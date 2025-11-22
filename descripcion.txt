@@ -1,0 +1,48 @@
+A. Cabecera y Noticias:
+
+Navbar: Logo, Título y botones de acceso.
+
+Ticker de Noticias (Marquesina): Barra superior azul oscura con noticias en movimiento (ej: "Messi confirma...", "Pozo sube a $50k").
+
+B. Columna Izquierda (Contenido Principal):
+
+Hero Section (Carrusel): Banner principal cinemático con transición automática de 3 imágenes (Estadio, Hinchada, Gol) y textos superpuestos ("Predice, Compite...").
+
+Cartelera de Partidos (Estilo Apuestas): Nueva mejora visual. 3 tarjetas con imágenes de fondo oscurecidas, banderas/nombres de equipos y botones funcionales para pronosticar (Local - Empate - Visita).
+
+Barra de Estadísticas: 3 contadores grandes (Participantes, Predicciones, Partidos).
+
+Cómo Funciona: 3 pasos simples con iconos (Registro, Predicción, Premios).
+
+Sistema de Puntos: Tarjetas explicativas (+1 punto por signo, +3 por marcador exacto).
+
+Sección de Premios: Grilla visual al final con fotos de los premios reales (Viaje, Tecnología, Efectivo).
+
+C. Columna Derecha (Barra Lateral / Sidebar):
+
+Contador Regresivo (Countdown): Reloj en tiempo real contando días/horas para el Mundial 2026.
+
+Ranking en Vivo: Widget con el Top 5 usuarios y sus puntajes.
+
+Pozo Acumulado: Tarjeta azul destacada mostrando los porcentajes de premios.
+
+Admin Access: Acceso rápido para administradores.
+
+CTA Final: Tarjeta pequeña invitando a registrarse ("¿Listo para competir?").
+
+D. Páginas de Autenticación
+
+Login:
+Diseño de pantalla dividida (Split Screen).
+
+Izquierda: Imagen de estadio con frase inspiradora.
+
+Derecha: Formulario de ingreso y enlace a "Recuperar contraseña".
+
+Registro:
+
+Diseño invertido (Imagen a la derecha, formulario a la izquierda).
+
+Campos para Nombre, Apellido, Email y Contraseña.
+
+Botón verde destacado "Registrarse Gratis".
