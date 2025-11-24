@@ -4,3 +4,19 @@ database: quiniela_db_jn3f
 Username: admin	
 Password : sCDzp6H5TGIh9ZO4CUAvjMQH3QCxcPBp
 Internal Database Url: postgresql://admin:sCDzp6H5TGIh9ZO4CUAvjMQH3QCxcPBp@dpg-d4i7m5emcj7s73cen37g-a/quiniela_db_jn3f
+
+
+
+
+¿Cuál es el siguiente paso para tu Quiniela?
+Ahora que ya puedes registrarte y entrar, se abre un mundo de posibilidades. Aquí tienes algunas ideas de por dónde podríamos seguir:
+
+Proteger el Dashboard: Asegurarnos de que si alguien intenta entrar directo a /dashboard sin loguearse, lo mande de vuelta al Login.
+
+Mostrar Partidos Reales: Crear la tabla de partidos en la base de datos y hacer que el Dashboard los muestre dinámicamente.
+
+Hacer Predicciones: Que el usuario pueda guardar sus pronósticos (1, X, 2) y que se guarden en la base de datos.
+
+Panel de Admin: Una página secreta para que tú (el administrador) cargues los resultados de los partidos y el sistema calcule los puntos.
+
+¿Qué te gustaría atacar ahora? ¡Soy todo oídos! 👂⚽️

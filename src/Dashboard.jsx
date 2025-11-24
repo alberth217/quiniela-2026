@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  Trophy, Home, BarChart2, Bell, LogOut, Search, Filter, 
-  Calendar, Clock, Check, ChevronDown 
+  Trophy, Home, BarChart2, Bell, LogOut, Search, 
+  Calendar, Clock, Check
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -26,19 +26,24 @@ function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+    // Agregamos pb-20 en móvil para que el contenido no quede tapado por la barra inferior
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-24 md:pb-0">
       
-      {/* --- 1. NAVBAR SUPERIOR (Logueado) --- */}
+      {/* --- 1. NAVBAR SUPERIOR (Adaptado) --- */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
+          
+          {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="bg-blue-600 text-white p-1.5 rounded-lg">
               <Trophy size={20} />
             </div>
+            {/* Ocultamos el texto en pantallas muy pequeñas si hace falta */}
             <span className="font-bold text-xl tracking-tight text-slate-900">Quiniela 2026</span>
           </div>
 
-          <div className="flex items-center gap-6">
+          {/* --- MENÚ DESKTOP (Oculto en móvil 'hidden md:flex') --- */}
+          <div className="hidden md:flex items-center gap-6">
             <Link to="/dashboard" className="flex items-center gap-1 text-sm font-semibold text-slate-900">
               <Home size={18} /> Partidos
             </Link>
@@ -56,45 +61,72 @@ function Dashboard() {
               <LogOut size={18} /> Salir
             </button>
           </div>
+
+          {/* --- MENÚ MÓVIL HEADER (Solo iconos esenciales) --- */}
+          <div className="flex md:hidden gap-4">
+             <button className="text-slate-400">
+               <Bell size={20} />
+             </button>
+             <button onClick={handleLogout} className="text-red-500">
+               <LogOut size={20} />
+             </button>
+          </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* --- 2. BARRA DE NAVEGACIÓN INFERIOR (Solo visible en móvil) --- */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 px-6 py-3 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <Link to="/dashboard" className="flex flex-col items-center gap-1 text-blue-600 transition-colors">
+          <Home size={24} />
+          <span className="text-[10px] font-bold">Partidos</span>
+        </Link>
+        <Link to="#" className="flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 transition-colors">
+          <BarChart2 size={24} />
+          <span className="text-[10px] font-medium">Puntos</span>
+        </Link>
+        <Link to="#" className="flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 transition-colors">
+          <Trophy size={24} />
+          <span className="text-[10px] font-medium">Ranking</span>
+        </Link>
+      </div>
+
+      {/* --- CONTENIDO PRINCIPAL --- */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         
-        {/* --- 2. HERO BANNER PEQUEÑO --- */}
-        <div className="rounded-xl overflow-hidden h-48 relative mb-8 shadow-md">
+        {/* HERO BANNER PEQUEÑO */}
+        <div className="rounded-xl overflow-hidden h-32 md:h-48 relative mb-6 md:mb-8 shadow-md">
           <img 
             src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1920&q=80" 
             className="w-full h-full object-cover"
             alt="Banner Estadio"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-transparent flex items-center px-8">
-             {/* Espacio para texto si se desea */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-transparent flex items-center px-6 md:px-8">
+             <h2 className="text-white text-xl md:text-2xl font-bold">¡Haz tus jugadas!</h2>
           </div>
         </div>
 
-        {/* --- 3. SUB-NAVEGACIÓN --- */}
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-1 flex gap-2 mb-8 w-fit mx-auto md:mx-0">
+        {/* SUB-NAVEGACIÓN */}
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-1 flex gap-1 mb-6 w-full md:w-fit mx-auto md:mx-0">
           <button 
             onClick={() => setActiveTab('Partidos')}
-            className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'Partidos' ? 'bg-white shadow text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+            className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'Partidos' ? 'bg-white shadow text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
           >
             <Trophy size={16} className="inline mr-2 mb-0.5"/> Partidos
           </button>
           <button 
             onClick={() => setActiveTab('Pagos')}
-            className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'Pagos' ? 'bg-white shadow text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+            className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'Pagos' ? 'bg-white shadow text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
           >
             <span className="inline mr-2">$</span> Pagos
           </button>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 text-center md:text-left">
           <h1 className="text-2xl font-bold text-slate-900">Partidos Disponibles</h1>
           <p className="text-slate-500 text-sm">Haz tus predicciones antes del cierre</p>
         </div>
 
-        {/* --- 4. BARRA DE FILTROS --- */}
+        {/* BARRA DE FILTROS */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-2.5 text-slate-400" size={20} />
@@ -104,7 +136,7 @@ function Dashboard() {
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
             {['Todos', 'Fase de Grupos', 'Octavos', 'Cuartos', 'Semifinal', 'Final'].map(f => (
               <button 
                 key={f}
@@ -121,7 +153,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* --- 5. GRILLA DE PARTIDOS (MATCH CARDS) --- */}
+        {/* GRILLA DE PARTIDOS (MATCH CARDS) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {matchesData.map((match) => (
             <MatchCard key={match.id} match={match} />
