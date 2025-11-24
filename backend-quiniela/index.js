@@ -73,3 +73,15 @@ app.post('/login', async (req, res) => {
     app.listen(PORT, () => {
         console.log(`Servidor corriendo en el puerto ${PORT}`);
     });
+
+    // RUTA PARA OBTENER PARTIDOS
+app.get('/partidos', async (req, res) => {
+    try {
+        // Consultamos todos los partidos ordenados por id
+        const result = await pool.query("SELECT * FROM partidos ORDER BY id ASC");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error al obtener partidos");
+    }
+});
