@@ -40,7 +40,7 @@ function Register() {
 
     try {
       // 1. CONEXIÓN CON EL BACKEND
-      const response = await fetch('http://localhost:3000/registro', {
+      const response = await fetch('https://api-quiniela-444s.onrender.com/registro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ function Register() {
 
           {/* 2. El Overlay Azul (Aquí controlamos la transparencia: bg-blue-900/40 significa 40% de opacidad) */}
           <div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div>
-          
+
         <div className="relative z-10 text-center px-10">
            <h2 className="text-4xl font-bold text-white mb-4">Únete a la Pasión</h2>
            <p className="text-blue-100 text-lg">Crea tu cuenta y comienza a predecir los resultados del mundial.</p>

@@ -1,0 +1,6 @@
+Hostname: dpg-d4i7m5emcj7s73cen37g-a
+Port: 5432
+database: quiniela_db_jn3f
+Username: admin	
+Password : sCDzp6H5TGIh9ZO4CUAvjMQH3QCxcPBp
+Internal Database Url: postgresql://admin:sCDzp6H5TGIh9ZO4CUAvjMQH3QCxcPBp@dpg-d4i7m5emcj7s73cen37g-a/quiniela_db_jn3f
