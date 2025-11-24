@@ -76,18 +76,19 @@ function Home() {
             <div className="bg-blue-700 text-white p-1.5 rounded-lg">
               <Trophy size={20} />
             </div>
-            <span className="font-bold text-xl tracking-tight text-slate-900">Quiniela 2026</span>
+            {/* RESPONSIVE: Ocultamos el texto en móviles para dar espacio a los botones */}
+            <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">Quiniela 2026</span>
           </Link>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <Link
               to="/login"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700 px-3 py-2 transition-colors"
+              className="text-sm font-medium text-slate-600 hover:text-blue-700 px-2 sm:px-3 py-2 transition-colors"
             >
               Iniciar Sesión
             </Link>
             <Link
               to="/register"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm whitespace-nowrap"
             >
               Crear Cuenta
             </Link>
@@ -124,7 +125,7 @@ function Home() {
           <div className="lg:col-span-9 space-y-8">
 
             {/* HERO SECTION (BANNER) - CARRUSEL */}
-            <div className="relative rounded-2xl overflow-hidden bg-blue-900 text-white h-80 flex flex-col justify-center items-start p-10 shadow-xl group">
+            <div className="relative rounded-2xl overflow-hidden bg-blue-900 text-white h-96 sm:h-80 flex flex-col justify-center items-start p-6 sm:p-10 shadow-xl group">
               {/* Overlay oscuro para mejor legibilidad del texto */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30 z-10"></div>
 
@@ -152,16 +153,17 @@ function Home() {
                   </span>
                   Mundial 2026 USA, México, Canadá
                 </div>
-                <h1 className="text-5xl font-extrabold leading-tight mb-4 drop-shadow-2xl text-white">
+                {/* RESPONSIVE: Texto más pequeño en móvil (3xl) y grande en escritorio (5xl) */}
+                <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight mb-4 drop-shadow-2xl text-white">
                   Predice, <br />
                   <span className="text-blue-200">Compite,</span> <br />
                   Gana.
                 </h1>
-                <div className="flex gap-3 mt-4">
-                  <button className="bg-white text-blue-900 px-6 py-3 rounded-lg font-bold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                  <button className="bg-white text-blue-900 px-6 py-3 rounded-lg font-bold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full sm:w-auto">
                     Registrarse como Cliente
                   </button>
-                  <button className="bg-blue-900/40 backdrop-blur-sm text-white border border-blue-400/50 px-6 py-3 rounded-lg font-semibold hover:bg-blue-800/60 transition-all">
+                  <button className="bg-blue-900/40 backdrop-blur-sm text-white border border-blue-400/50 px-6 py-3 rounded-lg font-semibold hover:bg-blue-800/60 transition-all w-full sm:w-auto">
                     Demo Admin
                   </button>
                 </div>
@@ -227,39 +229,40 @@ function Home() {
                     <div className="absolute inset-0 bg-black/60"></div>
                     
                     {/* Contenido */}
-                    <div className="relative z-10 p-6">
+                    <div className="relative z-10 p-4 sm:p-6">
                       {/* Cabecera */}
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="text-sm text-white/90 font-medium bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
+                      <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <div className="text-xs sm:text-sm text-white/90 font-medium bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
                           {match.date}
                         </div>
-                        <div className="text-sm text-white font-semibold bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
+                        <div className="text-xs sm:text-sm text-white font-semibold bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full truncate max-w-[150px]">
                           {match.stadium}
                         </div>
                       </div>
 
                       {/* Enfrentamiento */}
-                      <div className="flex items-center justify-center gap-6 mb-6">
-                        <div className="text-center">
-                          <div className="text-5xl mb-2">{match.homeFlag}</div>
-                          <div className="text-2xl font-bold text-white drop-shadow-lg">{match.home}</div>
+                      <div className="flex items-center justify-center gap-2 sm:gap-6 mb-4 sm:mb-6">
+                        <div className="text-center flex-1">
+                          {/* RESPONSIVE: Banderas más pequeñas en móvil */}
+                          <div className="text-3xl sm:text-5xl mb-1 sm:mb-2">{match.homeFlag}</div>
+                          <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.home}</div>
                         </div>
-                        <div className="text-white/80 font-bold text-2xl">VS</div>
-                        <div className="text-center">
-                          <div className="text-5xl mb-2">{match.awayFlag}</div>
-                          <div className="text-2xl font-bold text-white drop-shadow-lg">{match.away}</div>
+                        <div className="text-white/80 font-bold text-xl sm:text-2xl px-2">VS</div>
+                        <div className="text-center flex-1">
+                          <div className="text-3xl sm:text-5xl mb-1 sm:mb-2">{match.awayFlag}</div>
+                          <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.away}</div>
                         </div>
                       </div>
 
                       {/* Botones de pronóstico */}
-                      <div className="flex gap-3">
-                        <button className="flex-1 py-3 px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                      <div className="flex gap-2 sm:gap-3">
+                        <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
                           Local (1)
                         </button>
-                        <button className="flex-1 py-3 px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                          Empate (X)
+                        <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                          Empate
                         </button>
-                        <button className="flex-1 py-3 px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                        <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
                           Visita (2)
                         </button>
                       </div>
@@ -270,7 +273,8 @@ function Home() {
             </div>
 
             {/* STATS BAR */}
-            <div className="grid grid-cols-3 gap-4">
+            {/* RESPONSIVE: grid-cols-1 en móvil para apilar, grid-cols-3 en desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 text-center hover:border-blue-100 transition-colors">
                 <div className="text-blue-600 flex justify-center mb-2"><Users size={28} strokeWidth={1.5} /></div>
                 <div className="text-3xl font-bold text-slate-800">2,450</div>
@@ -394,19 +398,19 @@ function Home() {
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-3 text-center">
-                    <div className="text-2xl font-bold text-yellow-400">{String(timeLeft.days).padStart(2, '0')}</div>
+                    <div className="text-xl sm:text-2xl font-bold text-yellow-400">{String(timeLeft.days).padStart(2, '0')}</div>
                     <div className="text-xs text-slate-400 mt-1">Días</div>
                   </div>
                   <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-3 text-center">
-                    <div className="text-2xl font-bold text-yellow-400">{String(timeLeft.hours).padStart(2, '0')}</div>
+                    <div className="text-xl sm:text-2xl font-bold text-yellow-400">{String(timeLeft.hours).padStart(2, '0')}</div>
                     <div className="text-xs text-slate-400 mt-1">Horas</div>
                   </div>
                   <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-3 text-center">
-                    <div className="text-2xl font-bold text-yellow-400">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                    <div className="text-xl sm:text-2xl font-bold text-yellow-400">{String(timeLeft.minutes).padStart(2, '0')}</div>
                     <div className="text-xs text-slate-400 mt-1">Min</div>
                   </div>
                   <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-3 text-center">
-                    <div className="text-2xl font-bold text-yellow-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                    <div className="text-xl sm:text-2xl font-bold text-yellow-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
                     <div className="text-xs text-slate-400 mt-1">Seg</div>
                   </div>
                 </div>
@@ -527,4 +531,3 @@ function Home() {
 }
 
 export default Home;
-
