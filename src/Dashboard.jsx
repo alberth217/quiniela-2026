@@ -24,7 +24,7 @@ function Dashboard() {
     const fetchMatches = async () => {
       try {
         // Petición a tu Backend en Render
-        const response = await fetch('https://api-quiniela.onrender.com/partidos');
+        const response = await fetch('https://api-quiniela-444s.onrender.com/partidos');
         
         if (response.ok) {
           const data = await response.json();
