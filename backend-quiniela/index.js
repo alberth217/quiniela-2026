@@ -1,83 +1,58 @@
 const express = require('express');
 const cors = require('cors');
-const pool = require('./db'); // Importamos la conexión
+const pool = require('./db'); 
 
 const app = express();
 
-// Middlewares
 app.use(cors());
-app.use(express.json()); // Permite recibir datos JSON del frontend
+app.use(express.json()); 
 
-// RUTA DE PRUEBA (para ver si funciona)
+// RUTA DE PRUEBA
 app.get('/', (req, res) => {
     res.send('¡Servidor de la Quiniela funcionando!');
 });
 
-// RUTA DE REGISTRO DE USUARIO (ACTUALIZADA)
+// RUTA DE REGISTRO
 app.post('/registro', async (req, res) => {
     try {
-        // Ahora recibimos también el apellido
         const { nombre, apellido, email, password } = req.body;
-
-        // Verificamos si el usuario ya existe
         const userExist = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
         if (userExist.rows.length > 0) {
             return res.status(400).json({ message: "El correo ya está registrado" });
         }
-
-        // Insertamos nombre, apellido, email y password
         const nuevoUsuario = await pool.query(
             "INSERT INTO usuarios (nombre, apellido, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
             [nombre, apellido, email, password]
         );
-
         res.json(nuevoUsuario.rows[0]);
-
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Error en el servidor");
     }
 });
 
-// --- RUTA DE LOGIN ---
+// RUTA DE LOGIN
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // 1. Buscamos si el usuario existe por su email
         const result = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
-
-        // Si no hay filas, es que el email no existe
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Usuario no registrado" });
         }
-
         const usuario = result.rows[0];
-
-        // 2. Verificamos si la contraseña coincide
-        // (Nota: Para un proyecto real futuro, aquí deberíamos comparar contraseñas encriptadas)
         if (password !== usuario.password) {
             return res.status(401).json({ message: "Contraseña incorrecta" });
         }
-
-        // 3. ¡Éxito! Devolvemos los datos del usuario
         res.json(usuario);
-
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Error del servidor");
     }
 });
-    const PORT = process.env.PORT || 3000;
 
-    app.listen(PORT, () => {
-        console.log(`Servidor corriendo en el puerto ${PORT}`);
-    });
-
-    // RUTA PARA OBTENER PARTIDOS
+// RUTA PARA OBTENER PARTIDOS
 app.get('/partidos', async (req, res) => {
     try {
-        // Consultamos todos los partidos ordenados por id
         const result = await pool.query("SELECT * FROM partidos ORDER BY id ASC");
         res.json(result.rows);
     } catch (err) {
@@ -86,7 +61,9 @@ app.get('/partidos', async (req, res) => {
     }
 });
 
-// 1. RUTA PARA LEER (Esta es la que ya tienes, déjala así)
+// --- PREDICCIONES ---
+
+// 1. RUTA PARA LEER (Ya la tenías)
 app.get('/predicciones', async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM predicciones ORDER BY id ASC");
@@ -97,7 +74,7 @@ app.get('/predicciones', async (req, res) => {
     }
 });
 
-// 2. 👇 RUTA PARA GUARDAR (ESTA ES LA QUE TE FALTA) 👇
+// 2. RUTA PARA GUARDAR (ESTA ES LA QUE FALTABA)
 app.post('/predicciones', async (req, res) => {
     try {
         const { usuario_id, partido_id, tipo_prediccion, seleccion } = req.body;
@@ -107,9 +84,7 @@ app.post('/predicciones', async (req, res) => {
             return res.status(400).json({ message: "Faltan datos obligatorios" });
         }
 
-        // Usamos "ON CONFLICT" para:
-        // - Insertar si es nueva.
-        // - Actualizar si el usuario ya había pronosticado ese partido.
+        // Usamos "ON CONFLICT" para actualizar si ya existe
         const query = `
             INSERT INTO predicciones (usuario_id, partido_id, tipo_prediccion, seleccion)
             VALUES ($1, $2, $3, $4)
@@ -119,12 +94,15 @@ app.post('/predicciones', async (req, res) => {
         `;
         
         const result = await pool.query(query, [usuario_id, partido_id, tipo_prediccion, seleccion]);
-        
-        // Devolvemos la predicción guardada
         res.json(result.rows[0]);
 
     } catch (err) {
         console.error("Error guardando predicción:", err.message);
         res.status(500).json({ message: "Error interno al guardar" });
     }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
