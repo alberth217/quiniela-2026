@@ -1,8 +1,5 @@
 const { Client } = require('pg');
 
-// ⚠️ ¡ATENCIÓN AQUÍ! ⚠️
-// 1. Ve a Render -> Tu Base de Datos -> Connect -> Copia "External Connection"
-// 2. Pega esa URL larga DENTRO de las comillas de abajo:
 const connectionString = 'postgresql://admin:sCDzp6H5TGIh9ZO4CUAvjMQH3QCxcPBp@dpg-d4i7m5emcj7s73cen37g-a.ohio-postgres.render.com/quiniela_db_jn3f'; 
 
 const client = new Client({
