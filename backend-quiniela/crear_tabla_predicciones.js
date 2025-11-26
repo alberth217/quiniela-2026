@@ -28,7 +28,7 @@ async function iniciar() {
     console.log('✅ Conectado...');
     await client.query(crearTablaQuery);
     console.log('✅ Tabla "predicciones" creada con éxito.');
-  } catch (err) {
+  } catch (err) {   
     console.error('❌ Error:', err);
   } finally {
     await client.end();
