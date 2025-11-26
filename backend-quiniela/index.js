@@ -85,3 +85,14 @@ app.get('/partidos', async (req, res) => {
         res.status(500).send("Error al obtener partidos");
     }
 });
+
+app.get('/predicciones', async (req, res) => {
+    try {
+        // Consultamos todos las predicciones ordenados por id
+        const result = await pool.query("SELECT * FROM predicciones ORDER BY id ASC");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error al obtener predicciones");
+    }
+});
