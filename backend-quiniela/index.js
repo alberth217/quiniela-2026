@@ -86,13 +86,45 @@ app.get('/partidos', async (req, res) => {
     }
 });
 
+// 1. RUTA PARA LEER (Esta es la que ya tienes, déjala así)
 app.get('/predicciones', async (req, res) => {
     try {
-        // Consultamos todos las predicciones ordenados por id
         const result = await pool.query("SELECT * FROM predicciones ORDER BY id ASC");
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Error al obtener predicciones");
+    }
+});
+
+// 2. 👇 RUTA PARA GUARDAR (ESTA ES LA QUE TE FALTA) 👇
+app.post('/predicciones', async (req, res) => {
+    try {
+        const { usuario_id, partido_id, tipo_prediccion, seleccion } = req.body;
+
+        // Validación básica
+        if (!usuario_id || !partido_id || !seleccion) {
+            return res.status(400).json({ message: "Faltan datos obligatorios" });
+        }
+
+        // Usamos "ON CONFLICT" para:
+        // - Insertar si es nueva.
+        // - Actualizar si el usuario ya había pronosticado ese partido.
+        const query = `
+            INSERT INTO predicciones (usuario_id, partido_id, tipo_prediccion, seleccion)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (usuario_id, partido_id) 
+            DO UPDATE SET tipo_prediccion = EXCLUDED.tipo_prediccion, seleccion = EXCLUDED.seleccion, fecha_registro = CURRENT_TIMESTAMP
+            RETURNING *;
+        `;
+        
+        const result = await pool.query(query, [usuario_id, partido_id, tipo_prediccion, seleccion]);
+        
+        // Devolvemos la predicción guardada
+        res.json(result.rows[0]);
+
+    } catch (err) {
+        console.error("Error guardando predicción:", err.message);
+        res.status(500).json({ message: "Error interno al guardar" });
     }
 });
