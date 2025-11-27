@@ -71,7 +71,7 @@ function Login() {
         {/* 3. El contenido (texto blanco para contrastar con el azul) */}
         <div className="relative z-10 text-center px-10">
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl inline-block mb-6 shadow-xl border border-white/20">
-            <Trophy size={48} className="text-yellow-400" />
+            <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 w-auto" />
           </div>
           <h2 className="text-4xl font-bold text-white mb-4">Quiniela 2026</h2>
           <p className="text-blue-100 text-lg max-w-md mx-auto leading-relaxed">
@@ -89,7 +89,7 @@ function Login() {
 
           <div className="text-center mb-8">
             <div className="inline-flex lg:hidden bg-blue-600 text-white p-2 rounded-lg mb-3">
-              <Trophy size={24} />
+              <img src="/img/logo.png" alt="Logo Quiniela" className="h-8 w-auto" />
             </div>
             <h2 className="text-3xl font-bold text-slate-900">Bienvenido de nuevo</h2>
             <p className="text-slate-500 mt-2">Ingresa tus credenciales para continuar</p>

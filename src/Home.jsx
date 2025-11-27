@@ -74,7 +74,7 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <div className="bg-blue-700 text-white p-1.5 rounded-lg">
-              <Trophy size={20} />
+              <img src="/img/logo.png" alt="Logo Quiniela" className="h-10 w-auto" />
             </div>
             {/* RESPONSIVE: Ocultamos el texto en móviles para dar espacio a los botones */}
             <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">Quiniela 2026</span>
