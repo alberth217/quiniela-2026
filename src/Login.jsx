@@ -18,7 +18,9 @@ function Login() {
 
     try {
       // 1. Petición al Backend
-      const response = await fetch('https://api-quiniela-444s.onrender.com/login', {
+      // ⚠️ Asegúrate de que esta URL sea la correcta de tu Render ⚠️
+      const backendUrl = 'https://api-quiniela.onrender.com/login';
+      const response = await fetch(backendUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +59,6 @@ function Login() {
     <div className="min-h-screen bg-white flex">
 
       {/* --- COLUMNA IZQUIERDA (IMAGEN) --- */}
-      {/* --- COLUMNA IZQUIERDA (IMAGEN) --- */}
       {/* 1. Quitamos 'bg-slate-900' del padre para que no oscurezca nada si la imagen carga bien */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-gray-100">
 
@@ -93,7 +94,7 @@ function Login() {
 
           <div className="text-center mb-8">
             <div className="inline-flex lg:hidden bg-blue-600 text-white p-2 rounded-lg mb-3">
-              <img src="/img/logo.png" alt="Logo Quiniela" className="h-8 w-auto" />
+              <Trophy size={24} />
             </div>
             <h2 className="text-3xl font-bold text-slate-900">Bienvenido de nuevo</h2>
             <p className="text-slate-500 mt-2">Ingresa tus credenciales para continuar</p>
