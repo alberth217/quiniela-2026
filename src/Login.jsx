@@ -57,24 +57,28 @@ function Login() {
     <div className="min-h-screen bg-white flex">
 
       {/* --- COLUMNA IZQUIERDA (IMAGEN) --- */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-slate-900">
-        {/* 1. La imagen de fondo (sin opacidad, se ve nítida) */}
+      {/* --- COLUMNA IZQUIERDA (IMAGEN) --- */}
+      {/* 1. Quitamos 'bg-slate-900' del padre para que no oscurezca nada si la imagen carga bien */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-gray-100">
+
+        {/* Imagen de fondo */}
         <img
           src="/img/login.png"
           className="absolute inset-0 w-full h-full object-cover"
           alt="Estadio de fútbol"
         />
 
-        {/* 2. El Overlay Azul (Aquí controlamos la transparencia: bg-blue-900/40 significa 40% de opacidad) */}
-        {/*<div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div>*/}
+        {/* 2. ELIMINAMOS O COMENTAMOS ESTA LÍNEA QUE ES EL FILTRO AZUL: */}
+        {/* <div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div> */}
 
-        {/* 3. El contenido (texto blanco para contrastar con el azul) */}
+        {/* 3. El contenido */}
         <div className="relative z-10 text-center px-10">
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl inline-block mb-6 shadow-xl border border-white/20">
             <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 w-auto" />
           </div>
-          <h2 className="text-4xl font-bold text-white mb-4">Quiniela 2026</h2>
-          <p className="text-blue-100 text-lg max-w-md mx-auto leading-relaxed">
+          {/* Nota: Si la imagen es muy clara, quizás necesites cambiar 'text-white' a 'text-slate-900' aquí abajo para que se lea */}
+          <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">Quiniela 2026</h2>
+          <p className="text-white text-lg max-w-md mx-auto leading-relaxed drop-shadow-md">
             "El fútbol no es solo un juego, es una pasión que une naciones y crea historias inolvidables."
           </p>
         </div>
