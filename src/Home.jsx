@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const heroImages = [
   '/img/hero1.jpg',
   '/img/hero2.jpg',
-  '/img/hero3.jpg',
+  '/img/hero3.png',
 ];
 
 function Home() {
@@ -20,7 +20,7 @@ function Home() {
   });
 
   // Cambio automático de imagen cada 5 segundos
-  useEffect(() => { 
+  useEffect(() => {
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -137,8 +137,8 @@ function Home() {
                     src={image}
                     alt={`Hero ${index + 1}`}
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${index === currentImageIndex && !isTransitioning
-                        ? 'opacity-100'
-                        : 'opacity-0'
+                      ? 'opacity-100'
+                      : 'opacity-0'
                       }`}
                   />
                 ))}
@@ -176,8 +176,8 @@ function Home() {
                     key={index}
                     onClick={() => goToImage(index)}
                     className={`transition-all duration-300 rounded-full ${index === currentImageIndex
-                        ? 'bg-white w-8 h-2'
-                        : 'bg-white/40 w-2 h-2 hover:bg-white/60'
+                      ? 'bg-white w-8 h-2'
+                      : 'bg-white/40 w-2 h-2 hover:bg-white/60'
                       }`}
                     aria-label={`Ir a imagen ${index + 1}`}
                   />
@@ -190,30 +190,30 @@ function Home() {
               <h3 className="text-xl font-bold text-slate-800 mb-4">Partidos Destacados</h3>
               <div className="space-y-4">
                 {[
-                  { 
-                    date: '14 Jun', 
-                    stadium: 'Estadio Azteca', 
-                    home: 'MÉXICO', 
-                    homeFlag: '🇲🇽', 
-                    away: 'ALEMANIA', 
+                  {
+                    date: '14 Jun',
+                    stadium: 'Estadio Azteca',
+                    home: 'MÉXICO',
+                    homeFlag: '🇲🇽',
+                    away: 'ALEMANIA',
                     awayFlag: '🇩🇪',
                     image: '/img/Mexico-vs-Alemania.jpeg'
                   },
-                  { 
-                    date: '15 Jun', 
-                    stadium: 'MetLife Stadium', 
-                    home: 'BRASIL', 
-                    homeFlag: '🇧🇷', 
-                    away: 'FRANCIA', 
+                  {
+                    date: '15 Jun',
+                    stadium: 'MetLife Stadium',
+                    home: 'BRASIL',
+                    homeFlag: '🇧🇷',
+                    away: 'FRANCIA',
                     awayFlag: '🇫🇷',
                     image: '/img/brazil-vs-france.jpg'
                   },
-                  { 
-                    date: '16 Jun', 
-                    stadium: 'BMO Field', 
-                    home: 'ARGENTINA', 
-                    homeFlag: '🇦🇷', 
-                    away: 'ESPAÑA', 
+                  {
+                    date: '16 Jun',
+                    stadium: 'BMO Field',
+                    home: 'ARGENTINA',
+                    homeFlag: '🇦🇷',
+                    away: 'ESPAÑA',
                     awayFlag: '🇪🇸',
                     image: '/img/Argentina vs España.png'
                   },
@@ -227,7 +227,7 @@ function Home() {
                     />
                     {/* Overlay oscuro */}
                     <div className="absolute inset-0 bg-black/60"></div>
-                    
+
                     {/* Contenido */}
                     <div className="relative z-10 p-4 sm:p-6">
                       {/* Cabecera */}

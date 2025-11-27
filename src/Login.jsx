@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
   const navigate = useNavigate();
-  
+
   // Estados para manejar los inputs y la interfaz
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,13 +31,13 @@ function Login() {
       if (response.ok) {
         // 2. ÉXITO: Guardamos la sesión
         const userSession = {
-            ...data,
-            isLoggedIn: true
+          ...data,
+          isLoggedIn: true
         };
-        
+
         // Guardamos en localStorage para persistencia
         localStorage.setItem('currentUser', JSON.stringify(userSession));
-        
+
         // Redirigir al Dashboard
         navigate('/Dashboard');
       } else {
@@ -55,19 +55,19 @@ function Login() {
 
   return (
     <div className="min-h-screen bg-white flex">
-      
+
       {/* --- COLUMNA IZQUIERDA (IMAGEN) --- */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-slate-900">
         {/* 1. La imagen de fondo (sin opacidad, se ve nítida) */}
-        <img 
-          src="/img/login.jpg" 
+        <img
+          src="/img/login.png"
           className="absolute inset-0 w-full h-full object-cover"
           alt="Estadio de fútbol"
         />
-        
+
         {/* 2. El Overlay Azul (Aquí controlamos la transparencia: bg-blue-900/40 significa 40% de opacidad) */}
         <div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div>
-        
+
         {/* 3. El contenido (texto blanco para contrastar con el azul) */}
         <div className="relative z-10 text-center px-10">
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl inline-block mb-6 shadow-xl border border-white/20">
@@ -107,12 +107,12 @@ function Login() {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3.5 text-slate-400" size={20}/>
-                <input 
-                  type="email" 
+                <Mail className="absolute left-3 top-3.5 text-slate-400" size={20} />
+                <input
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com" 
+                  placeholder="tu@email.com"
                   className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   required
                 />
@@ -121,18 +121,18 @@ function Login() {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3.5 text-slate-400" size={20}/>
-                <input 
-                  type="password" 
+                <Lock className="absolute left-3 top-3.5 text-slate-400" size={20} />
+                <input
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••" 
+                  placeholder="••••••••"
                   className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   required
                 />
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center text-slate-600 cursor-pointer">
                 <input type="checkbox" className="mr-2 rounded text-blue-600 focus:ring-blue-500" />
@@ -141,10 +141,10 @@ function Login() {
               <a href="#" className="text-blue-600 hover:underline font-medium">¿Olvidaste tu contraseña?</a>
             </div>
 
-            <button 
-                type="submit"
-                disabled={loading}
-                className={`w-full text-white py-3 rounded-lg font-bold transition-colors shadow-lg 
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full text-white py-3 rounded-lg font-bold transition-colors shadow-lg 
                     ${loading ? 'bg-blue-400 cursor-wait' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30'}`}
             >
               {loading ? 'Ingresando...' : 'Ingresar'}

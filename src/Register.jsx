@@ -10,7 +10,7 @@ function Register() {
     email: '',
     password: ''
   });
-  
+
   const [loading, setLoading] = useState(false);
   // Nuevo estado para notificaciones (tipo 'success' o 'error')
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
@@ -50,7 +50,7 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validación local
     const validationError = validateForm();
     if (validationError) {
@@ -62,7 +62,7 @@ function Register() {
 
     try {
       // ⚠️ Asegúrate de que esta URL sea la correcta de tu Render ⚠️
-      const backendUrl = 'https://api-quiniela-444s.onrender.com/registro'; 
+      const backendUrl = 'https://api-quiniela-444s.onrender.com/registro';
       // Si aún no tienes la URL de Render configurada en el código, reemplaza la línea de arriba.
 
       const response = await fetch(backendUrl, {
@@ -83,7 +83,7 @@ function Register() {
 
         // Mostramos mensaje de éxito bonito
         showNotification(`¡Bienvenido ${formData.nombre}! Redirigiendo...`, 'success');
-        
+
         // Esperamos 1.5 segundos para que el usuario lea el mensaje antes de ir al dashboard
         setTimeout(() => {
           navigate('/Dashboard');
@@ -104,12 +104,11 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-white flex flex-row-reverse relative overflow-hidden">
-      
+
       {/* --- COMPONENTE DE NOTIFICACIÓN FLOTANTE (TOAST) --- */}
       {notification.show && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-500 ease-in-out animate-in slide-in-from-top-5 ${
-          notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
-        }`}>
+        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-500 ease-in-out animate-in slide-in-from-top-5 ${notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
+          }`}>
           {notification.type === 'success' ? <CheckCircle size={24} /> : <AlertCircle size={24} />}
           <div>
             <h4 className="font-bold text-sm uppercase">{notification.type === 'success' ? '¡Éxito!' : 'Error'}</h4>
@@ -123,14 +122,14 @@ function Register() {
 
       {/* --- IMAGEN (LADO DERECHO) --- */}
       <div className="hidden lg:flex lg:w-1/2 bg-blue-900 relative overflow-hidden items-center justify-center">
-        <img 
-          src="https://images.unsplash.com/photo-1560272564-c83b66b1bccd?auto=format&fit=crop&w=1920&q=80" 
+        <img
+          src="/img/Registro.png"
           className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
           alt="Aficionados celebrando"
         />
         <div className="relative z-10 text-center px-10">
-           <h2 className="text-4xl font-bold text-white mb-4">Únete a la Pasión</h2>
-           <p className="text-blue-100 text-lg">Crea tu cuenta y comienza a predecir los resultados del mundial.</p>
+          <h2 className="text-4xl font-bold text-white mb-4">Únete a la Pasión</h2>
+          <p className="text-blue-100 text-lg">Crea tu cuenta y comienza a predecir los resultados del mundial.</p>
         </div>
       </div>
 
@@ -147,7 +146,7 @@ function Register() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 bg-white p-8 rounded-2xl shadow-sm border border-slate-200 relative">
-            
+
             {/* Overlay de carga (opcional, para evitar doble click) */}
             {loading && (
               <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-2xl">
@@ -156,74 +155,74 @@ function Register() {
             )}
 
             <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3.5 text-slate-400" size={18}/>
-                      <input 
-                        type="text" 
-                        name="nombre"
-                        value={formData.nombre}
-                        onChange={handleChange}
-                        className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
-                        placeholder="Juan" 
-                        required
-                      />
-                    </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3.5 text-slate-400" size={18} />
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={handleChange}
+                    className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    placeholder="Juan"
+                    required
+                  />
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Apellido</label>
-                    <input 
-                      type="text" 
-                      name="apellido"
-                      value={formData.apellido}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
-                      placeholder="Pérez" 
-                      required
-                    />
-                </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3.5 text-slate-400" size={20}/>
-                <input 
-                  type="email" 
-                  name="email"
-                  value={formData.email}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Apellido</label>
+                <input
+                  type="text"
+                  name="apellido"
+                  value={formData.apellido}
                   onChange={handleChange}
-                  placeholder="tu@email.com" 
-                  className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
+                  className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  placeholder="Pérez"
                   required
                 />
               </div>
             </div>
-            
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3.5 text-slate-400" size={20} />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="tu@email.com"
+                  className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  required
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3.5 text-slate-400" size={20}/>
-                <input 
-                  type="password" 
+                <Lock className="absolute left-3 top-3.5 text-slate-400" size={20} />
+                <input
+                  type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••" 
-                  className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
+                  placeholder="••••••••"
+                  className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   required
                 />
               </div>
               <p className="text-xs text-slate-400 mt-1 ml-1">Mínimo 6 caracteres</p>
             </div>
 
-            <button 
+            <button
               type="submit"
-              disabled={loading} 
+              disabled={loading}
               className={`w-full py-3.5 rounded-lg font-bold text-white transition-all shadow-lg mt-4 flex items-center justify-center gap-2
-                ${loading 
-                  ? 'bg-blue-400 cursor-wait' 
+                ${loading
+                  ? 'bg-blue-400 cursor-wait'
                   : notification.type === 'success'
                     ? 'bg-green-500 hover:bg-green-600'
                     : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30 hover:-translate-y-0.5'
