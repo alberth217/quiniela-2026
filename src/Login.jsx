@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, Mail, Lock, AlertCircle, ArrowRight, CheckCircle } from 'lucide-react';
+import { Trophy, Mail, Lock, AlertCircle, ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -74,7 +74,7 @@ function Login() {
           {/* 'object-contain' asegura que se vea todo el logo sin recortarse */}
           <div className="relative w-full max-w-xl mb-8 transition-transform hover:scale-105 duration-700">
             <img
-              src="/img/logo.png"
+              src="/img/login.png"
               className="w-full h-auto object-contain drop-shadow-2xl"
               alt="Predigol 3D Logo"
             />
@@ -98,9 +98,13 @@ function Login() {
 
           {/* Cabecera Móvil (Solo visible en celular) */}
           <div className="lg:hidden text-center mb-8">
-            <img src="/img/logo.png" alt="Logo" className="h-20 mx-auto mb-4 object-contain" />
+            <img src="/img/login.png" alt="Logo" className="h-20 mx-auto mb-4 object-contain" />
             <h2 className="text-3xl font-bold text-slate-900">Quiniela 2026</h2>
           </div>
+
+          <Link to="/" className="inline-flex items-center text-sm text-slate-500 hover:text-blue-600 mb-6 transition-colors">
+            <ArrowLeft size={16} className="mr-1" /> Volver al Inicio
+          </Link>
 
           {/* Cabecera del Formulario */}
           <div className="text-center lg:text-left">
