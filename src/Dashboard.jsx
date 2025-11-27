@@ -133,7 +133,7 @@ function Dashboard() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="bg-blue-600 text-white p-1.5 rounded-lg"><img src="/img/logo.png" alt="Logo Quiniela" className="h-10 w-auto" /></div>
+            <img src="/img/logo.png" alt="Logo Quiniela" className="h-10 w-auto" />
             <span className="font-bold text-xl tracking-tight text-slate-900">Quiniela 2026</span>
           </div>
 
@@ -338,49 +338,76 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
           <span className="flex items-center gap-1"><Clock size={12} /> {match.hora}</span>
         </div>
 
-        {/* Selector Tipo */}
-        <div className="flex bg-slate-100 rounded-lg p-1 mb-4">
-          <button disabled={isFinalized} onClick={() => setPredictionType('1X2')} className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${predictionType === '1X2' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>1X2</button>
-          <button disabled={isFinalized} onClick={() => setPredictionType('Marcador')} className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${predictionType === 'Marcador' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Marcador</button>
-        </div>
-
-        {/* Opciones */}
-        {predictionType === '1X2' ? (
-          <div className="flex gap-2 mb-2">
-            {['Local', 'Empate', 'Visita'].map((opt) => (
+        {/* CONTROLES DE PREDICCIÓN */}
+        {!isFinalized ? (
+          <div className="space-y-4">
+            {/* Selector de Tipo */}
+            <div className="flex bg-slate-100 p-1 rounded-lg">
               <button
-                key={opt}
-                disabled={isFinalized}
-                onClick={() => setSelection(opt)}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${selection === opt
-                  ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500'
-                  : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                  } ${isFinalized ? 'cursor-not-allowed' : ''}`}
+                onClick={() => setPredictionType('1X2')}
+                className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${predictionType === '1X2' ? 'bg-white shadow text-blue-600' : 'text-slate-500'}`}
               >
-                {opt}
+                Ganador
               </button>
-            ))}
+              <button
+                onClick={() => setPredictionType('Marcador')}
+                className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${predictionType === 'Marcador' ? 'bg-white shadow text-blue-600' : 'text-slate-500'}`}
+              >
+                Marcador
+              </button>
+            </div>
+
+            {predictionType === '1X2' ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setSelection('1')}
+                  className={`flex-1 py-2 rounded-lg border text-sm font-bold transition-all ${selection === '1' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'}`}
+                >
+                  1
+                </button>
+                <button
+                  onClick={() => setSelection('X')}
+                  className={`flex-1 py-2 rounded-lg border text-sm font-bold transition-all ${selection === 'X' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'}`}
+                >
+                  X
+                </button>
+                <button
+                  onClick={() => setSelection('2')}
+                  className={`flex-1 py-2 rounded-lg border text-sm font-bold transition-all ${selection === '2' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'}`}
+                >
+                  2
+                </button>
+              </div>
+            ) : (
+              <div className="flex justify-center items-center gap-3">
+                <input
+                  type="number"
+                  value={scoreA}
+                  onChange={(e) => setScoreA(e.target.value)}
+                  className="w-12 h-10 text-center border border-slate-200 rounded-lg font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="-"
+                />
+                <span className="font-bold text-slate-300">-</span>
+                <input
+                  type="number"
+                  value={scoreB}
+                  onChange={(e) => setScoreB(e.target.value)}
+                  className="w-12 h-10 text-center border border-slate-200 rounded-lg font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="-"
+                />
+              </div>
+            )}
           </div>
         ) : (
-          <div className="flex justify-center gap-4 mb-2 items-center">
-            <input disabled={isFinalized} type="number" value={scoreA} onChange={(e) => setScoreA(e.target.value)} className="w-12 h-10 text-center border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-700 disabled:bg-slate-100" placeholder="-" />
-            <span className="text-slate-300">-</span>
-            <input disabled={isFinalized} type="number" value={scoreB} onChange={(e) => setScoreB(e.target.value)} className="w-12 h-10 text-center border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-700 disabled:bg-slate-100" placeholder="-" />
+          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-100">
+            <p className="text-xs text-slate-500 mb-1">Tu predicción:</p>
+            <p className="font-bold text-slate-800">
+              {existingPrediction ? (
+                existingPrediction.tipo_prediccion === '1X2' ? `Ganador: ${existingPrediction.seleccion}` : `Marcador: ${existingPrediction.seleccion}`
+              ) : 'Sin predicción'}
+            </p>
           </div>
         )}
-
-        {/* Indicador de estado (opcional, visual feedback) */}
-        {unsavedPrediction && (
-          <div className="text-center mt-2">
-            <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded-full">Cambio sin guardar</span>
-          </div>
-        )}
-        {existingPrediction && !unsavedPrediction && (
-          <div className="text-center mt-2">
-            <span className="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded-full flex items-center justify-center gap-1"><Check size={10} /> Guardado</span>
-          </div>
-        )}
-
       </div>
     </div>
   );

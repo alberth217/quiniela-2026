@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, ArrowLeft, Mail, Lock, AlertCircle } from 'lucide-react';
+import { Trophy, Mail, Lock, AlertCircle, ArrowRight, CheckCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -19,7 +19,7 @@ function Login() {
     try {
       // 1. Petición al Backend
       // ⚠️ Asegúrate de que esta URL sea la correcta de tu Render ⚠️
-      const backendUrl = 'https://api-quiniela.onrender.com/login';
+      const backendUrl = 'https://api-quiniela-444s.onrender.com/login';
       const response = await fetch(backendUrl, {
         method: 'POST',
         headers: {
@@ -56,112 +56,155 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen flex bg-slate-50">
 
-      {/* --- COLUMNA IZQUIERDA (IMAGEN) --- */}
-      {/* 1. Quitamos 'bg-slate-900' del padre para que no oscurezca nada si la imagen carga bien */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-gray-100">
+      {/* --- COLUMNA IZQUIERDA (BRANDING PREMIUM) --- */}
+      {/* Usamos un ancho de 55% en pantallas grandes para dar protagonismo a la marca */}
+      <div className="hidden lg:flex lg:w-[55%] relative bg-[#0f172a] items-center justify-center overflow-hidden">
 
-        {/* Imagen de fondo */}
-        <img
-          src="/img/login.png"
-          className="absolute inset-0 w-full h-full object-cover"
-          alt="Estadio de fútbol"
-        />
+        {/* Fondo decorativo con degradado sutil */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-[#1e1b4b] to-blue-900 opacity-90 z-0"></div>
 
-        {/* 2. ELIMINAMOS O COMENTAMOS ESTA LÍNEA QUE ES EL FILTRO AZUL: */}
-        <div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div>
+        {/* Círculos de luz decorativos (Efecto moderno de fondo) */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500 rounded-full mix-blend-screen filter blur-[100px] opacity-20"></div>
 
-        {/* 3. El contenido */}
-        <div className="relative z-10 text-center px-10">
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl inline-block mb-6 shadow-xl border border-white/20">
-            <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 w-auto" />
+        <div className="relative z-10 w-full max-w-2xl px-12 flex flex-col items-center text-center">
+          {/* Imagen Principal (Logo 3D) */}
+          {/* 'object-contain' asegura que se vea todo el logo sin recortarse */}
+          <div className="relative w-full max-w-xl mb-8 transition-transform hover:scale-105 duration-700">
+            <img
+              src="/img/logo.png"
+              className="w-full h-auto object-contain drop-shadow-2xl"
+              alt="Predigol 3D Logo"
+            />
           </div>
-          {/* Nota: Si la imagen es muy clara, quizás necesites cambiar 'text-white' a 'text-slate-900' aquí abajo para que se lea */}
-          <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">Quiniela 2026</h2>
-          <p className="text-white text-lg max-w-md mx-auto leading-relaxed drop-shadow-md">
-            "El fútbol no es solo un juego, es una pasión que une naciones y crea historias inolvidables."
-          </p>
+
+          {/* Texto de Bienvenida / Slogan */}
+          <div className="space-y-6">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+              Bienvenido a <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Predigol</span>
+            </h1>
+            <p className="text-slate-300 text-lg leading-relaxed max-w-lg mx-auto font-light">
+              "El fútbol no es solo un juego, es una pasión que une naciones y crea historias inolvidables."
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* --- COLUMNA DERECHA (FORMULARIO) --- */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-slate-50">
-        <div className="max-w-md w-full">
-          <Link to="/" className="inline-flex items-center text-sm text-slate-500 hover:text-blue-600 mb-8 transition-colors">
-            <ArrowLeft size={16} className="mr-1" /> Volver al Inicio
-          </Link>
+      {/* --- COLUMNA DERECHA (FORMULARIO MODERNO) --- */}
+      <div className="w-full lg:w-[45%] flex items-center justify-center p-8 lg:p-16 bg-white relative">
+        <div className="w-full max-w-md space-y-8">
 
-          <div className="text-center mb-8">
-            <div className="inline-flex lg:hidden bg-blue-600 text-white p-2 rounded-lg mb-3">
-              <Trophy size={24} />
-            </div>
-            <h2 className="text-3xl font-bold text-slate-900">Bienvenido de nuevo</h2>
-            <p className="text-slate-500 mt-2">Ingresa tus credenciales para continuar</p>
+          {/* Cabecera Móvil (Solo visible en celular) */}
+          <div className="lg:hidden text-center mb-8">
+            <img src="/img/logo.png" alt="Logo" className="h-20 mx-auto mb-4 object-contain" />
+            <h2 className="text-3xl font-bold text-slate-900">Quiniela 2026</h2>
+          </div>
+
+          {/* Cabecera del Formulario */}
+          <div className="text-center lg:text-left">
+            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Iniciar Sesión</h2>
+            <p className="text-slate-500 mt-2">Ingresa tus credenciales para acceder a tu panel.</p>
           </div>
 
           {/* Mensaje de Error */}
           {error && (
-            <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 flex items-center gap-2 border border-red-200 animate-pulse">
-              <AlertCircle size={20} className="flex-shrink-0" />
-              <span className="text-sm font-medium">{error}</span>
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md flex items-start gap-3 animate-pulse">
+              <AlertCircle className="text-red-500 mt-0.5" size={20} />
+              <div className="text-sm text-red-700 font-medium">{error}</div>
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-6 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3.5 text-slate-400" size={20} />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
-                  className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  required
-                />
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-5">
+
+              {/* Input Email */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Correo Electrónico</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                    <Mail size={20} />
+                  </div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="ejemplo@correo.com"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-slate-50 focus:bg-white"
+                    required
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3.5 text-slate-400" size={20} />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  required
-                />
+
+              {/* Input Password */}
+              <div>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Contraseña</label>
+                  <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline">¿Olvidaste tu contraseña?</a>
+                </div>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                    <Lock size={20} />
+                  </div>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-slate-50 focus:bg-white"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center text-slate-600 cursor-pointer">
-                <input type="checkbox" className="mr-2 rounded text-blue-600 focus:ring-blue-500" />
-                Recordarme
+            {/* Checkbox Recordarme */}
+            <div className="flex items-center">
+              <input id="remember-me" type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer" />
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-600 cursor-pointer select-none">
+                Recordarme en este dispositivo
               </label>
-              <a href="#" className="text-blue-600 hover:underline font-medium">¿Olvidaste tu contraseña?</a>
             </div>
 
+            {/* Botón Principal */}
             <button
               type="submit"
               disabled={loading}
-              className={`w-full text-white py-3 rounded-lg font-bold transition-colors shadow-lg 
-                    ${loading ? 'bg-blue-400 cursor-wait' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30'}`}
+              className={`w-full flex items-center justify-center py-3.5 px-4 rounded-xl text-white font-bold text-lg shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 hover:shadow-blue-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                    ${loading ? 'bg-blue-400 cursor-wait' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
             >
-              {loading ? 'Ingresando...' : 'Ingresar'}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Ingresando...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  Ingresar <ArrowRight size={20} />
+                </span>
+              )}
             </button>
           </form>
 
-          <p className="text-center mt-8 text-slate-600 text-sm">
-            ¿No tienes una cuenta? {' '}
-            <Link to="/register" className="text-blue-600 font-bold hover:underline">
-              Crear Cuenta
+          {/* Separador y Link Registro */}
+          <div className="relative mt-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-slate-500">¿Aún no tienes cuenta?</span>
+            </div>
+          </div>
+
+          <div className="text-center mt-4">
+            <Link to="/register" className="inline-flex items-center justify-center w-full px-4 py-3 border-2 border-slate-100 rounded-xl text-slate-700 font-bold hover:border-blue-100 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+              Crear una cuenta gratis
             </Link>
-          </p>
+          </div>
         </div>
       </div>
     </div>

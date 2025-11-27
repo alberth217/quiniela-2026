@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Mail, Lock, AlertCircle, CheckCircle, X, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Lock, User, AlertCircle, ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Register() {
@@ -63,7 +63,6 @@ function Register() {
     try {
       // ⚠️ Asegúrate de que esta URL sea la correcta de tu Render ⚠️
       const backendUrl = 'https://api-quiniela-444s.onrender.com/registro';
-      // Si aún no tienes la URL de Render configurada en el código, reemplaza la línea de arriba.
 
       const response = await fetch(backendUrl, {
         method: 'POST',
@@ -103,147 +102,186 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-row-reverse relative overflow-hidden">
+    <div className="min-h-screen flex bg-slate-50">
 
-      {/* --- COMPONENTE DE NOTIFICACIÓN FLOTANTE (TOAST) --- */}
-      {notification.show && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-500 ease-in-out animate-in slide-in-from-top-5 ${notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-500 text-white'
-          }`}>
-          {notification.type === 'success' ? <CheckCircle size={24} /> : <AlertCircle size={24} />}
-          <div>
-            <h4 className="font-bold text-sm uppercase">{notification.type === 'success' ? '¡Éxito!' : 'Error'}</h4>
-            <p className="text-sm font-medium opacity-90">{notification.message}</p>
+      {/* --- COLUMNA IZQUIERDA (BRANDING PREMIUM) --- */}
+      {/* Usamos un ancho de 55% en pantallas grandes para dar protagonismo a la marca */}
+      <div className="hidden lg:flex lg:w-[55%] relative bg-[#0f172a] items-center justify-center overflow-hidden">
+
+        {/* Fondo decorativo con degradado sutil */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-[#1e1b4b] to-blue-900 opacity-90 z-0"></div>
+
+        {/* Círculos de luz decorativos (Efecto moderno de fondo) */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500 rounded-full mix-blend-screen filter blur-[100px] opacity-20"></div>
+
+        <div className="relative z-10 w-full max-w-2xl px-12 flex flex-col items-center text-center">
+          {/* Imagen Principal (Logo 3D) */}
+          <div className="relative w-full max-w-xl mb-8 transition-transform hover:scale-105 duration-700">
+            <img
+              src="/img/logo.png"
+              className="w-full h-auto object-contain drop-shadow-2xl"
+              alt="Predigol 3D Logo"
+            />
           </div>
-          <button onClick={() => setNotification({ ...notification, show: false })} className="ml-2 hover:bg-white/20 p-1 rounded-full">
-            <X size={16} />
-          </button>
-        </div>
-      )}
 
-      {/* --- IMAGEN (LADO DERECHO) --- */}
-      <div className="hidden lg:flex lg:w-1/2 bg-blue-900 relative overflow-hidden items-center justify-center">
-        <img
-          src="/img/Registro.png"
-          className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
-          alt="Aficionados celebrando"
-        />
-        <div className="relative z-10 text-center px-10">
-          <h2 className="text-4xl font-bold text-white mb-4">Únete a la Pasión</h2>
-          <p className="text-blue-100 text-lg">Crea tu cuenta y comienza a predecir los resultados del mundial.</p>
+          {/* Texto de Bienvenida / Slogan */}
+          <div className="space-y-6">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+              Únete a <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Predigol</span>
+            </h1>
+            <p className="text-slate-300 text-lg leading-relaxed max-w-lg mx-auto font-light">
+              "Demuestra tu pasión, predice los resultados y compite con amigos en el mundial."
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* --- FORMULARIO (LADO IZQUIERDO) --- */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-slate-50">
-        <div className="max-w-md w-full">
-          <Link to="/" className="inline-flex items-center text-sm text-slate-500 hover:text-blue-600 mb-8 transition-colors">
+      {/* --- COLUMNA DERECHA (FORMULARIO MODERNO) --- */}
+      <div className="w-full lg:w-[45%] flex items-center justify-center p-8 lg:p-16 bg-white relative">
+        <div className="w-full max-w-md space-y-8">
+
+          {/* Cabecera Móvil (Solo visible en celular) */}
+          <div className="lg:hidden text-center mb-8">
+            <img src="/img/logo.png" alt="Logo" className="h-20 mx-auto mb-4 object-contain" />
+            <h2 className="text-3xl font-bold text-slate-900">Quiniela 2026</h2>
+          </div>
+
+          <Link to="/" className="inline-flex items-center text-sm text-slate-500 hover:text-blue-600 mb-6 transition-colors">
             <ArrowLeft size={16} className="mr-1" /> Volver al Inicio
           </Link>
 
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-900">Crear Cuenta</h2>
-            <p className="text-slate-500 mt-2">Completa tus datos para registrarte</p>
+          {/* Cabecera del Formulario */}
+          <div className="text-center lg:text-left">
+            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Crear Cuenta</h2>
+            <p className="text-slate-500 mt-2">Completa tus datos para comenzar a jugar.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4 bg-white p-8 rounded-2xl shadow-sm border border-slate-200 relative">
+          {/* Notificación de Error/Éxito */}
+          {notification.show && (
+            <div className={`p-4 rounded-md flex items-start gap-3 animate-pulse border-l-4 ${notification.type === 'success'
+              ? 'bg-green-50 border-green-500 text-green-700'
+              : 'bg-red-50 border-red-500 text-red-700'
+              }`}>
+              {notification.type === 'success' ? <CheckCircle size={20} className="mt-0.5" /> : <AlertCircle size={20} className="mt-0.5" />}
+              <div className="text-sm font-medium">{notification.message}</div>
+            </div>
+          )}
 
-            {/* Overlay de carga (opcional, para evitar doble click) */}
-            {loading && (
-              <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-2xl">
-                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-5">
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3.5 text-slate-400" size={18} />
+              {/* Input Nombre y Apellido (Grid) */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Nombre</label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                      <User size={20} />
+                    </div>
+                    <input
+                      type="text"
+                      name="nombre"
+                      value={formData.nombre}
+                      onChange={handleChange}
+                      placeholder="Juan"
+                      className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-slate-50 focus:bg-white"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Apellido</label>
                   <input
                     type="text"
-                    name="nombre"
-                    value={formData.nombre}
+                    name="apellido"
+                    value={formData.apellido}
                     onChange={handleChange}
-                    className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                    placeholder="Juan"
+                    placeholder="Pérez"
+                    className="block w-full px-4 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-slate-50 focus:bg-white"
                     required
                   />
                 </div>
               </div>
+
+              {/* Input Email */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Apellido</label>
-                <input
-                  type="text"
-                  name="apellido"
-                  value={formData.apellido}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  placeholder="Pérez"
-                  required
-                />
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Correo Electrónico</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                    <Mail size={20} />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="ejemplo@correo.com"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-slate-50 focus:bg-white"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Input Password */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Contraseña</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                    <Lock size={20} />
+                  </div>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-slate-50 focus:bg-white"
+                    required
+                  />
+                </div>
+                <p className="text-xs text-slate-400 mt-1 ml-1">Mínimo 6 caracteres</p>
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3.5 text-slate-400" size={20} />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="tu@email.com"
-                  className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3.5 text-slate-400" size={20} />
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full pl-10 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  required
-                />
-              </div>
-              <p className="text-xs text-slate-400 mt-1 ml-1">Mínimo 6 caracteres</p>
-            </div>
-
+            {/* Botón Principal */}
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3.5 rounded-lg font-bold text-white transition-all shadow-lg mt-4 flex items-center justify-center gap-2
-                ${loading
-                  ? 'bg-blue-400 cursor-wait'
-                  : notification.type === 'success'
-                    ? 'bg-green-500 hover:bg-green-600'
-                    : 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30 hover:-translate-y-0.5'
-                }`}
+              className={`w-full flex items-center justify-center py-3.5 px-4 rounded-xl text-white font-bold text-lg shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 hover:shadow-blue-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                    ${loading ? 'bg-blue-400 cursor-wait' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
             >
               {loading ? (
-                <>Procesando...</>
-              ) : notification.type === 'success' ? (
-                <><CheckCircle size={20} /> ¡Registrado!</>
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Procesando...
+                </span>
               ) : (
-                'Crear Cuenta Gratis'
+                <span className="flex items-center gap-2">
+                  Crear Cuenta Gratis <ArrowRight size={20} />
+                </span>
               )}
             </button>
           </form>
 
-          <p className="text-center mt-8 text-slate-600 text-sm">
-            ¿Ya tienes cuenta? {' '}
-            <Link to="/login" className="text-blue-600 font-bold hover:underline">
+          {/* Separador y Link Login */}
+          <div className="relative mt-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-slate-500">¿Ya tienes cuenta?</span>
+            </div>
+          </div>
+
+          <div className="text-center mt-4">
+            <Link to="/login" className="inline-flex items-center justify-center w-full px-4 py-3 border-2 border-slate-100 rounded-xl text-slate-700 font-bold hover:border-blue-100 hover:bg-blue-50 hover:text-blue-700 transition-colors">
               Iniciar Sesión
             </Link>
-          </p>
+          </div>
         </div>
       </div>
     </div>
