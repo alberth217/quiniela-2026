@@ -66,7 +66,7 @@ function Login() {
         />
 
         {/* 2. El Overlay Azul (Aquí controlamos la transparencia: bg-blue-900/40 significa 40% de opacidad) */}
-        <div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div>
+        {/*<div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div>*/}
 
         {/* 3. El contenido (texto blanco para contrastar con el azul) */}
         <div className="relative z-10 text-center px-10">
