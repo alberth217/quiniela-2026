@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 // Array de imágenes del carrusel
 const heroImages = [
-  '/img/hero1.jpg',
+  '/img/hero1.png',
   '/img/hero2.jpg',
   '/img/hero3.png',
 ];
