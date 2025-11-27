@@ -70,7 +70,7 @@ function Login() {
         />
 
         {/* 2. ELIMINAMOS O COMENTAMOS ESTA LÍNEA QUE ES EL FILTRO AZUL: */}
-        {/* <div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div> */}
+        <div className="absolute inset-0 bg-blue-900/40 mix-blend-multiply"></div>
 
         {/* 3. El contenido */}
         <div className="relative z-10 text-center px-10">
