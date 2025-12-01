@@ -6,8 +6,8 @@ import RulesSection from './RulesSection';
 // Array de imágenes del carrusel (Updated)
 const heroImages = [
   'https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1522778119026-d647f0565c6d?q=80&w=2070&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=1989&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1504305754058-2f08ccd89a05?q=80&w=2070&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?q=80&w=2223&auto=format&fit=crop',
 ];
 
 function Home() {
@@ -74,7 +74,7 @@ function Home() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 sm:h-20 w-auto object-contain" />
+            <img src="/img/logo.png" alt="Logo Quiniela" className="h-12 w-auto object-contain" />
             {/* RESPONSIVE: Ocultamos el texto en móviles para dar espacio a los botones */}
             <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">Quiniela 2026</span>
           </Link>
@@ -215,11 +215,6 @@ function Home() {
                   />
                 ))}
               </div>
-            </div>
-
-            {/* SECCIÓN DE REGLAS (MOVIDO AQUÍ) */}
-            <div id="reglas" className="scroll-mt-24">
-              <RulesSection />
             </div>
 
             {/* SECCIÓN PRÓXIMOS PARTIDOS */}
@@ -420,6 +415,11 @@ function Home() {
               </div>
             </div>
 
+            {/* SECCIÓN DE REGLAS (MOVIDO AQUÍ) */}
+            <div id="reglas" className="scroll-mt-24">
+              <RulesSection />
+            </div>
+
           </div>
 
           {/* === COLUMNA DERECHA (SIDEBAR) - Ocupa 2 de 10 partes (20%) === */}
@@ -551,6 +551,23 @@ function Home() {
               <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                 Crear Cuenta Gratis
               </button>
+            </div>
+
+            {/* WIDGET REGLAS (NUEVO) */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+              <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
+                <span className="text-xl">📜</span>
+                <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
+              </div>
+              <p className="text-sm text-slate-600 mb-4">
+                Conoce cómo sumar puntos y ganar premios increíbles.
+              </p>
+              <a
+                href="#reglas"
+                className="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-lg transition-colors text-sm"
+              >
+                Ver Reglamento
+              </a>
             </div>
 
           </div>

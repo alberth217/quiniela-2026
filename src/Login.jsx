@@ -99,7 +99,7 @@ function Login() {
 
           {/* Cabecera Móvil (Solo visible en celular) */}
           <div className="lg:hidden text-center mb-8">
-            <img src="/img/login.png" alt="Logo" className="h-20 w-auto mx-auto mb-4 object-contain" />
+            <img src="/img/login.png" alt="Logo" className="h-12 w-auto mx-auto mb-4 object-contain" />
             <h2 className="text-3xl font-bold text-slate-900">Quiniela 2026</h2>
           </div>
 

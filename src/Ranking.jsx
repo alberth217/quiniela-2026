@@ -48,7 +48,7 @@ function Ranking() {
             <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 sm:h-20 w-auto object-contain" />
+                        <img src="/img/logo.png" alt="Logo Quiniela" className="h-12 w-auto object-contain" />
                         <span className="font-bold text-xl tracking-tight text-slate-900">Quiniela 2026</span>
                     </div>
 
@@ -97,6 +97,7 @@ function Ranking() {
                                     <tr>
                                         <th className="px-6 py-3">Pos</th>
                                         <th className="px-6 py-3">Usuario</th>
+                                        <th className="px-6 py-3 text-center">Aciertos</th>
                                         <th className="px-6 py-3 text-right">Puntos</th>
                                     </tr>
                                 </thead>
@@ -120,6 +121,9 @@ function Ranking() {
                                                         </span>
                                                     </div>
                                                 </td>
+                                                <td className="px-6 py-4 text-center text-slate-500">
+                                                    {user.aciertos || 0}
+                                                </td>
                                                 <td className="px-6 py-4 text-right font-bold text-blue-600">
                                                     {user.puntos}
                                                 </td>
@@ -128,7 +132,7 @@ function Ranking() {
                                     })}
                                     {ranking.length === 0 && (
                                         <tr>
-                                            <td colSpan="3" className="px-6 py-8 text-center text-slate-400">
+                                            <td colSpan="4" className="px-6 py-8 text-center text-slate-400">
                                                 Aún no hay puntos registrados.
                                             </td>
                                         </tr>

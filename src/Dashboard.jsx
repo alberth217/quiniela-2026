@@ -141,7 +141,7 @@ function Dashboard() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 sm:h-20 w-auto object-contain" />
+            <img src="/img/logo.png" alt="Logo Quiniela" className="h-12 w-auto object-contain" />
             <span className="font-bold text-xl tracking-tight text-slate-900">Quiniela 2026</span>
           </div>
 
@@ -221,40 +221,68 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* GRILLA DE PARTIDOS */}
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-            <Loader size={40} className="animate-spin mb-4 text-blue-600" />
-            <p>Cargando datos...</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMatches.length > 0 ? (
-              filteredMatches.map((match) => {
-                const existingPrediction = userPredictions.find(p => p.partido_id === match.id);
-                // Si hay un cambio local sin guardar, lo usamos para la UI
-                const unsaved = unsavedPredictions[match.id];
+        {/* LAYOUT GRID: PARTIDOS + SIDEBAR */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-                return (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    existingPrediction={existingPrediction}
-                    unsavedPrediction={unsaved}
-                    onChange={handlePredictionChange}
-                  />
-                );
-              })
+          {/* COLUMNA PRINCIPAL (PARTIDOS) */}
+          <div className="lg:col-span-3">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                <Loader size={40} className="animate-spin mb-4 text-blue-600" />
+                <p>Cargando datos...</p>
+              </div>
             ) : (
-              <div className="col-span-full text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
-                <p className="text-slate-500">No se encontraron partidos con esos filtros.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredMatches.length > 0 ? (
+                  filteredMatches.map((match) => {
+                    const existingPrediction = userPredictions.find(p => p.partido_id === match.id);
+                    // Si hay un cambio local sin guardar, lo usamos para la UI
+                    const unsaved = unsavedPredictions[match.id];
+
+                    return (
+                      <MatchCard
+                        key={match.id}
+                        match={match}
+                        existingPrediction={existingPrediction}
+                        unsavedPrediction={unsaved}
+                        onChange={handlePredictionChange}
+                      />
+                    );
+                  })
+                ) : (
+                  <div className="col-span-full text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
+                    <p className="text-slate-500">No se encontraron partidos con esos filtros.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
 
-        {/* SECCIÓN DE REGLAS */}
-        <RulesSection />
+          {/* SIDEBAR (REGLAS) */}
+          <div className="hidden lg:block lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sticky top-24">
+              <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
+                <span className="text-xl">📜</span>
+                <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
+              </div>
+              <p className="text-sm text-slate-600 mb-4">
+                ¿Tienes dudas sobre cómo sumar puntos? Revisa el reglamento completo.
+              </p>
+              <Link
+                to="/"
+                className="block w-full text-center bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2 rounded-lg transition-colors text-sm"
+              >
+                Ver Reglamento
+              </Link>
+            </div>
+          </div>
+
+        </div>
+
+        {/* SECCIÓN DE REGLAS (MÓVIL O EXTRA) */}
+        <div className="mt-8 lg:hidden">
+          <RulesSection />
+        </div>
       </main>
 
       {/* BOTÓN FLOTANTE DE GUARDADO */}
