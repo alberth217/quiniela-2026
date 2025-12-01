@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   Trophy, Home, BarChart2, Bell, LogOut, Search,
-  Calendar, Clock, Check, Loader, Save, Lock
+  Calendar, Clock, Check, Loader, Save, Lock,
+  X, Ticket, AlertTriangle
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -10,6 +11,7 @@ const API_URL = 'https://api-quiniela-444s.onrender.com'; // Ajustado a producci
 function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Partidos');
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
 
   // Estados de Datos
   const [matches, setMatches] = useState([]);
@@ -133,7 +135,7 @@ function Dashboard() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <img src="/img/logo.png" alt="Logo Quiniela" className="h-10 w-auto" />
+            <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 sm:h-20 w-auto object-contain" />
             <span className="font-bold text-xl tracking-tight text-slate-900">Quiniela 2026</span>
           </div>
 
@@ -165,16 +167,22 @@ function Dashboard() {
 
         {/* HERO BANNER */}
         <div className="rounded-xl overflow-hidden h-32 md:h-48 relative mb-6 md:mb-8 shadow-md">
-          <img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1920&q=80" className="w-full h-full object-cover" alt="Banner Estadio" />
+          <img src="https://images.unsplash.com/photo-1556056504-5c7696c4c28d?q=80&w=2076&auto=format&fit=crop" className="w-full h-full object-cover" alt="Banner Estadio" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-transparent flex items-center px-6 md:px-8">
             <h2 className="text-white text-xl md:text-2xl font-bold">¡Haz tus jugadas!</h2>
           </div>
         </div>
 
         {/* SUB-NAVEGACIÓN */}
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-1 flex gap-1 mb-6 w-full md:w-fit mx-auto md:mx-0">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-1 flex gap-1 mb-6 w-full md:w-fit mx-auto md:mx-0 items-center">
           <button onClick={() => setActiveTab('Partidos')} className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'Partidos' ? 'bg-white shadow text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}><Trophy size={16} className="inline mr-2 mb-0.5" /> Partidos</button>
           <button onClick={() => setActiveTab('Pagos')} className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'Pagos' ? 'bg-white shadow text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}><span className="inline mr-2">$</span> Pagos</button>
+
+          {/* Ticket Indicator */}
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-md text-sm font-bold border border-yellow-200 ml-auto md:ml-2">
+            <Ticket size={16} />
+            <span>Tickets: 1/2</span>
+          </div>
         </div>
 
         <div className="mb-6 text-center md:text-left">
@@ -251,6 +259,62 @@ function Dashboard() {
             {savingBatch ? <Loader size={20} className="animate-spin" /> : <Save size={20} />}
             Guardar Quiniela ({Object.keys(unsavedPredictions).length} cambios)
           </button>
+        </div>
+      )}
+
+      {/* MODAL DE BIENVENIDA */}
+      {showWelcomeModal && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in-up relative">
+            <button
+              onClick={() => setShowWelcomeModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Ticket className="text-blue-600" size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900">¡Bienvenido a la Quiniela!</h3>
+              <p className="text-slate-500 text-sm mt-1">Prepárate para el Mundial 2026</p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-4">
+                <div className="bg-white p-2 rounded-full shadow-sm text-blue-600">
+                  <Ticket size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-blue-900">Costo del Ticket: $25 USD</h4>
+                  <p className="text-xs text-blue-700 font-medium mt-0.5">Fase de Grupos</p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex items-start gap-4">
+                <div className="bg-white p-2 rounded-full shadow-sm text-yellow-600">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-yellow-900">Regla Importante</h4>
+                  <p className="text-xs text-yellow-700 font-medium mt-0.5">Máximo 2 Tickets por usuario.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <p className="text-xs text-slate-400 mb-4">
+                * Siguiente Fase: Costo adicional aplicable.
+              </p>
+              <button
+                onClick={() => setShowWelcomeModal(false)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Entendido, ¡A Jugar!
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

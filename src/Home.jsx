@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Trophy, Users, Calendar, CheckCircle, ArrowRight, Shield, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Array de imágenes del carrusel
+// Array de imágenes del carrusel (Updated)
 const heroImages = [
-  '/img/hero1.png',
-  '/img/hero2.jpg',
-  '/img/hero3.png',
+  'https://images.unsplash.com/photo-1504305555647-529668d6c612?q=80&w=2067&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1522778119026-d647f0565c6d?q=80&w=2070&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=1989&auto=format&fit=crop',
 ];
 
 function Home() {
@@ -73,7 +73,7 @@ function Home() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/img/logo.png" alt="Logo Quiniela" className="h-10 w-auto" />
+            <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 sm:h-20 w-auto object-contain" />
             {/* RESPONSIVE: Ocultamos el texto en móviles para dar espacio a los botones */}
             <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">Quiniela 2026</span>
           </Link>
@@ -114,13 +114,40 @@ function Home() {
         </div>
       </div>
 
-      {/* --- LAYOUT PRINCIPAL (GRID DE 2 COLUMNAS) --- */}
+      {/* --- LAYOUT PRINCIPAL (GRID DE 3 COLUMNAS) --- */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Aquí está la magia: grid-cols-12 divide la pantalla en 12 partes */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-          {/* === COLUMNA IZQUIERDA (CONTENIDO PRINCIPAL) - Ocupa 9 de 12 partes === */}
-          <div className="lg:col-span-9 space-y-8">
+          {/* === COLUMNA IZQUIERDA (PUBLICIDAD) - Ocupa 2 de 12 partes === */}
+          <div className="lg:col-span-2 space-y-6 order-last lg:order-first hidden lg:block">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sticky top-24">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 text-center">Patrocinadores</h3>
+              <div className="space-y-4">
+                {/* Sponsor 1 */}
+                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-32 animate-pulse">
+                  <span className="font-black text-slate-300 text-xl">NIKE</span>
+                </div>
+                {/* Sponsor 2 */}
+                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-32 animate-pulse delay-75">
+                  <span className="font-black text-slate-300 text-xl">ADIDAS</span>
+                </div>
+                {/* Sponsor 3 */}
+                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-32 animate-pulse delay-150">
+                  <span className="font-black text-slate-300 text-xl">COCA-COLA</span>
+                </div>
+                {/* Banner Vertical */}
+                <div className="bg-gradient-to-b from-blue-600 to-blue-800 rounded-lg h-64 flex items-center justify-center text-white text-center p-2">
+                  <div>
+                    <p className="font-bold text-lg mb-2">¡Tu Marca Aquí!</p>
+                    <button className="bg-white text-blue-700 text-xs px-3 py-1 rounded-full font-bold">Contactar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* === COLUMNA CENTRAL (CONTENIDO PRINCIPAL) - Ocupa 7 de 12 partes === */}
+          <div className="lg:col-span-7 space-y-8">
 
             {/* HERO SECTION (BANNER) - CARRUSEL */}
             <div className="relative rounded-2xl overflow-hidden bg-blue-900 text-white h-96 sm:h-80 flex flex-col justify-center items-start p-6 sm:p-10 shadow-xl group">
