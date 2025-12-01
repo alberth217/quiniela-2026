@@ -5,9 +5,9 @@ import RulesSection from './RulesSection';
 
 // Array de imágenes del carrusel (Updated)
 const heroImages = [
-  'https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1504305754058-2f08ccd89a05?q=80&w=2070&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?q=80&w=2223&auto=format&fit=crop',
+  '/img/hero1.jpg',
+  '/img/hero2.jpg',
+  '/img/hero3.jpg',
 ];
 
 function Home() {
@@ -123,7 +123,7 @@ function Home() {
 
       {/* --- LAYOUT PRINCIPAL (GRID DE 3 COLUMNAS) --- */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
           {/* === COLUMNA IZQUIERDA (PUBLICIDAD) - Ocupa 3 de 10 partes (30%) === */}
           <div className="lg:col-span-3 space-y-6 order-last lg:order-first hidden lg:block">
@@ -154,7 +154,7 @@ function Home() {
           </div>
 
           {/* === COLUMNA CENTRAL (CONTENIDO PRINCIPAL) - Ocupa 5 de 10 partes (50%) === */}
-          <div className="lg:col-span-5 space-y-8">
+          <div className="lg:col-span-6 space-y-8">
 
             {/* HERO SECTION (BANNER) - CARRUSEL */}
             <div className="relative rounded-2xl overflow-hidden bg-blue-900 text-white h-96 sm:h-80 flex flex-col justify-center items-start p-6 sm:p-10 shadow-xl group">
@@ -423,7 +423,7 @@ function Home() {
           </div>
 
           {/* === COLUMNA DERECHA (SIDEBAR) - Ocupa 2 de 10 partes (20%) === */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-3 space-y-6">
 
             {/* CONTADOR REGRESIVO */}
             <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
