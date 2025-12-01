@@ -491,6 +491,23 @@ function Home() {
               </div>
             </div>
 
+            {/* WIDGET REGLAS (NUEVO) */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+              <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
+                <span className="text-xl">📜</span>
+                <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
+              </div>
+              <p className="text-sm text-slate-600 mb-4">
+                Conoce cómo sumar puntos y ganar premios increíbles.
+              </p>
+              <a
+                href="#reglas"
+                className="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-lg transition-colors text-sm"
+              >
+                Ver Reglamento
+              </a>
+            </div>
+
             {/* WIDGET POZO */}
             <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg p-6 text-white text-center relative overflow-hidden ring-1 ring-blue-500/50">
               {/* Decoración de fondo */}
@@ -553,22 +570,7 @@ function Home() {
               </button>
             </div>
 
-            {/* WIDGET REGLAS (NUEVO) */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-              <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                <span className="text-xl">📜</span>
-                <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
-              </div>
-              <p className="text-sm text-slate-600 mb-4">
-                Conoce cómo sumar puntos y ganar premios increíbles.
-              </p>
-              <a
-                href="#reglas"
-                className="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-lg transition-colors text-sm"
-              >
-                Ver Reglamento
-              </a>
-            </div>
+
 
           </div>
         </div>
