@@ -5,6 +5,7 @@ import {
   X, Ticket, AlertTriangle
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import RulesSection from './RulesSection';
 
 const API_URL = 'https://api-quiniela-444s.onrender.com'; // Ajustado a producción
 
@@ -28,7 +29,7 @@ function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('currentUser');
-    navigate('/login');
+    navigate('/');
   };
 
   useEffect(() => {
@@ -246,6 +247,9 @@ function Dashboard() {
             )}
           </div>
         )}
+
+        {/* SECCIÓN DE REGLAS */}
+        <RulesSection />
       </main>
 
       {/* BOTÓN FLOTANTE DE GUARDADO */}
@@ -274,9 +278,7 @@ function Dashboard() {
             </button>
 
             <div className="text-center mb-6">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Ticket className="text-blue-600" size={32} />
-              </div>
+              <img src="/img/logo.png" alt="Logo Quiniela" className="h-20 mx-auto mb-4 object-contain" />
               <h3 className="text-2xl font-bold text-slate-900">¡Bienvenido a la Quiniela!</h3>
               <p className="text-slate-500 text-sm mt-1">Prepárate para el Mundial 2026</p>
             </div>

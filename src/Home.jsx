@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, Users, Calendar, CheckCircle, ArrowRight, Shield, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import RulesSection from './RulesSection';
 
 // Array de imágenes del carrusel (Updated)
 const heroImages = [
@@ -407,6 +408,9 @@ function Home() {
                 ))}
               </div>
             </div>
+
+            {/* SECCIÓN DE REGLAS */}
+            <RulesSection />
 
           </div>
 
