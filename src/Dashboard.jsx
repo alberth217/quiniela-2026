@@ -4,15 +4,20 @@ import {
   Calendar, Clock, Check, Loader, Save, Lock,
   X, Ticket, AlertTriangle
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import RulesSection from './RulesSection';
 
 const API_URL = 'https://api-quiniela-444s.onrender.com'; // Ajustado a producción
 
 function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('Partidos');
-  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+
+  // Solo mostrar el modal si venimos del login
+  const [showWelcomeModal, setShowWelcomeModal] = useState(() => {
+    return location.state?.fromLogin || false;
+  });
 
   // Estados de Datos
   const [matches, setMatches] = useState([]);
@@ -168,7 +173,7 @@ function Dashboard() {
 
         {/* HERO BANNER */}
         <div className="rounded-xl overflow-hidden h-32 md:h-48 relative mb-6 md:mb-8 shadow-md">
-          <img src="https://images.unsplash.com/photo-1556056504-5c7696c4c28d?q=80&w=2076&auto=format&fit=crop" className="w-full h-full object-cover" alt="Banner Estadio" />
+          <img src="https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover" alt="Banner Estadio" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-transparent flex items-center px-6 md:px-8">
             <h2 className="text-white text-xl md:text-2xl font-bold">¡Haz tus jugadas!</h2>
           </div>

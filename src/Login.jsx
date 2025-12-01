@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, Mail, Lock, AlertCircle, ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Trophy, Mail, Lock, AlertCircle, ArrowRight, CheckCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -8,6 +8,7 @@ function Login() {
   // Estados para manejar los inputs y la interfaz
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -40,8 +41,8 @@ function Login() {
         // Guardamos en localStorage para persistencia
         localStorage.setItem('currentUser', JSON.stringify(userSession));
 
-        // Redirigir al Dashboard
-        navigate('/Dashboard');
+        // Redirigir al Dashboard con estado para mostrar el modal de bienvenida
+        navigate('/Dashboard', { state: { fromLogin: true } });
       } else {
         // 3. ERROR (Usuario no existe o contraseña mal)
         setError(data.message || 'Credenciales inválidas');
@@ -145,20 +146,29 @@ function Login() {
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="block text-sm font-medium text-slate-700">Contraseña</label>
-                  <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline">¿Olvidaste tu contraseña?</a>
                 </div>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
                     <Lock size={20} />
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-slate-50 focus:bg-white"
+                    className="block w-full pl-10 pr-10 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-slate-50 focus:bg-white"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+                <div className="flex justify-end mt-1">
+                  <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline">¿Olvidaste tu contraseña?</a>
                 </div>
               </div>
             </div>

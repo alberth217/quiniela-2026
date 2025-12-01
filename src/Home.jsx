@@ -5,7 +5,7 @@ import RulesSection from './RulesSection';
 
 // Array de imágenes del carrusel (Updated)
 const heroImages = [
-  'https://images.unsplash.com/photo-1504305555647-529668d6c612?q=80&w=2067&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1522778119026-d647f0565c6d?q=80&w=2070&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=1989&auto=format&fit=crop',
 ];
@@ -79,6 +79,12 @@ function Home() {
             <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">Quiniela 2026</span>
           </Link>
           <div className="flex gap-2 sm:gap-3">
+            <a
+              href="#reglas"
+              className="text-sm font-medium text-slate-600 hover:text-blue-700 px-2 sm:px-3 py-2 transition-colors hidden md:block"
+            >
+              Reglas
+            </a>
             <Link
               to="/login"
               className="text-sm font-medium text-slate-600 hover:text-blue-700 px-2 sm:px-3 py-2 transition-colors"
@@ -117,24 +123,24 @@ function Home() {
 
       {/* --- LAYOUT PRINCIPAL (GRID DE 3 COLUMNAS) --- */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
 
-          {/* === COLUMNA IZQUIERDA (PUBLICIDAD) - Ocupa 2 de 12 partes === */}
-          <div className="lg:col-span-2 space-y-6 order-last lg:order-first hidden lg:block">
+          {/* === COLUMNA IZQUIERDA (PUBLICIDAD) - Ocupa 3 de 10 partes (30%) === */}
+          <div className="lg:col-span-3 space-y-6 order-last lg:order-first hidden lg:block">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sticky top-24">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 text-center">Patrocinadores</h3>
               <div className="space-y-4">
                 {/* Sponsor 1 */}
-                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-32 animate-pulse">
-                  <span className="font-black text-slate-300 text-xl">NIKE</span>
+                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-48 animate-pulse">
+                  <span className="font-black text-slate-300 text-2xl">NIKE</span>
                 </div>
                 {/* Sponsor 2 */}
-                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-32 animate-pulse delay-75">
-                  <span className="font-black text-slate-300 text-xl">ADIDAS</span>
+                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-48 animate-pulse delay-75">
+                  <span className="font-black text-slate-300 text-2xl">ADIDAS</span>
                 </div>
                 {/* Sponsor 3 */}
-                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-32 animate-pulse delay-150">
-                  <span className="font-black text-slate-300 text-xl">COCA-COLA</span>
+                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-48 animate-pulse delay-150">
+                  <span className="font-black text-slate-300 text-2xl">COCA-COLA</span>
                 </div>
                 {/* Banner Vertical */}
                 <div className="bg-gradient-to-b from-blue-600 to-blue-800 rounded-lg h-64 flex items-center justify-center text-white text-center p-2">
@@ -147,8 +153,8 @@ function Home() {
             </div>
           </div>
 
-          {/* === COLUMNA CENTRAL (CONTENIDO PRINCIPAL) - Ocupa 7 de 12 partes === */}
-          <div className="lg:col-span-7 space-y-8">
+          {/* === COLUMNA CENTRAL (CONTENIDO PRINCIPAL) - Ocupa 5 de 10 partes (50%) === */}
+          <div className="lg:col-span-5 space-y-8">
 
             {/* HERO SECTION (BANNER) - CARRUSEL */}
             <div className="relative rounded-2xl overflow-hidden bg-blue-900 text-white h-96 sm:h-80 flex flex-col justify-center items-start p-6 sm:p-10 shadow-xl group">
@@ -209,6 +215,11 @@ function Home() {
                   />
                 ))}
               </div>
+            </div>
+
+            {/* SECCIÓN DE REGLAS (MOVIDO AQUÍ) */}
+            <div id="reglas" className="scroll-mt-24">
+              <RulesSection />
             </div>
 
             {/* SECCIÓN PRÓXIMOS PARTIDOS */}
@@ -409,13 +420,10 @@ function Home() {
               </div>
             </div>
 
-            {/* SECCIÓN DE REGLAS */}
-            <RulesSection />
-
           </div>
 
-          {/* === COLUMNA DERECHA (SIDEBAR) - Ocupa 3 de 12 partes === */}
-          <div className="lg:col-span-3 space-y-6">
+          {/* === COLUMNA DERECHA (SIDEBAR) - Ocupa 2 de 10 partes (20%) === */}
+          <div className="lg:col-span-2 space-y-6">
 
             {/* CONTADOR REGRESIVO */}
             <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
