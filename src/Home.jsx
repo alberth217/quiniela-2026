@@ -5,9 +5,9 @@ import RulesSection from './RulesSection';
 
 // Array de imágenes del carrusel (Updated)
 const heroImages = [
-  '/img/hero1.jpg',
+  '/img/hero1.png',
   '/img/hero2.jpg',
-  '/img/hero3.jpg',
+  '/img/hero3.png',
 ];
 
 function Home() {
