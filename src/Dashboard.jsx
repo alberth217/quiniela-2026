@@ -23,7 +23,6 @@ function Dashboard() {
   const [matches, setMatches] = useState([]);
   const [userPredictions, setUserPredictions] = useState([]); // Lo que viene de la BD
   const [unsavedPredictions, setUnsavedPredictions] = useState({}); // Cambios locales { partidoId: { tipo, seleccion } }
-  const [topUsers, setTopUsers] = useState([]); // Estado para el ranking
 
   const [loading, setLoading] = useState(true);
   const [savingBatch, setSavingBatch] = useState(false);
@@ -56,7 +55,6 @@ function Dashboard() {
         setLoading(true);
         const matchesRes = await fetch(`${API_URL}/partidos`);
         const predictionsRes = await fetch(`${API_URL}/predicciones`);
-        const rankingRes = await fetch(`${API_URL}/ranking`);
 
         if (matchesRes.ok && predictionsRes.ok) {
           const matchesData = await matchesRes.json();
@@ -67,11 +65,6 @@ function Dashboard() {
           setUserPredictions(myPredictions);
         } else {
           console.error("Error cargando datos");
-        }
-
-        if (rankingRes.ok) {
-          const rankingData = await rankingRes.json();
-          setTopUsers(rankingData);
         }
       } catch (error) {
         console.error("Error de conexión:", error);
@@ -278,35 +271,21 @@ function Dashboard() {
                 </span>
               </div>
               <div className="divide-y divide-slate-50">
-                {topUsers.length > 0 ? (
-                  topUsers.slice(0, 5).map((user, index) => {
-                    // Asignar colores según el ranking (1, 2, 3)
-                    let rankColor = "bg-slate-100 text-slate-600 border-slate-200";
-                    if (index === 0) rankColor = "bg-yellow-100 text-yellow-700 border-yellow-200";
-                    if (index === 1) rankColor = "bg-slate-100 text-slate-600 border-slate-200"; // Plata (ajustar si se desea otro color)
-                    if (index === 2) rankColor = "bg-orange-50 text-orange-700 border-orange-200";
-
-                    return (
-                      <div key={user.id || index} className="p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer group">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${rankColor}`}>
-                          {index < 3 ? <Trophy size={14} /> : index + 1}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
-                            {user.nombre || user.name || 'Usuario'}
-                          </p>
-                        </div>
-                        <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">
-                          {user.puntos}
-                        </span>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="p-4 text-center text-slate-400 text-xs">
-                    Cargando ranking...
+                {[
+                  { name: "Carlos M.", points: 156, rank: 1, color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
+                  { name: "Ana R.", points: 142, rank: 2, color: "bg-slate-100 text-slate-600 border-slate-200" },
+                  { name: "Luis P.", points: 138, rank: 3, color: "bg-orange-50 text-orange-700 border-orange-200" },
+                ].map((user) => (
+                  <div key={user.rank} className="p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer group">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${user.color}`}>
+                      {user.rank <= 3 ? <Trophy size={14} /> : user.rank}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">{user.name}</p>
+                    </div>
+                    <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">{user.points}</span>
                   </div>
-                )}
+                ))}
               </div>
               <div className="p-3 text-center border-t border-slate-100 bg-slate-50/50">
                 <Link to="/ranking" className="text-xs text-blue-600 font-bold hover:text-blue-800 flex items-center justify-center gap-1 mx-auto transition-colors">

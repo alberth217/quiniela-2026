@@ -24,6 +24,7 @@ function Home() {
 
   const [matches, setMatches] = useState([]);
   const [loadingMatches, setLoadingMatches] = useState(true);
+  const [topUsers, setTopUsers] = useState([]); // Estado para el ranking
 
   // Fetch de Partidos Destacados
   useEffect(() => {
@@ -32,8 +33,8 @@ function Home() {
         const res = await fetch(`${API_URL}/partidos`);
         if (res.ok) {
           const data = await res.json();
-          // Filtrar o tomar los primeros 3-4 para mostrar en Home
-          setMatches(data.slice(0, 4)); // Mostrar hasta 4 partidos
+          // Filtrar partidos destacados o próximos (ejemplo: primeros 3)
+          setMatches(data.slice(0, 3));
         }
       } catch (error) {
         console.error("Error fetching matches:", error);
@@ -42,462 +43,442 @@ function Home() {
       }
     };
 
+    const fetchRanking = async () => {
+      try {
+        const res = await fetch(`${API_URL}/ranking`);
+        if (res.ok) {
+          const data = await res.json();
+          setTopUsers(data);
+        }
+      } catch (error) {
+        console.error("Error fetching ranking:", error);
+      }
+    };
+
     fetchMatches();
+    fetchRanking();
   }, []);
 
-  // Cambio automático de imagen cada 5 segundos
+  // Efecto para el carrusel automático
   useEffect(() => {
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
         setIsTransitioning(false);
-      }, 300); // Duración de la transición
-    }, 5000);
+      }, 500); // Duración de la transición
+    }, 5000); // Cambiar cada 5 segundos
 
     return () => clearInterval(interval);
   }, []);
 
-  // Contador regresivo para el Mundial 2026 (11 de Junio de 2026)
+  // Efecto para la cuenta regresiva (Mundial 2026 - Fecha estimada Junio 2026)
   useEffect(() => {
-    const targetDate = new Date('2026-06-11T00:00:00').getTime();
-
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const difference = targetDate - now;
+    const calculateTimeLeft = () => {
+      const difference = +new Date("2026-06-11") - +new Date();
+      let timeLeft = {};
 
       if (difference > 0) {
-        setTimeLeft({
+        timeLeft = {
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60)
+        };
       }
+      return timeLeft;
     };
 
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, []);
 
-  // Función para cambiar de imagen manualmente
-  const goToImage = (index) => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentImageIndex(index);
-      setIsTransitioning(false);
-    }, 300);
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
-      {/* --- NAVBAR --- */}
-      <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/img/logo.png" alt="Logo Quiniela" className="h-12 w-auto object-contain" />
-            <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">Quiniela 2026</span>
-          </Link>
-          <div className="flex gap-2 sm:gap-3">
-            <a
-              href="#reglas"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700 px-2 sm:px-3 py-2 transition-colors hidden md:block"
-            >
-              Reglas
-            </a>
-            <Link
-              to="/login"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700 px-2 sm:px-3 py-2 transition-colors"
-            >
-              Iniciar Sesión
-            </Link>
-            <Link
-              to="/register"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm whitespace-nowrap"
-            >
-              Crear Cuenta
-            </Link>
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-20 md:pb-0">
 
+      {/* NAVBAR */}
+      <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <img src="/img/logo.png" alt="Logo Quiniela" className="h-16 w-auto object-contain" />
+            <span className="font-bold text-2xl tracking-tight text-slate-900 hidden md:block">Quiniela 2026</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Link to="/login" className="text-slate-600 hover:text-blue-600 font-semibold text-sm transition-colors">Iniciar Sesión</Link>
+            <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+              Registrarse
+            </Link>
           </div>
         </div>
       </nav>
 
-      {/* --- TICKER DE NOTICIAS (MARQUESINA) --- */}
-      <div className="bg-blue-950 text-white py-2 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4 text-xs font-medium whitespace-nowrap animate-marquee">
-            <span className="inline-block">¡El pozo acumulado supera los $50,000!</span>
-            <span className="text-blue-300">|</span>
-            <span className="inline-block">Messi confirma su último mundial</span>
-            <span className="text-blue-300">|</span>
-            <span className="inline-block">Regístrate hoy y duplica tus puntos</span>
-            <span className="text-blue-300">|</span>
-            <span className="inline-block">¡El pozo acumulado supera los $50,000!</span>
-            <span className="text-blue-300">|</span>
-            <span className="inline-block">Messi confirma su último mundial</span>
-            <span className="text-blue-300">|</span>
-            <span className="inline-block">Regístrate hoy y duplica tus puntos</span>
-          </div>
-        </div>
-      </div>
-
-      {/* --- LAYOUT PRINCIPAL (GRID DE 2 COLUMNAS: 25% - 75%) --- */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-
-          {/* === COLUMNA IZQUIERDA (PATROCINADORES) - 25% (1 de 4) === */}
-          <div className="lg:col-span-1 space-y-6 order-last lg:order-first hidden lg:block">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sticky top-24">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 text-center">Patrocinadores Oficiales</h3>
-              <div className="space-y-6">
-                {/* Sponsor 1: Nike */}
-                <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <img src="/img/nike.jpg" alt="Nike" className="w-full h-full object-cover relative z-10" />
-                </div>
-                {/* Sponsor 2: Adidas */}
-                <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <img src="/img/adidas.jpg" alt="Adidas" className="w-full h-full object-cover relative z-10" />
-                </div>
-                {/* Sponsor 3: Coca-Cola */}
-                <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <img src="/img/coca-cola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
-                </div>
-
-                {/* Banner Call to Action */}
-                <div className="bg-gradient-to-b from-blue-600 to-blue-800 rounded-xl p-4 text-white text-center shadow-lg transform transition-transform hover:scale-105">
-                  <p className="font-bold text-lg mb-2 leading-tight">¡Tu Marca Aquí!</p>
-                  <p className="text-xs text-blue-100 mb-3">Llega a miles de fanáticos.</p>
-                  <button className="bg-white text-blue-700 text-xs px-4 py-2 rounded-full font-bold hover:bg-blue-50 transition-colors shadow-sm">
-                    Contactar
-                  </button>
-                </div>
-              </div>
+      <main>
+        {/* HERO SECTION CON CARRUSEL */}
+        <div className="relative h-[500px] md:h-[600px] overflow-hidden bg-slate-900">
+          {heroImages.map((img, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? 'opacity-60' : 'opacity-0'
+                }`}
+            >
+              <img src={img} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
             </div>
-          </div>
+          ))}
 
-          {/* === COLUMNA DERECHA (CONTENIDO PRINCIPAL) - 75% (3 de 4) === */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/50"></div>
 
-            {/* HERO SECTION (BANNER) - CARRUSEL */}
-            <div className="relative rounded-2xl overflow-hidden bg-blue-900 text-white h-96 sm:h-80 flex flex-col justify-center items-start p-6 sm:p-10 shadow-xl group">
-              {/* Overlay oscuro para mejor legibilidad del texto */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30 z-10"></div>
-
-              {/* Carrusel de imágenes */}
-              <div className="absolute inset-0">
-                {heroImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`Hero ${index + 1}`}
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${index === currentImageIndex && !isTransitioning
-                      ? 'opacity-100'
-                      : 'opacity-0'
-                      }`}
-                  />
-                ))}
-              </div>
-
-              {/* Contenido del Hero */}
-              <div className="relative z-20 max-w-xl">
-                <div className="inline-flex items-center gap-2 bg-blue-950/50 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium text-blue-200 mb-4 border border-blue-500/30">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                  </span>
-                  Mundial 2026 USA, México, Canadá
-                </div>
-                <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight mb-4 drop-shadow-2xl text-white">
-                  Predice, <br />
-                  <span className="text-blue-200">Compite,</span> <br />
-                  Gana.
-                </h1>
-                <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                  <button className="bg-white text-blue-900 px-6 py-3 rounded-lg font-bold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full sm:w-auto">
-                    Registrarse como Cliente
-                  </button>
-                  <button className="bg-blue-900/40 backdrop-blur-sm text-white border border-blue-400/50 px-6 py-3 rounded-lg font-semibold hover:bg-blue-800/60 transition-all w-full sm:w-auto">
-                    Demo Admin
-                  </button>
-                </div>
-              </div>
-
-              {/* Indicadores de posición (puntos) */}
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex gap-2">
-                {heroImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToImage(index)}
-                    className={`transition-all duration-300 rounded-full ${index === currentImageIndex
-                      ? 'bg-white w-8 h-2'
-                      : 'bg-white/40 w-2 h-2 hover:bg-white/60'
-                      }`}
-                    aria-label={`Ir a imagen ${index + 1}`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* GRID INTERNO PARA WIDGETS Y PARTIDOS */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-              {/* COLUMNA DE PARTIDOS (2/3) */}
-              <div className="lg:col-span-2 space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <Calendar className="text-blue-600" size={24} />
-                    Partidos Destacados
-                  </h3>
-                  <div className="space-y-4">
-                    {loadingMatches ? (
-                      <div className="flex justify-center py-10">
-                        <Loader className="animate-spin text-blue-600" size={32} />
-                      </div>
-                    ) : matches.length > 0 ? (
-                      matches.map((match, idx) => (
-                        <div key={match.id || idx} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all">
-                          {/* Cabecera */}
-                          <div className="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-white">
-                            <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-full border border-blue-100">
-                              {match.fase || match.stage}
-                            </span>
-                            <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
-                              {match.fecha} • {match.hora}
-                            </span>
-                          </div>
-
-                          <div className="p-5">
-                            <div className="flex justify-between items-center mb-4">
-                              {/* Equipo A */}
-                              <div className="flex flex-col items-center gap-2 w-1/3">
-                                {match.logo_a ? (
-                                  <img src={match.logo_a} alt={match.equipo_a} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-md mx-auto" />
-                                ) : (
-                                  <Shield size={64} className="text-slate-300 mx-auto" />
-                                )}
-                                <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight mt-2">{match.equipo_a}</h3>
-                              </div>
-
-                              {/* VS / Marcador */}
-                              <div className="text-center w-1/3 flex flex-col items-center justify-center">
-                                <span className="text-xs text-slate-400 font-bold mb-2">VS</span>
-                                {match.estado === 'finalizado' && (
-                                  <div className="text-3xl font-black text-slate-800 tracking-widest">
-                                    {match.goles_a} - {match.goles_b}
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Equipo B */}
-                              <div className="flex flex-col items-center gap-2 w-1/3">
-                                {match.logo_b ? (
-                                  <img src={match.logo_b} alt={match.equipo_b} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-md mx-auto" />
-                                ) : (
-                                  <Shield size={64} className="text-slate-300 mx-auto" />
-                                )}
-                                <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight mt-2">{match.equipo_b}</h3>
-                              </div>
-                            </div>
-
-                            {/* Inputs (Visual Only for Home) */}
-                            {match.estado !== 'finalizado' ? (
-                              <div className="flex justify-center items-center gap-3">
-                                <input
-                                  type="number"
-                                  disabled
-                                  className="w-14 h-12 text-center border border-slate-200 rounded-lg font-bold text-xl bg-slate-50 text-slate-400 cursor-not-allowed"
-                                  placeholder="-"
-                                />
-                                <span className="font-bold text-slate-300">-</span>
-                                <input
-                                  type="number"
-                                  disabled
-                                  className="w-14 h-12 text-center border border-slate-200 rounded-lg font-bold text-xl bg-slate-50 text-slate-400 cursor-not-allowed"
-                                  placeholder="-"
-                                />
-                              </div>
-                            ) : (
-                              <div className="text-center">
-                                <span className="bg-slate-100 text-slate-500 px-4 py-1 rounded-full text-xs font-bold border border-slate-200">Finalizado</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
-                        <p className="text-slate-500">No hay partidos destacados por el momento.</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* STATS BAR */}
-                  <div className="grid grid-cols-3 gap-4 mt-8">
-                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
-                      <div className="text-blue-600 flex justify-center mb-1"><Users size={24} /></div>
-                      <div className="text-2xl font-bold text-slate-800">2.4K</div>
-                      <div className="text-[10px] text-slate-500 uppercase font-bold">Usuarios</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
-                      <div className="text-blue-600 flex justify-center mb-1"><CheckCircle size={24} /></div>
-                      <div className="text-2xl font-bold text-slate-800">48K</div>
-                      <div className="text-[10px] text-slate-500 uppercase font-bold">Predicciones</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
-                      <div className="text-blue-600 flex justify-center mb-1"><Calendar size={24} /></div>
-                      <div className="text-2xl font-bold text-slate-800">104</div>
-                      <div className="text-[10px] text-slate-500 uppercase font-bold">Partidos</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* COLUMNA DE WIDGETS (1/3) */}
-              <div className="space-y-6">
-
-                {/* WIDGET CUENTA REGRESIVA */}
-                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-lg p-5 text-white relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-transparent"></div>
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Clock className="text-yellow-400" size={18} />
-                      <h3 className="text-sm font-bold">Cuenta Regresiva</h3>
-                    </div>
-                    <div className="grid grid-cols-4 gap-1">
-                      <div className="bg-slate-800/50 rounded p-2 text-center border border-slate-700">
-                        <div className="text-lg font-bold text-yellow-400">{String(timeLeft.days).padStart(2, '0')}</div>
-                        <div className="text-[9px] text-slate-400">Días</div>
-                      </div>
-                      <div className="bg-slate-800/50 rounded p-2 text-center border border-slate-700">
-                        <div className="text-lg font-bold text-yellow-400">{String(timeLeft.hours).padStart(2, '0')}</div>
-                        <div className="text-[9px] text-slate-400">Hrs</div>
-                      </div>
-                      <div className="bg-slate-800/50 rounded p-2 text-center border border-slate-700">
-                        <div className="text-lg font-bold text-yellow-400">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                        <div className="text-[9px] text-slate-400">Min</div>
-                      </div>
-                      <div className="bg-slate-800/50 rounded p-2 text-center border border-slate-700">
-                        <div className="text-lg font-bold text-yellow-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                        <div className="text-[9px] text-slate-400">Seg</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* WIDGET RANKING */}
-                <div className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden">
-                  <div className="bg-slate-50 p-3 border-b border-slate-100 flex justify-between items-center">
-                    <h3 className="font-bold text-sm text-slate-800">Top Ranking</h3>
-                    <span className="text-[9px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                      LIVE
-                    </span>
-                  </div>
-                  <div className="divide-y divide-slate-50">
-                    {[
-                      { name: "Carlos M.", points: 156, rank: 1, color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-                      { name: "Ana R.", points: 142, rank: 2, color: "bg-slate-100 text-slate-600 border-slate-200" },
-                      { name: "Luis P.", points: 138, rank: 3, color: "bg-orange-50 text-orange-700 border-orange-200" },
-                    ].map((user) => (
-                      <div key={user.rank} className="p-2 flex items-center gap-2 hover:bg-slate-50 transition-colors cursor-pointer group">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border ${user.color}`}>
-                          {user.rank <= 3 ? <Trophy size={10} /> : user.rank}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">{user.name}</p>
-                        </div>
-                        <span className="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[10px]">{user.points}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* WIDGET REGLAS */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-                  <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                    <span className="text-xl">📜</span>
-                    <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
-                  </div>
-                  <p className="text-sm text-slate-600 mb-4">
-                    Conoce cómo sumar puntos y ganar premios increíbles.
-                  </p>
-                  <a
-                    href="#reglas"
-                    className="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-lg transition-colors text-sm"
-                  >
-                    Ver Reglamento
-                  </a>
-                </div>
-
-                {/* WIDGET POZO */}
-                <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg p-4 text-white text-center relative overflow-hidden">
-                  <div className="relative z-10">
-                    <h3 className="text-sm font-bold mb-1">Pozo Acumulado</h3>
-                    <div className="text-2xl font-black text-yellow-300 drop-shadow-md mb-2">$50,000</div>
-                    <button className="w-full bg-white/20 hover:bg-white/30 text-white text-xs py-1.5 rounded-lg font-semibold transition-colors border border-white/30">
-                      Ver Premios
-                    </button>
-                  </div>
-                </div>
-
-                {/* CARD ADMIN */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:border-slate-300 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-slate-100 p-2 rounded-lg text-slate-600">
-                      <Shield size={16} />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-xs text-slate-900">Admin Access</h4>
-                      <button className="text-[10px] text-blue-600 font-bold hover:underline">Ingresar</button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* CÓMO FUNCIONA */}
-            <div className="py-4 border-t border-slate-100 pt-8">
-              <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
+            <span className="bg-blue-600/20 text-blue-300 border border-blue-500/30 px-4 py-1.5 rounded-full text-sm font-bold mb-6 backdrop-blur-sm animate-fade-in-down">
+              🏆 La Copa del Mundo 2026
+            </span>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight drop-shadow-lg animate-fade-in-up">
+              Vive la Pasión <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Gana en Grande</span>
+            </h1>
+            <p className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto font-medium drop-shadow-md animate-fade-in-up delay-100">
+              Participa en la quiniela más emocionante. Predice resultados, compite con amigos y gana premios exclusivos.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-200">
+              <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(37,99,235,0.5)] hover:shadow-[0_0_30px_rgba(37,99,235,0.7)] transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                Jugar Ahora <ArrowRight size={20} />
+              </Link>
+              <a href="#como-funciona" className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-xl font-bold text-lg transition-all backdrop-blur-sm flex items-center justify-center">
                 Cómo Funciona
-              </h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                {[
-                  { title: "Regístrate Gratis", desc: "Crea tu cuenta en segundos.", icon: Users },
-                  { title: "Haz Predicciones", desc: "Define marcadores antes del cierre.", icon: Calendar },
-                  { title: "Gana Premios", desc: "Suma puntos y escala el ranking.", icon: Trophy }
-                ].map((step, idx) => (
-                  <div key={idx} className="text-center space-y-3">
-                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <step.icon size={20} />
-                    </div>
-                    <h4 className="font-bold text-slate-900">{step.title}</h4>
-                    <p className="text-sm text-slate-500">{step.desc}</p>
-                  </div>
-                ))}
-              </div>
+              </a>
             </div>
-
-            {/* SECCIÓN DE REGLAS (MOVIDO AQUÍ) */}
-            <div id="reglas" className="scroll-mt-24">
-              <RulesSection />
-            </div>
-
           </div>
         </div>
+
+        {/* SECCIÓN PRINCIPAL: PARTIDOS Y SIDEBAR */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+            {/* COLUMNA IZQUIERDA (2/3): PARTIDOS DESTACADOS */}
+            <div className="lg:col-span-2 space-y-12">
+
+              {/* Título de Sección */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
+                  <span className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Calendar size={24} /></span>
+                  Partidos Destacados
+                </h2>
+                <Link to="/login" className="text-blue-600 font-bold text-sm hover:underline flex items-center gap-1">
+                  Ver Todos <ArrowRight size={16} />
+                </Link>
+              </div>
+
+              {/* Lista de Partidos */}
+              <div className="space-y-6">
+                {loadingMatches ? (
+                  <div className="flex justify-center py-10">
+                    <Loader size={40} className="animate-spin text-blue-600" />
+                  </div>
+                ) : (
+                  matches.map((match) => (
+                    <div key={match.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow group">
+                      <div className="bg-slate-50 px-6 py-3 border-b border-slate-100 flex justify-between items-center">
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{match.fase}</span>
+                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1">
+                          <Clock size={12} /> {match.fecha} - {match.hora}
+                        </span>
+                      </div>
+                      <div className="p-6 md:p-8 flex items-center justify-between">
+                        {/* Equipo A */}
+                        <div className="flex flex-col items-center gap-3 w-1/3 group-hover:transform group-hover:scale-105 transition-transform duration-300">
+                          {match.logo_a ? (
+                            <img src={match.logo_a} alt={match.equipo_a} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg" />
+                          ) : (
+                            <Shield size={64} className="text-slate-300" />
+                          )}
+                          <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight">{match.equipo_a}</h3>
+                        </div>
+
+                        {/* VS / Marcador */}
+                        <div className="flex flex-col items-center justify-center w-1/3">
+                          {match.estado === 'finalizado' ? (
+                            <div className="text-3xl md:text-5xl font-black text-slate-800 tracking-tighter">
+                              {match.goles_a} <span className="text-slate-300">-</span> {match.goles_b}
+                            </div>
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-black text-xl border-4 border-white shadow-inner">
+                              VS
+                            </div>
+                          )}
+                          <span className="mt-2 text-xs font-bold text-slate-400 uppercase">
+                            {match.estado === 'finalizado' ? 'Finalizado' : 'Por Jugar'}
+                          </span>
+                        </div>
+
+                        {/* Equipo B */}
+                        <div className="flex flex-col items-center gap-3 w-1/3 group-hover:transform group-hover:scale-105 transition-transform duration-300">
+                          {match.logo_b ? (
+                            <img src={match.logo_b} alt={match.equipo_b} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg" />
+                          ) : (
+                            <Shield size={64} className="text-slate-300" />
+                          )}
+                          <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight">{match.equipo_b}</h3>
+                        </div>
+                      </div>
+                      <div className="bg-slate-50 px-6 py-3 border-t border-slate-100 text-center">
+                        <Link to="/login" className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
+                          Haz tu predicción &rarr;
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Banner Promocional */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
+
+                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div>
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2">¡Únete a la Competencia!</h3>
+                    <p className="text-blue-100 text-lg">Demuestra que eres el mejor pronosticador.</p>
+                  </div>
+                  <Link to="/register" className="bg-white text-blue-700 px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-50 transition-colors whitespace-nowrap">
+                    Crear Cuenta Gratis
+                  </Link>
+                </div>
+              </div>
+
+            </div>
+
+            {/* COLUMNA DERECHA (1/3): SIDEBAR */}
+            <div className="space-y-8">
+
+              {/* WIDGET: PATROCINADORES */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  <span className="text-yellow-500">★</span> Patrocinadores Oficiales
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Sponsor 1: Nike */}
+                  <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="/img/nike.jpg" alt="Nike" className="w-full h-full object-cover relative z-10" />
+                  </div>
+
+                  {/* Sponsor 2: Adidas */}
+                  <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="/img/adidas.jpg" alt="Adidas" className="w-full h-full object-cover relative z-10" />
+                  </div>
+
+                  {/* Sponsor 3: Coca-Cola (Full Width) */}
+                  <div className="col-span-2 group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="/img/cocacola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
+                  </div>
+                </div>
+              </div>
+
+              {/* WIDGET: ESTADÍSTICAS */}
+              <div className="bg-slate-900 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                <h3 className="font-bold text-lg mb-6 relative z-10">Estadísticas Globales</h3>
+                <div className="grid grid-cols-2 gap-4 relative z-10">
+                  <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center">
+                    <div className="text-blue-400 flex justify-center mb-2"><Users size={24} /></div>
+                    <div className="text-2xl font-bold">2.5K+</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Usuarios</div>
+                  </div>
+                  <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center">
+                    <div className="text-green-400 flex justify-center mb-2"><CheckCircle size={24} /></div>
+                    <div className="text-2xl font-bold">48K</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Predicciones</div>
+                  </div>
+                  <div className="col-span-2 bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center flex items-center justify-between px-8">
+                    <div className="text-left">
+                      <div className="text-2xl font-bold">104</div>
+                      <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Partidos</div>
+                    </div>
+                    <div className="text-yellow-400"><Calendar size={32} /></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* WIDGET: CUENTA REGRESIVA */}
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-lg p-6 text-white border border-slate-700/50">
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock className="text-yellow-400" size={20} />
+                  <h3 className="font-bold text-lg">Cuenta Regresiva</h3>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
+                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.days).padStart(2, '0')}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold">Días</div>
+                  </div>
+                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
+                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.hours).padStart(2, '0')}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold">Hrs</div>
+                  </div>
+                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
+                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold">Min</div>
+                  </div>
+                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
+                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold">Seg</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* WIDGET: TOP RANKING (REAL DATA) */}
+              <div className="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
+                <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
+                  <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                    <Trophy size={16} className="text-yellow-500" /> Top Ranking
+                  </h3>
+                  <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    LIVE
+                  </span>
+                </div>
+                <div className="divide-y divide-slate-50">
+                  {topUsers.length > 0 ? (
+                    topUsers.slice(0, 5).map((user, index) => {
+                      // Asignar colores según el ranking (1, 2, 3)
+                      let rankColor = "bg-slate-100 text-slate-600 border-slate-200";
+                      if (index === 0) rankColor = "bg-yellow-100 text-yellow-700 border-yellow-200";
+                      if (index === 1) rankColor = "bg-slate-100 text-slate-600 border-slate-200"; // Plata
+                      if (index === 2) rankColor = "bg-orange-50 text-orange-700 border-orange-200";
+
+                      return (
+                        <div key={user.id || index} className="p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer group">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${rankColor}`}>
+                            {index < 3 ? <Trophy size={14} /> : index + 1}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
+                              {user.nombre || user.name || 'Usuario'}
+                            </p>
+                          </div>
+                          <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg text-xs">
+                            {user.puntos} pts
+                          </span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="p-6 text-center text-slate-400 text-sm">
+                      <Loader size={20} className="animate-spin mx-auto mb-2" />
+                      Cargando ranking...
+                    </div>
+                  )}
+                </div>
+                <div className="p-3 text-center border-t border-slate-100 bg-slate-50/50">
+                  <Link to="/login" className="text-xs text-blue-600 font-bold hover:text-blue-800 flex items-center justify-center gap-1 mx-auto transition-colors">
+                    Ver Ranking Completo <ArrowRight size={12} />
+                  </Link>
+                </div>
+              </div>
+
+              {/* WIDGET: REGLAS */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
+                  <span className="text-2xl">📜</span>
+                  <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
+                </div>
+                <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+                  Conoce cómo sumar puntos, las reglas de desempate y gana premios increíbles.
+                </p>
+                <a
+                  href="#reglas"
+                  className="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors text-sm"
+                >
+                  Ver Reglamento
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* SECCIÓN CÓMO FUNCIONA */}
+        <div id="como-funciona" className="bg-white py-16 md:py-24 border-t border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="text-blue-600 font-bold tracking-wider uppercase text-sm mb-2 block">Paso a Paso</span>
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">¿Cómo Funciona?</h2>
+              <p className="text-slate-500 max-w-2xl mx-auto text-lg">Es muy fácil participar y ganar. Solo sigue estos 3 simples pasos.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+              <div className="text-center group">
+                <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300 shadow-sm group-hover:shadow-blue-200 group-hover:shadow-xl transform group-hover:-translate-y-2">
+                  <Users size={32} className="text-blue-600 group-hover:text-white transition-colors duration-300" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">1. Regístrate</h3>
+                <p className="text-slate-500 leading-relaxed">Crea tu cuenta en segundos y obtén acceso inmediato a la plataforma.</p>
+              </div>
+              <div className="text-center group">
+                <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300 shadow-sm group-hover:shadow-blue-200 group-hover:shadow-xl transform group-hover:-translate-y-2">
+                  <CheckCircle size={32} className="text-blue-600 group-hover:text-white transition-colors duration-300" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">2. Pronostica</h3>
+                <p className="text-slate-500 leading-relaxed">Predice los resultados de los partidos del Mundial 2026.</p>
+              </div>
+              <div className="text-center group">
+                <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300 shadow-sm group-hover:shadow-blue-200 group-hover:shadow-xl transform group-hover:-translate-y-2">
+                  <Trophy size={32} className="text-blue-600 group-hover:text-white transition-colors duration-300" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">3. Gana</h3>
+                <p className="text-slate-500 leading-relaxed">Suma puntos por cada acierto y escala en el ranking global.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* REGLAS SECTION COMPONENT */}
+        <div id="reglas" className="bg-slate-50 py-16 border-t border-slate-200">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <RulesSection />
+          </div>
+        </div>
+
       </main>
 
-      {/* FOOTER SIMPLE */}
-      <footer className="border-t border-slate-200 bg-white mt-12 py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-slate-400 text-sm">© 2025 Quiniela Mundial. Todos los derechos reservados.</p>
+      {/* FOOTER */}
+      <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <img src="/img/logo.png" alt="Logo" className="h-10 opacity-80 grayscale hover:grayscale-0 transition-all" />
+                <span className="text-white font-bold text-xl">Quiniela 2026</span>
+              </div>
+              <p className="text-sm max-w-xs">
+                La plataforma líder para pronósticos deportivos del Mundial 2026. Juega, diviértete y gana.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-white font-bold mb-4">Enlaces Rápidos</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link to="/login" className="hover:text-white transition-colors">Iniciar Sesión</Link></li>
+                <li><Link to="/register" className="hover:text-white transition-colors">Registrarse</Link></li>
+                <li><a href="#como-funciona" className="hover:text-white transition-colors">Cómo Funciona</a></li>
+                <li><a href="#reglas" className="hover:text-white transition-colors">Reglas</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-bold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-white transition-colors">Términos y Condiciones</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Política de Privacidad</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-slate-800 pt-8 text-center text-xs">
+            &copy; {new Date().getFullYear()} Quiniela 2026. Todos los derechos reservados.
+          </div>
         </div>
       </footer>
     </div>
