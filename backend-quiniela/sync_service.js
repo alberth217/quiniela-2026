@@ -60,6 +60,8 @@ async function syncMatches() {
                 // Mapeo de datos
                 const equipo_a = teams.home.name;
                 const equipo_b = teams.away.name;
+                const logo_a = teams.home.logo;
+                const logo_b = teams.away.logo;
 
                 // Formateo de fecha y hora
                 const dateObj = new Date(fixture.date);
@@ -97,18 +99,18 @@ async function syncMatches() {
                     const id = checkRes.rows[0].id;
                     const updateQuery = `
             UPDATE partidos 
-            SET fecha = $1, hora = $2, fase = $3, estado = $4, goles_a = $5, goles_b = $6
-            WHERE id = $7
+            SET fecha = $1, hora = $2, fase = $3, estado = $4, goles_a = $5, goles_b = $6, logo_a = $7, logo_b = $8
+            WHERE id = $9
           `;
-                    await client.query(updateQuery, [fecha, hora, fase, estado, goles_a, goles_b, id]);
+                    await client.query(updateQuery, [fecha, hora, fase, estado, goles_a, goles_b, logo_a, logo_b, id]);
                     console.log(`🔄 Actualizado: ${equipo_a} vs ${equipo_b}`);
                 } else {
                     // Insertar
                     const insertQuery = `
-            INSERT INTO partidos (equipo_a, equipo_b, fecha, hora, fase, estado, goles_a, goles_b)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO partidos (equipo_a, equipo_b, fecha, hora, fase, estado, goles_a, goles_b, logo_a, logo_b)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
           `;
-                    await client.query(insertQuery, [equipo_a, equipo_b, fecha, hora, fase, estado, goles_a, goles_b]);
+                    await client.query(insertQuery, [equipo_a, equipo_b, fecha, hora, fase, estado, goles_a, goles_b, logo_a, logo_b]);
                     console.log(`➕ Insertado: ${equipo_a} vs ${equipo_b}`);
                 }
             }

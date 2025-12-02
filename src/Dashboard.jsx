@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Trophy, Home, BarChart2, Bell, LogOut, Search,
   Calendar, Clock, Check, Loader, Save, Lock,
-  X, Ticket, AlertTriangle
+  X, Ticket, AlertTriangle, Shield
 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import RulesSection from './RulesSection';
@@ -462,9 +462,35 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
 
       <div className="p-5">
         <div className="flex justify-between items-center mb-6">
-          <div className="text-center w-1/3"><h3 className="font-bold text-slate-800 text-lg">{match.equipo_a}</h3></div>
-          <div className="text-center w-1/3 text-xs text-slate-400 font-medium">VS</div>
-          <div className="text-center w-1/3"><h3 className="font-bold text-slate-800 text-lg">{match.equipo_b}</h3></div>
+          {/* Equipo A */}
+          <div className="flex flex-col items-center gap-2 w-1/3">
+            {match.logo_a ? (
+              <img src={match.logo_a} alt={match.equipo_a} className="h-12 w-12 object-contain drop-shadow-sm" />
+            ) : (
+              <Shield size={32} className="text-slate-300" />
+            )}
+            <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_a}</h3>
+          </div>
+
+          {/* VS / Marcador */}
+          <div className="text-center w-1/3 flex flex-col items-center justify-center">
+            <span className="text-xs text-slate-400 font-bold mb-1">VS</span>
+            {match.estado === 'finalizado' && (
+              <div className="text-xl font-black text-slate-800 tracking-widest">
+                {match.goles_a} - {match.goles_b}
+              </div>
+            )}
+          </div>
+
+          {/* Equipo B */}
+          <div className="flex flex-col items-center gap-2 w-1/3">
+            {match.logo_b ? (
+              <img src={match.logo_b} alt={match.equipo_b} className="h-12 w-12 object-contain drop-shadow-sm" />
+            ) : (
+              <Shield size={32} className="text-slate-300" />
+            )}
+            <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_b}</h3>
+          </div>
         </div>
 
         <div className="flex justify-center gap-4 text-xs text-slate-400 mb-6">

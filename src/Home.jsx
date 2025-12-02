@@ -3,7 +3,7 @@ import { Trophy, Users, Calendar, CheckCircle, ArrowRight, Shield, Clock, Loader
 import { Link } from 'react-router-dom';
 import RulesSection from './RulesSection';
 
-// Array de imágenes del carrusel (Updated)
+// Array de imágenes del carrusel
 const heroImages = [
   '/img/hero1.png',
   '/img/hero2.jpg',
@@ -33,7 +33,6 @@ function Home() {
         if (res.ok) {
           const data = await res.json();
           // Filtrar o tomar los primeros 3-4 para mostrar en Home
-          // Ordenar por fecha si es necesario
           setMatches(data.slice(0, 4)); // Mostrar hasta 4 partidos
         }
       } catch (error) {
@@ -101,7 +100,6 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <img src="/img/logo.png" alt="Logo Quiniela" className="h-12 w-auto object-contain" />
-            {/* RESPONSIVE: Ocultamos el texto en móviles para dar espacio a los botones */}
             <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">Quiniela 2026</span>
           </Link>
           <div className="flex gap-2 sm:gap-3">
@@ -216,7 +214,6 @@ function Home() {
                   </span>
                   Mundial 2026 USA, México, Canadá
                 </div>
-                {/* RESPONSIVE: Texto más pequeño en móvil (3xl) y grande en escritorio (5xl) */}
                 <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight mb-4 drop-shadow-2xl text-white">
                   Predice, <br />
                   <span className="text-blue-200">Compite,</span> <br />
@@ -288,15 +285,25 @@ function Home() {
 
                             {/* Enfrentamiento */}
                             <div className="flex items-center justify-center gap-2 sm:gap-6 mb-4 sm:mb-6">
-                              <div className="text-center flex-1">
-                                <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.equipo_a}</div>
+                              <div className="text-center flex-1 flex flex-col items-center gap-2">
+                                {match.logo_a ? (
+                                  <img src={match.logo_a} alt={match.equipo_a} className="h-12 w-12 object-contain drop-shadow-md" />
+                                ) : (
+                                  <Shield size={40} className="text-slate-300" />
+                                )}
+                                <div className="text-lg sm:text-xl font-bold text-white drop-shadow-lg truncate w-full">{match.equipo_a}</div>
                                 {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_a}</div>}
                               </div>
                               <div className="text-white/80 font-bold text-xl sm:text-2xl px-2">
                                 {match.estado === 'finalizado' ? '-' : 'VS'}
                               </div>
-                              <div className="text-center flex-1">
-                                <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.equipo_b}</div>
+                              <div className="text-center flex-1 flex flex-col items-center gap-2">
+                                {match.logo_b ? (
+                                  <img src={match.logo_b} alt={match.equipo_b} className="h-12 w-12 object-contain drop-shadow-md" />
+                                ) : (
+                                  <Shield size={40} className="text-slate-300" />
+                                )}
+                                <div className="text-lg sm:text-xl font-bold text-white drop-shadow-lg truncate w-full">{match.equipo_b}</div>
                                 {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_b}</div>}
                               </div>
                             </div>
