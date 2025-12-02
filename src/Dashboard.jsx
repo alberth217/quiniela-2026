@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Trophy, Home, BarChart2, Bell, LogOut, Search,
+  Trophy, Home, BarChart2, LogOut, Search,
   Calendar, Clock, Loader, Save, Lock,
-  Ticket, AlertTriangle, Shield, TrendingUp, Star
+  Ticket, AlertTriangle, Shield, TrendingUp, Star, X
 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import RulesSection from './RulesSection';
-// Asegúrate de importar tu MatchCard actualizado aquí
-// import MatchCard from './MatchCard'; 
 
 const API_URL = 'https://api-quiniela-444s.onrender.com';
 
@@ -15,7 +13,11 @@ function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('Partidos');
-  const [showWelcomeModal, setShowWelcomeModal] = useState(() => location.state?.fromLogin || false);
+
+  // Estado para el Modal
+  const [showWelcomeModal, setShowWelcomeModal] = useState(() => {
+    return location.state?.fromLogin || false;
+  });
 
   // Estados de Datos
   const [matches, setMatches] = useState([]);
@@ -99,6 +101,8 @@ function Dashboard() {
         });
       });
       await Promise.all(promises);
+
+      // Recargar datos
       const predictionsRes = await fetch(`${API_URL}/predicciones`);
       const allPredictions = await predictionsRes.json();
       const myPredictions = allPredictions.filter(p => p.usuario_id === currentUser.id);
@@ -118,7 +122,7 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-24 md:pb-10">
 
-      {/* NAVBAR MEJORADO */}
+      {/* NAVBAR */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -151,10 +155,8 @@ function Dashboard() {
 
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        {/* BANNER DE ESTADÍSTICAS (Nuevo Diseño) */}
-        {/* Usamos un degradado en lugar de imagen para que cargue rápido y se vea pro */}
+        {/* BANNER MODERNO (Nuevo Diseño) */}
         <div className="relative bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 md:p-10 mb-8 text-white overflow-hidden shadow-xl">
-          {/* Formas decorativas de fondo */}
           <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
 
@@ -169,7 +171,7 @@ function Dashboard() {
               </p>
             </div>
 
-            {/* Tarjetas de Resumen Flotantes */}
+            {/* Estadísticas Flotantes */}
             <div className="flex gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
               <div className="bg-white/10 backdrop-blur-md border border-white/10 p-4 rounded-xl min-w-[140px] flex flex-col items-center justify-center text-center">
                 <span className="text-slate-300 text-xs font-bold uppercase mb-1">Tu Ranking</span>
@@ -187,12 +189,10 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* BARRA DE HERRAMIENTAS INTEGRADA (Filtros + Búsqueda) */}
+        {/* BARRA DE HERRAMIENTAS INTEGRADA */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-
-          {/* Selector de Fases (Tipo Segment) */}
           <div className="flex overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-hide gap-1">
-            {['Todos', 'Fase de Grupos', 'Octavos', 'Cuartos', 'Semi', 'Final'].map(f => (
+            {['Todos', 'Fase de Grupos', 'Octavos', 'Cuartos', 'Semifinal', 'Final'].map(f => (
               <button
                 key={f}
                 onClick={() => setFilterStage(f)}
@@ -202,8 +202,6 @@ function Dashboard() {
               </button>
             ))}
           </div>
-
-          {/* Buscador Expandible */}
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
             <input
@@ -216,8 +214,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* GRID PRINCIPAL OPTIMIZADO */}
-        {/* Aquí está el cambio clave: xl:grid-cols-4 */}
+        {/* GRID DE PARTIDOS (4 COLUMNAS + TARJETAS CORREGIDAS) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {loading ? (
             <div className="col-span-full flex flex-col items-center justify-center py-24 text-slate-400">
@@ -228,7 +225,6 @@ function Dashboard() {
             filteredMatches.map((match) => {
               const existingPrediction = userPredictions.find(p => p.partido_id === match.id);
               const unsaved = unsavedPredictions[match.id];
-              // Renderizar tu MatchCard importado aquí
               return (
                 <MatchCard
                   key={match.id}
@@ -250,7 +246,7 @@ function Dashboard() {
 
       </main>
 
-      {/* BOTÓN FLOTANTE DE GUARDADO */}
+      {/* BOTÓN FLOTANTE */}
       {hasUnsavedChanges && (
         <div className="fixed bottom-6 right-6 md:right-10 z-50 animate-bounce-in">
           <button
@@ -267,28 +263,68 @@ function Dashboard() {
         </div>
       )}
 
-      {/* MODAL BIENVENIDA (Mismo código anterior) */}
+      {/* --- MODAL DE BIENVENIDA RECUPERADO --- */}
       {showWelcomeModal && (
-        <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
-          {/* ... Contenido del Modal igual al anterior ... */}
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-            <button onClick={() => setShowWelcomeModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><Lock size={20} /></button>
-            <h2 className="text-2xl font-bold mb-2">¡Bienvenido!</h2>
-            <p className="text-slate-500 mb-6">Comienza a predecir para ganar.</p>
-            <button onClick={() => setShowWelcomeModal(false)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Comenzar</button>
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in-up relative">
+            <button
+              onClick={() => setShowWelcomeModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="text-center mb-6">
+              <img src="/img/logo.png" alt="Logo Quiniela" className="h-20 mx-auto mb-4 object-contain" />
+              <h3 className="text-2xl font-bold text-slate-900">¡Bienvenido a la Quiniela!</h3>
+              <p className="text-slate-500 text-sm mt-1">Prepárate para el Mundial 2026</p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-4">
+                <div className="bg-white p-2 rounded-full shadow-sm text-blue-600">
+                  <Ticket size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-blue-900">Costo del Ticket: $25 USD</h4>
+                  <p className="text-xs text-blue-700 font-medium mt-0.5">Fase de Grupos</p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex items-start gap-4">
+                <div className="bg-white p-2 rounded-full shadow-sm text-yellow-600">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-yellow-900">Regla Importante</h4>
+                  <p className="text-xs text-yellow-700 font-medium mt-0.5">Máximo 2 Tickets por usuario.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <p className="text-xs text-slate-400 mb-4">
+                * Siguiente Fase: Costo adicional aplicable.
+              </p>
+              <button
+                onClick={() => setShowWelcomeModal(false)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Entendido, ¡A Jugar! <span>Tickets: 1/2</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }
 
-// --- COMPONENTE TARJETA CORREGIDO Y SIMÉTRICO ---
+// --- COMPONENTE MATCHCARD CORREGIDO (Simétrico) ---
 function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
-  // Datos actuales (Prioridad: Local > Guardado > Vacío)
   const currentData = unsavedPrediction || existingPrediction || {};
 
-  // Parsear marcador "GolesA-GolesB"
   let initialScoreA = '';
   let initialScoreB = '';
   if (currentData.seleccion && currentData.seleccion.includes('-')) {
@@ -300,13 +336,10 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
   const [scoreA, setScoreA] = useState(initialScoreA);
   const [scoreB, setScoreB] = useState(initialScoreB);
 
-  // Notificar cambios al padre (Dashboard)
   useEffect(() => {
     if (scoreA !== '' && scoreB !== '') {
       const valorPrediccion = `${scoreA}-${scoreB}`;
       const dbSel = existingPrediction?.seleccion;
-
-      // Solo notificar si cambió respecto a lo guardado
       if (valorPrediccion !== dbSel) {
         onChange(match.id, {
           tipo_prediccion: 'Marcador',
@@ -317,17 +350,12 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
   }, [scoreA, scoreB]);
 
   const isFinalized = match.estado === 'finalizado';
-
-  // Formato simple de fecha
-  const formatDate = (dateStr) => {
-    // Puedes ajustar esto según venga tu fecha "2026-06-10" -> "10 Jun"
-    return dateStr;
-  };
+  const formatDate = (dateStr) => dateStr;
 
   return (
     <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col ${isFinalized ? 'opacity-90 bg-slate-50' : ''}`}>
 
-      {/* 1. HEADER (Fase y Hora) */}
+      {/* HEADER */}
       <div className="flex justify-between items-center px-4 py-3 bg-slate-50/80 border-b border-slate-100">
         <span className="bg-blue-50 text-blue-700 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wide">
           {match.fase || 'Fase de Grupos'}
@@ -343,13 +371,11 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
         )}
       </div>
 
-      {/* 2. CONTENIDO PRINCIPAL (Grid 3 Columnas: A - Info - B) */}
-      {/* Usamos grid-cols-[1fr_auto_1fr] para forzar que los equipos tengan el mismo ancho y el centro se ajuste */}
+      {/* CONTENIDO (Grid simétrico) */}
       <div className="p-5 grid grid-cols-[1fr_auto_1fr] gap-2 items-start">
 
-        {/* COLUMNA IZQUIERDA: EQUIPO A */}
+        {/* EQUIPO A */}
         <div className="flex flex-col items-center">
-          {/* Bandera con efecto de elevación suave */}
           <div className="relative mb-3 group">
             <div className="absolute inset-0 bg-black/5 rounded-lg transform translate-y-1 translate-x-0 blur-sm"></div>
             {match.logo_a ? (
@@ -358,12 +384,9 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
               <Shield size={40} className="text-slate-200 relative" />
             )}
           </div>
-
           <h3 className="text-sm font-bold text-slate-800 text-center leading-tight h-8 flex items-center justify-center mb-2">
             {match.equipo_a}
           </h3>
-
-          {/* Input A */}
           {!isFinalized ? (
             <input
               type="number"
@@ -371,14 +394,14 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
               placeholder="0"
               value={scoreA}
               onChange={(e) => setScoreA(e.target.value)}
-              className="w-12 h-10 text-center bg-white border border-slate-200 rounded-lg font-bold text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all"
+              className="w-12 h-10 text-center bg-white border border-slate-200 rounded-lg font-bold text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
             />
           ) : (
             <span className="text-2xl font-black text-slate-800">{match.goles_a}</span>
           )}
         </div>
 
-        {/* COLUMNA CENTRAL: VS e INFO */}
+        {/* VS */}
         <div className="flex flex-col items-center justify-start pt-2 px-2">
           <span className="text-[10px] font-black text-slate-300 uppercase mb-1">VS</span>
           <div className="flex flex-col items-center gap-1">
@@ -389,9 +412,8 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
           </div>
         </div>
 
-        {/* COLUMNA DERECHA: EQUIPO B */}
+        {/* EQUIPO B */}
         <div className="flex flex-col items-center">
-          {/* Bandera */}
           <div className="relative mb-3 group">
             <div className="absolute inset-0 bg-black/5 rounded-lg transform translate-y-1 translate-x-0 blur-sm"></div>
             {match.logo_b ? (
@@ -400,12 +422,9 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
               <Shield size={40} className="text-slate-200 relative" />
             )}
           </div>
-
           <h3 className="text-sm font-bold text-slate-800 text-center leading-tight h-8 flex items-center justify-center mb-2">
             {match.equipo_b}
           </h3>
-
-          {/* Input B */}
           {!isFinalized ? (
             <input
               type="number"
@@ -413,16 +432,14 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
               placeholder="0"
               value={scoreB}
               onChange={(e) => setScoreB(e.target.value)}
-              className="w-12 h-10 text-center bg-white border border-slate-200 rounded-lg font-bold text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all"
+              className="w-12 h-10 text-center bg-white border border-slate-200 rounded-lg font-bold text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
             />
           ) : (
             <span className="text-2xl font-black text-slate-800">{match.goles_b}</span>
           )}
         </div>
-
       </div>
 
-      {/* FOOTER OPCIONAL (Solo si ya predicción finalizada) */}
       {isFinalized && existingPrediction && (
         <div className="bg-slate-50 py-2 text-center border-t border-slate-100">
           <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">
