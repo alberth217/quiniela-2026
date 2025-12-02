@@ -29,7 +29,7 @@ async function syncMatches() {
             method: 'GET',
             url: API_URL,
             params: {
-                next: '10', // Próximos 10 partidos
+                next: '15', // Próximos 15 partidos
                 // league: '1', // Opcional: ID de la Copa del Mundo (ej. 1) o Champions. Si se omite, trae de todo el mundo.
                 // timezone: 'America/La_Paz' // Ajustar si es necesario
             },

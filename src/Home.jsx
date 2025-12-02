@@ -34,7 +34,7 @@ function Home() {
           const data = await res.json();
           // Filtrar o tomar los primeros 3-4 para mostrar en Home
           // Ordenar por fecha si es necesario
-          setMatches(data.slice(0, 3));
+          setMatches(data.slice(0, 4)); // Mostrar hasta 4 partidos
         }
       } catch (error) {
         console.error("Error fetching matches:", error);
@@ -147,40 +147,45 @@ function Home() {
         </div>
       </div>
 
-      {/* --- LAYOUT PRINCIPAL (GRID DE 3 COLUMNAS) --- */}
+      {/* --- LAYOUT PRINCIPAL (GRID DE 2 COLUMNAS: 25% - 75%) --- */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-          {/* === COLUMNA IZQUIERDA (PUBLICIDAD) - Ocupa 3 de 10 partes (30%) === */}
-          <div className="lg:col-span-3 space-y-6 order-last lg:order-first hidden lg:block">
+          {/* === COLUMNA IZQUIERDA (PATROCINADORES) - 25% (1 de 4) === */}
+          <div className="lg:col-span-1 space-y-6 order-last lg:order-first hidden lg:block">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sticky top-24">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 text-center">Patrocinadores</h3>
-              <div className="space-y-4">
-                {/* Sponsor 1 */}
-                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-48 animate-pulse">
-                  <span className="font-black text-slate-300 text-2xl">NIKE</span>
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 text-center">Patrocinadores Oficiales</h3>
+              <div className="space-y-6">
+                {/* Sponsor 1: Nike */}
+                <div className="group relative bg-white rounded-xl p-4 flex items-center justify-center border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <img src="/img/nike.jpg" alt="Nike" className="max-h-20 max-w-full object-contain relative z-10 mix-blend-multiply" />
                 </div>
-                {/* Sponsor 2 */}
-                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-48 animate-pulse delay-75">
-                  <span className="font-black text-slate-300 text-2xl">ADIDAS</span>
+                {/* Sponsor 2: Adidas */}
+                <div className="group relative bg-white rounded-xl p-4 flex items-center justify-center border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <img src="/img/adidas.jpg" alt="Adidas" className="max-h-20 max-w-full object-contain relative z-10 mix-blend-multiply" />
                 </div>
-                {/* Sponsor 3 */}
-                <div className="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center border border-slate-100 h-48 animate-pulse delay-150">
-                  <span className="font-black text-slate-300 text-2xl">COCA-COLA</span>
+                {/* Sponsor 3: Coca-Cola */}
+                <div className="group relative bg-white rounded-xl p-4 flex items-center justify-center border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <img src="/img/coca-cola.jpg" alt="Coca-Cola" className="max-h-20 max-w-full object-contain relative z-10 mix-blend-multiply" />
                 </div>
-                {/* Banner Vertical */}
-                <div className="bg-gradient-to-b from-blue-600 to-blue-800 rounded-lg h-64 flex items-center justify-center text-white text-center p-2">
-                  <div>
-                    <p className="font-bold text-lg mb-2">¡Tu Marca Aquí!</p>
-                    <button className="bg-white text-blue-700 text-xs px-3 py-1 rounded-full font-bold">Contactar</button>
-                  </div>
+
+                {/* Banner Call to Action */}
+                <div className="bg-gradient-to-b from-blue-600 to-blue-800 rounded-xl p-4 text-white text-center shadow-lg transform transition-transform hover:scale-105">
+                  <p className="font-bold text-lg mb-2 leading-tight">¡Tu Marca Aquí!</p>
+                  <p className="text-xs text-blue-100 mb-3">Llega a miles de fanáticos.</p>
+                  <button className="bg-white text-blue-700 text-xs px-4 py-2 rounded-full font-bold hover:bg-blue-50 transition-colors shadow-sm">
+                    Contactar
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* === COLUMNA CENTRAL (CONTENIDO PRINCIPAL) - Ocupa 5 de 10 partes (50%) === */}
-          <div className="lg:col-span-6 space-y-8">
+          {/* === COLUMNA DERECHA (CONTENIDO PRINCIPAL) - 75% (3 de 4) === */}
+          <div className="lg:col-span-3 space-y-8">
 
             {/* HERO SECTION (BANNER) - CARRUSEL */}
             <div className="relative rounded-2xl overflow-hidden bg-blue-900 text-white h-96 sm:h-80 flex flex-col justify-center items-start p-6 sm:p-10 shadow-xl group">
@@ -243,103 +248,197 @@ function Home() {
               </div>
             </div>
 
-            {/* SECCIÓN PRÓXIMOS PARTIDOS */}
-            <div>
-              <h3 className="text-xl font-bold text-slate-800 mb-4">Partidos Destacados</h3>
-              <div className="space-y-4">
-                {loadingMatches ? (
-                  <div className="flex justify-center py-10">
-                    <Loader className="animate-spin text-blue-600" size={32} />
+            {/* GRID INTERNO PARA WIDGETS Y PARTIDOS */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+              {/* COLUMNA DE PARTIDOS (2/3 del espacio derecho) */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* SECCIÓN PRÓXIMOS PARTIDOS */}
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <Calendar className="text-blue-600" size={24} />
+                    Partidos Destacados
+                  </h3>
+                  <div className="space-y-4">
+                    {loadingMatches ? (
+                      <div className="flex justify-center py-10">
+                        <Loader className="animate-spin text-blue-600" size={32} />
+                      </div>
+                    ) : matches.length > 0 ? (
+                      matches.map((match, idx) => (
+                        <div key={match.id || idx} className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group bg-slate-900">
+                          {/* Imagen de fondo (Placeholder o dinámica si hubiera) */}
+                          <img
+                            src={`/img/hero${(idx % 3) + 1}.jpg`} // Fallback a imágenes locales rotativas
+                            alt={`${match.equipo_a} vs ${match.equipo_b}`}
+                            className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
+                          />
+
+                          {/* Contenido */}
+                          <div className="relative z-10 p-4 sm:p-6">
+                            {/* Cabecera */}
+                            <div className="flex items-center justify-between mb-4 sm:mb-6">
+                              <div className="text-xs sm:text-sm text-white/90 font-medium bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
+                                {match.fecha} • {match.hora}
+                              </div>
+                              <div className="text-xs sm:text-sm text-white font-semibold bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full truncate max-w-[150px]">
+                                {match.fase}
+                              </div>
+                            </div>
+
+                            {/* Enfrentamiento */}
+                            <div className="flex items-center justify-center gap-2 sm:gap-6 mb-4 sm:mb-6">
+                              <div className="text-center flex-1">
+                                <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.equipo_a}</div>
+                                {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_a}</div>}
+                              </div>
+                              <div className="text-white/80 font-bold text-xl sm:text-2xl px-2">
+                                {match.estado === 'finalizado' ? '-' : 'VS'}
+                              </div>
+                              <div className="text-center flex-1">
+                                <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.equipo_b}</div>
+                                {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_b}</div>}
+                              </div>
+                            </div>
+
+                            {/* Botones de pronóstico (Solo si no ha finalizado) */}
+                            {match.estado !== 'finalizado' && (
+                              <div className="flex gap-2 sm:gap-3">
+                                <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                                  Local
+                                </button>
+                                <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                                  Empate
+                                </button>
+                                <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                                  Visita
+                                </button>
+                              </div>
+                            )}
+                            {match.estado === 'finalizado' && (
+                              <div className="text-center">
+                                <span className="bg-slate-800/80 text-white px-4 py-1 rounded-full text-xs font-bold border border-slate-600">Partido Finalizado</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
+                        <p className="text-slate-500">No hay partidos destacados por el momento.</p>
+                      </div>
+                    )}
                   </div>
-                ) : matches.length > 0 ? (
-                  matches.map((match, idx) => (
-                    <div key={match.id || idx} className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group bg-slate-900">
-                      {/* Imagen de fondo (Placeholder o dinámica si hubiera) */}
-                      <img
-                        src={`/img/hero${(idx % 3) + 1}.jpg`} // Fallback a imágenes locales rotativas
-                        alt={`${match.equipo_a} vs ${match.equipo_b}`}
-                        className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
-                      />
+                </div>
 
-                      {/* Contenido */}
-                      <div className="relative z-10 p-4 sm:p-6">
-                        {/* Cabecera */}
-                        <div className="flex items-center justify-between mb-4 sm:mb-6">
-                          <div className="text-xs sm:text-sm text-white/90 font-medium bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
-                            {match.fecha} • {match.hora}
-                          </div>
-                          <div className="text-xs sm:text-sm text-white font-semibold bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full truncate max-w-[150px]">
-                            {match.fase}
-                          </div>
-                        </div>
+                {/* STATS BAR */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <div className="text-blue-600 flex justify-center mb-1"><Users size={24} /></div>
+                    <div className="text-2xl font-bold text-slate-800">2.4K</div>
+                    <div className="text-[10px] text-slate-500 uppercase font-bold">Usuarios</div>
+                  </div>
+                  <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <div className="text-blue-600 flex justify-center mb-1"><CheckCircle size={24} /></div>
+                    <div className="text-2xl font-bold text-slate-800">48K</div>
+                    <div className="text-[10px] text-slate-500 uppercase font-bold">Predicciones</div>
+                  </div>
+                  <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                    <div className="text-blue-600 flex justify-center mb-1"><Calendar size={24} /></div>
+                    <div className="text-2xl font-bold text-slate-800">104</div>
+                    <div className="text-[10px] text-slate-500 uppercase font-bold">Partidos</div>
+                  </div>
+                </div>
+              </div>
 
-                        {/* Enfrentamiento */}
-                        <div className="flex items-center justify-center gap-2 sm:gap-6 mb-4 sm:mb-6">
-                          <div className="text-center flex-1">
-                            <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.equipo_a}</div>
-                            {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_a}</div>}
-                          </div>
-                          <div className="text-white/80 font-bold text-xl sm:text-2xl px-2">
-                            {match.estado === 'finalizado' ? '-' : 'VS'}
-                          </div>
-                          <div className="text-center flex-1">
-                            <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.equipo_b}</div>
-                            {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_b}</div>}
-                          </div>
-                        </div>
-
-                        {/* Botones de pronóstico (Solo si no ha finalizado) */}
-                        {match.estado !== 'finalizado' && (
-                          <div className="flex gap-2 sm:gap-3">
-                            <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                              Local
-                            </button>
-                            <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                              Empate
-                            </button>
-                            <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                              Visita
-                            </button>
-                          </div>
-                        )}
-                        {match.estado === 'finalizado' && (
-                          <div className="text-center">
-                            <span className="bg-slate-800/80 text-white px-4 py-1 rounded-full text-xs font-bold border border-slate-600">Partido Finalizado</span>
-                          </div>
-                        )}
+              {/* COLUMNA DE WIDGETS (1/3 del espacio derecho) */}
+              <div className="space-y-6">
+                {/* CONTADOR REGRESIVO */}
+                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-lg p-5 text-white relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-transparent"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Clock className="text-yellow-400" size={18} />
+                      <h3 className="text-sm font-bold">Cuenta Regresiva</h3>
+                    </div>
+                    <div className="grid grid-cols-4 gap-1">
+                      <div className="bg-slate-800/50 rounded p-2 text-center border border-slate-700">
+                        <div className="text-lg font-bold text-yellow-400">{String(timeLeft.days).padStart(2, '0')}</div>
+                        <div className="text-[9px] text-slate-400">Días</div>
+                      </div>
+                      <div className="bg-slate-800/50 rounded p-2 text-center border border-slate-700">
+                        <div className="text-lg font-bold text-yellow-400">{String(timeLeft.hours).padStart(2, '0')}</div>
+                        <div className="text-[9px] text-slate-400">Hrs</div>
+                      </div>
+                      <div className="bg-slate-800/50 rounded p-2 text-center border border-slate-700">
+                        <div className="text-lg font-bold text-yellow-400">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                        <div className="text-[9px] text-slate-400">Min</div>
+                      </div>
+                      <div className="bg-slate-800/50 rounded p-2 text-center border border-slate-700">
+                        <div className="text-lg font-bold text-yellow-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                        <div className="text-[9px] text-slate-400">Seg</div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
-                    <p className="text-slate-500">No hay partidos destacados por el momento.</p>
                   </div>
-                )}
-              </div>
-            </div>
+                </div>
 
-            {/* STATS BAR */}
-            {/* RESPONSIVE: grid-cols-1 en móvil para apilar, grid-cols-3 en desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 text-center hover:border-blue-100 transition-colors">
-                <div className="text-blue-600 flex justify-center mb-2"><Users size={28} strokeWidth={1.5} /></div>
-                <div className="text-3xl font-bold text-slate-800">2,450</div>
-                <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Participantes</div>
-              </div>
-              <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 text-center hover:border-blue-100 transition-colors">
-                <div className="text-blue-600 flex justify-center mb-2"><CheckCircle size={28} strokeWidth={1.5} /></div>
-                <div className="text-3xl font-bold text-slate-800">48.5K</div>
-                <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Predicciones</div>
-              </div>
-              <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 text-center hover:border-blue-100 transition-colors">
-                <div className="text-blue-600 flex justify-center mb-2"><Calendar size={28} strokeWidth={1.5} /></div>
-                <div className="text-3xl font-bold text-slate-800">104</div>
-                <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Partidos</div>
+                {/* WIDGET RANKING */}
+                <div className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden">
+                  <div className="bg-slate-50 p-3 border-b border-slate-100 flex justify-between items-center">
+                    <h3 className="font-bold text-sm text-slate-800">Top Ranking</h3>
+                    <span className="text-[9px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                      LIVE
+                    </span>
+                  </div>
+                  <div className="divide-y divide-slate-50">
+                    {[
+                      { name: "Carlos M.", points: 156, rank: 1, color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
+                      { name: "Ana R.", points: 142, rank: 2, color: "bg-slate-100 text-slate-600 border-slate-200" },
+                      { name: "Luis P.", points: 138, rank: 3, color: "bg-orange-50 text-orange-700 border-orange-200" },
+                    ].map((user) => (
+                      <div key={user.rank} className="p-2 flex items-center gap-2 hover:bg-slate-50 transition-colors cursor-pointer group">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border ${user.color}`}>
+                          {user.rank <= 3 ? <Trophy size={10} /> : user.rank}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">{user.name}</p>
+                        </div>
+                        <span className="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[10px]">{user.points}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* WIDGET POZO */}
+                <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg p-4 text-white text-center relative overflow-hidden">
+                  <div className="relative z-10">
+                    <h3 className="text-sm font-bold mb-1">Pozo Acumulado</h3>
+                    <div className="text-2xl font-black text-yellow-300 drop-shadow-md mb-2">$50,000</div>
+                    <button className="w-full bg-white/20 hover:bg-white/30 text-white text-xs py-1.5 rounded-lg font-semibold transition-colors border border-white/30">
+                      Ver Premios
+                    </button>
+                  </div>
+                </div>
+
+                {/* CARD ADMIN */}
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:border-slate-300 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-slate-100 p-2 rounded-lg text-slate-600">
+                      <Shield size={16} />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-xs text-slate-900">Admin Access</h4>
+                      <button className="text-[10px] text-blue-600 font-bold hover:underline">Ingresar</button>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
             {/* CÓMO FUNCIONA */}
-            <div className="py-4">
+            <div className="py-4 border-t border-slate-100 pt-8">
               <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                 Cómo Funciona
               </h3>
@@ -360,231 +459,10 @@ function Home() {
               </div>
             </div>
 
-            {/* SISTEMA DE PUNTOS */}
-            <div>
-              <h3 className="text-xl font-bold text-slate-800 mb-6">Sistema de Puntos</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500 flex items-center gap-4 hover:shadow-md transition-shadow">
-                  <div className="bg-green-50 p-3 rounded-full text-green-600">
-                    <ArrowRight size={24} />
-                  </div>
-                  <div>
-                    <h4 className="text-2xl font-bold text-green-600">+1 Punto</h4>
-                    <p className="text-slate-600 font-medium text-sm">Por acertar el signo (Ganador o Empate)</p>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-yellow-500 flex items-center gap-4 hover:shadow-md transition-shadow">
-                  <div className="bg-yellow-50 p-3 rounded-full text-yellow-600">
-                    <Trophy size={24} />
-                  </div>
-                  <div>
-                    <h4 className="text-2xl font-bold text-yellow-600">+3 Puntos</h4>
-                    <p className="text-slate-600 font-medium text-sm">Por acertar el marcador exacto</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* SECCIÓN DE PREMIOS */}
-            <div>
-              <h3 className="text-xl font-bold text-slate-800 mb-6">Premios Increíbles</h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                {[
-                  {
-                    place: '1er Lugar',
-                    title: 'Viaje Todo Pagado',
-                    image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=2070&auto=format&fit=crop',
-                    description: 'Disfruta de un viaje inolvidable'
-                  },
-                  {
-                    place: '2do Lugar',
-                    title: 'Tech Pack',
-                    image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=2070&auto=format&fit=crop',
-                    description: 'iPhone, MacBook y más'
-                  },
-                  {
-                    place: '3er Lugar',
-                    title: 'Bono en Efectivo',
-                    image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=2070&auto=format&fit=crop',
-                    description: 'Dinero en efectivo'
-                  }
-                ].map((prize, idx) => (
-                  <div key={idx} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow group">
-                    <div className="relative h-40 overflow-hidden">
-                      <img
-                        src={prize.image}
-                        alt={prize.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      <div className="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                        {prize.place}
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <h4 className="font-bold text-slate-900 mb-1">{prize.title}</h4>
-                      <p className="text-sm text-slate-600">{prize.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* SECCIÓN DE REGLAS (MOVIDO AQUÍ) */}
             <div id="reglas" className="scroll-mt-24">
               <RulesSection />
             </div>
-
-          </div>
-
-          {/* === COLUMNA DERECHA (SIDEBAR) - Ocupa 2 de 10 partes (20%) === */}
-          <div className="lg:col-span-3 space-y-6">
-
-            {/* CONTADOR REGRESIVO */}
-            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-transparent"></div>
-              <div className="relative z-10">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <Clock className="text-yellow-400" size={20} />
-                  <h3 className="text-lg font-bold">Tiempo para el Mundial</h3>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-3 text-center">
-                    <div className="text-xl sm:text-2xl font-bold text-yellow-400">{String(timeLeft.days).padStart(2, '0')}</div>
-                    <div className="text-xs text-slate-400 mt-1">Días</div>
-                  </div>
-                  <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-3 text-center">
-                    <div className="text-xl sm:text-2xl font-bold text-yellow-400">{String(timeLeft.hours).padStart(2, '0')}</div>
-                    <div className="text-xs text-slate-400 mt-1">Horas</div>
-                  </div>
-                  <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-3 text-center">
-                    <div className="text-xl sm:text-2xl font-bold text-yellow-400">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                    <div className="text-xs text-slate-400 mt-1">Min</div>
-                  </div>
-                  <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-3 text-center">
-                    <div className="text-xl sm:text-2xl font-bold text-yellow-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                    <div className="text-xs text-slate-400 mt-1">Seg</div>
-                  </div>
-                </div>
-                <p className="text-center text-xs text-slate-400 mt-4">11 de Junio, 2026</p>
-              </div>
-            </div>
-
-            {/* WIDGET RANKING */}
-            <div className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden">
-              <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
-                <h3 className="font-bold text-slate-800">Ranking Global</h3>
-                <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                  EN VIVO
-                </span>
-              </div>
-              <div className="divide-y divide-slate-50">
-                {[
-                  { name: "Carlos M.", points: 156, rank: 1, color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-                  { name: "Ana R.", points: 142, rank: 2, color: "bg-slate-100 text-slate-600 border-slate-200" },
-                  { name: "Luis P.", points: 138, rank: 3, color: "bg-orange-50 text-orange-700 border-orange-200" },
-                  { name: "María G.", points: 129, rank: 4, color: "bg-white text-slate-500 border-slate-100" },
-                  { name: "Jorge S.", points: 124, rank: 5, color: "bg-white text-slate-500 border-slate-100" },
-                ].map((user) => (
-                  <div key={user.rank} className="p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer group">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${user.color}`}>
-                      {user.rank <= 3 ? <Trophy size={14} /> : user.rank}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">{user.name}</p>
-                      <p className="text-xs text-slate-400">{user.points - 20} aciertos</p>
-                    </div>
-                    <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">{user.points}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="p-3 text-center border-t border-slate-100 bg-slate-50/50">
-                <button className="text-xs text-blue-600 font-bold hover:text-blue-800 flex items-center justify-center gap-1 mx-auto transition-colors">
-                  Ver Ranking Completo <ArrowRight size={12} />
-                </button>
-              </div>
-            </div>
-
-            {/* WIDGET REGLAS (NUEVO) */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-              <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                <span className="text-xl">📜</span>
-                <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
-              </div>
-              <p className="text-sm text-slate-600 mb-4">
-                Conoce cómo sumar puntos y ganar premios increíbles.
-              </p>
-              <a
-                href="#reglas"
-                className="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-lg transition-colors text-sm"
-              >
-                Ver Reglamento
-              </a>
-            </div>
-
-            {/* WIDGET POZO */}
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg p-6 text-white text-center relative overflow-hidden ring-1 ring-blue-500/50">
-              {/* Decoración de fondo */}
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-blue-500 rounded-full opacity-30 blur-xl"></div>
-              <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-blue-800/50 to-transparent"></div>
-
-              <div className="relative z-10">
-                <div className="bg-blue-500/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 ring-4 ring-blue-400/20">
-                  <Trophy className="text-yellow-300 drop-shadow-md" size={32} fill="currentColor" />
-                </div>
-                <h3 className="text-lg font-bold mb-1">Pozo Acumulado</h3>
-                <p className="text-blue-100 text-xs mb-5 opacity-90">Compite por los premios</p>
-
-                <div className="flex justify-center gap-2 text-center">
-                  <div className="bg-blue-800/40 backdrop-blur border border-blue-500/30 p-2 rounded-lg flex-1">
-                    <div className="text-[10px] text-blue-200 font-medium uppercase">1º Lugar</div>
-                    <div className="font-bold text-yellow-300 text-lg">50%</div>
-                  </div>
-                  <div className="bg-blue-800/40 backdrop-blur border border-blue-500/30 p-2 rounded-lg flex-1">
-                    <div className="text-[10px] text-blue-200 font-medium uppercase">2º Lugar</div>
-                    <div className="font-bold text-slate-200 text-lg">30%</div>
-                  </div>
-                  <div className="bg-blue-800/40 backdrop-blur border border-blue-500/30 p-2 rounded-lg flex-1">
-                    <div className="text-[10px] text-blue-200 font-medium uppercase">3º Lugar</div>
-                    <div className="font-bold text-orange-300 text-lg">20%</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* CARD ADMIN */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:border-slate-300 transition-colors">
-              <div className="flex items-start gap-3">
-                <div className="bg-slate-100 p-2 rounded-lg text-slate-600">
-                  <Shield size={18} />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-sm text-slate-900">Admin Access</h4>
-                  <p className="text-xs text-slate-500 mt-0.5 mb-3">Gestión de resultados.</p>
-                  <button className="w-full py-1.5 border border-slate-300 rounded-md text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-700 transition-colors">
-                    Ingresar
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* TARJETA FINAL - ¿LISTO PARA COMPETIR? */}
-            <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="flex justify-center mb-4">
-                <div className="bg-blue-50 p-3 rounded-full">
-                  <Trophy className="text-blue-600" size={24} />
-                </div>
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">¿Listo para Competir?</h3>
-              <p className="text-sm text-slate-600 mb-4">
-                Únete ahora y demuestra tu conocimiento del fútbol mundialista.
-              </p>
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                Crear Cuenta Gratis
-              </button>
-            </div>
-
-
 
           </div>
         </div>
