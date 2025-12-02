@@ -24,7 +24,7 @@ function Home() {
 
   const [matches, setMatches] = useState([]);
   const [loadingMatches, setLoadingMatches] = useState(true);
-  const [topUsers, setTopUsers] = useState([]); // Estado para el ranking
+  const [topUsers, setTopUsers] = useState([]); // Inicializado vacío, sin datos falsos
 
   // Fetch de Partidos Destacados
   useEffect(() => {
@@ -48,7 +48,10 @@ function Home() {
         const res = await fetch(`${API_URL}/ranking`);
         if (res.ok) {
           const data = await res.json();
-          setTopUsers(data);
+          // Aseguramos que data sea un array antes de setearlo
+          if (Array.isArray(data)) {
+            setTopUsers(data);
+          }
         }
       } catch (error) {
         console.error("Error fetching ranking:", error);
@@ -66,13 +69,13 @@ function Home() {
       setTimeout(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
         setIsTransitioning(false);
-      }, 500); // Duración de la transición
-    }, 5000); // Cambiar cada 5 segundos
+      }, 500);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Efecto para la cuenta regresiva (Mundial 2026 - Fecha estimada Junio 2026)
+  // Efecto para la cuenta regresiva
   useEffect(() => {
     const calculateTimeLeft = () => {
       const difference = +new Date("2026-06-11") - +new Date();
@@ -117,13 +120,12 @@ function Home() {
       </nav>
 
       <main>
-        {/* HERO SECTION CON CARRUSEL */}
+        {/* HERO SECTION */}
         <div className="relative h-[500px] md:h-[600px] overflow-hidden bg-slate-900">
           {heroImages.map((img, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? 'opacity-60' : 'opacity-0'
-                }`}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? 'opacity-60' : 'opacity-0'}`}
             >
               <img src={img} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
             </div>
@@ -131,7 +133,7 @@ function Home() {
 
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/50"></div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-left items-left text-left">
             <span className="bg-blue-600/20 text-blue-300 border border-blue-500/30 px-4 py-1.5 rounded-full text-sm font-bold mb-6 backdrop-blur-sm animate-fade-in-down">
               🏆 La Copa del Mundo 2026
             </span>
@@ -153,14 +155,12 @@ function Home() {
           </div>
         </div>
 
-        {/* SECCIÓN PRINCIPAL: PARTIDOS Y SIDEBAR */}
+        {/* SECCIÓN PRINCIPAL */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
             {/* COLUMNA IZQUIERDA (2/3): PARTIDOS DESTACADOS */}
             <div className="lg:col-span-2 space-y-12">
-
-              {/* Título de Sección */}
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
                   <span className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Calendar size={24} /></span>
@@ -171,7 +171,6 @@ function Home() {
                 </Link>
               </div>
 
-              {/* Lista de Partidos */}
               <div className="space-y-6">
                 {loadingMatches ? (
                   <div className="flex justify-center py-10">
@@ -187,7 +186,6 @@ function Home() {
                         </span>
                       </div>
                       <div className="p-6 md:p-8 flex items-center justify-between">
-                        {/* Equipo A */}
                         <div className="flex flex-col items-center gap-3 w-1/3 group-hover:transform group-hover:scale-105 transition-transform duration-300">
                           {match.logo_a ? (
                             <img src={match.logo_a} alt={match.equipo_a} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg" />
@@ -197,7 +195,6 @@ function Home() {
                           <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight">{match.equipo_a}</h3>
                         </div>
 
-                        {/* VS / Marcador */}
                         <div className="flex flex-col items-center justify-center w-1/3">
                           {match.estado === 'finalizado' ? (
                             <div className="text-3xl md:text-5xl font-black text-slate-800 tracking-tighter">
@@ -213,7 +210,6 @@ function Home() {
                           </span>
                         </div>
 
-                        {/* Equipo B */}
                         <div className="flex flex-col items-center gap-3 w-1/3 group-hover:transform group-hover:scale-105 transition-transform duration-300">
                           {match.logo_b ? (
                             <img src={match.logo_b} alt={match.equipo_b} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg" />
@@ -233,11 +229,9 @@ function Home() {
                 )}
               </div>
 
-              {/* Banner Promocional */}
               <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
-
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                   <div>
                     <h3 className="text-2xl md:text-3xl font-bold mb-2">¡Únete a la Competencia!</h3>
@@ -248,11 +242,119 @@ function Home() {
                   </Link>
                 </div>
               </div>
-
             </div>
 
             {/* COLUMNA DERECHA (1/3): SIDEBAR */}
             <div className="space-y-8">
+
+
+
+              {/* WIDGET: CUENTA REGRESIVA */}
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-lg p-6 text-white border border-slate-700/50">
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock className="text-yellow-400" size={20} />
+                  <h3 className="font-bold text-lg">Cuenta Regresiva</h3>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
+                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.days).padStart(2, '0')}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold">Días</div>
+                  </div>
+                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
+                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.hours).padStart(2, '0')}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold">Hrs</div>
+                  </div>
+                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
+                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold">Min</div>
+                  </div>
+                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
+                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold">Seg</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* WIDGET: TOP RANKING (REAL DATA ONLY) */}
+              <div className="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
+                <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
+                  <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                    <Trophy size={16} className="text-yellow-500" /> Top Ranking
+                  </h3>
+                  <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    LIVE
+                  </span>
+                </div>
+                <div className="divide-y divide-slate-50">
+                  {topUsers.length > 0 ? (
+                    topUsers.slice(0, 5).map((user, index) => {
+                      // Colores de ranking (1, 2, 3)
+                      let rankColor = "bg-slate-100 text-slate-600 border-slate-200";
+                      if (index === 0) rankColor = "bg-yellow-100 text-yellow-700 border-yellow-200";
+                      if (index === 1) rankColor = "bg-slate-100 text-slate-600 border-slate-200"; // Plata
+                      if (index === 2) rankColor = "bg-orange-50 text-orange-700 border-orange-200";
+
+                      return (
+                        <div key={user.id || index} className="p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer group">
+
+                          {/* Columna POSICIÓN */}
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${rankColor}`}>
+                            {index < 3 ? <Trophy size={14} /> : index + 1}
+                          </div>
+
+                          {/* Columna USUARIO */}
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
+                              {user.nombre || user.name || 'Usuario'}
+                            </p>
+                          </div>
+
+                          {/* Columna ACIERTOS (Agregada para coincidir con Ranking.jsx) */}
+                          <div className="text-right mr-2">
+                            <span className="block text-xs font-bold text-slate-700">
+                              {user.aciertos !== undefined ? user.aciertos : 0}
+                            </span>
+                            <span className="text-[9px] text-slate-400 uppercase">Aciertos</span>
+                          </div>
+
+                          {/* Columna PUNTOS */}
+                          <div className="text-right min-w-[50px]">
+                            <span className="block font-bold text-blue-600 text-sm">
+                              {user.puntos !== undefined ? user.puntos : 0}
+                            </span>
+                            <span className="text-[9px] text-blue-400 uppercase font-bold">Pts</span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="p-6 text-center text-slate-400 text-sm">
+                      <Loader size={20} className="animate-spin mx-auto mb-2" />
+                      Esperando datos del ranking...
+                    </div>
+                  )}
+                </div>
+                <div className="p-3 text-center border-t border-slate-100 bg-slate-50/50">
+                  <Link to="/login" className="text-xs text-blue-600 font-bold hover:text-blue-800 flex items-center justify-center gap-1 mx-auto transition-colors">
+                    Ver Ranking Completo <ArrowRight size={12} />
+                  </Link>
+                </div>
+              </div>
+
+              {/* WIDGET: REGLAS */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
+                  <span className="text-2xl">📜</span>
+                  <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
+                </div>
+                <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+                  Conoce cómo sumar puntos, las reglas de desempate y gana premios increíbles.
+                </p>
+                <a href="#reglas" className="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors text-sm">
+                  Ver Reglamento
+                </a>
+              </div>
 
               {/* WIDGET: PATROCINADORES */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
@@ -260,22 +362,14 @@ function Home() {
                   <span className="text-yellow-500">★</span> Patrocinadores Oficiales
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {/* Sponsor 1: Nike */}
                   <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <img src="/img/nike.jpg" alt="Nike" className="w-full h-full object-cover relative z-10" />
                   </div>
-
-                  {/* Sponsor 2: Adidas */}
                   <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <img src="/img/adidas.jpg" alt="Adidas" className="w-full h-full object-cover relative z-10" />
                   </div>
-
-                  {/* Sponsor 3: Coca-Cola (Full Width) */}
                   <div className="col-span-2 group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <img src="/img/cocacola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
+                    <img src="/img/coca-cola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
                   </div>
                 </div>
               </div>
@@ -305,104 +399,11 @@ function Home() {
                 </div>
               </div>
 
-              {/* WIDGET: CUENTA REGRESIVA */}
-              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-lg p-6 text-white border border-slate-700/50">
-                <div className="flex items-center gap-2 mb-4">
-                  <Clock className="text-yellow-400" size={20} />
-                  <h3 className="font-bold text-lg">Cuenta Regresiva</h3>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
-                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.days).padStart(2, '0')}</div>
-                    <div className="text-[10px] text-slate-400 uppercase font-bold">Días</div>
-                  </div>
-                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
-                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.hours).padStart(2, '0')}</div>
-                    <div className="text-[10px] text-slate-400 uppercase font-bold">Hrs</div>
-                  </div>
-                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
-                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                    <div className="text-[10px] text-slate-400 uppercase font-bold">Min</div>
-                  </div>
-                  <div className="bg-slate-950/50 rounded-lg p-2 text-center border border-slate-700">
-                    <div className="text-xl font-bold text-yellow-400 font-mono">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                    <div className="text-[10px] text-slate-400 uppercase font-bold">Seg</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* WIDGET: TOP RANKING (REAL DATA) */}
-              <div className="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
-                <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
-                  <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                    <Trophy size={16} className="text-yellow-500" /> Top Ranking
-                  </h3>
-                  <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                    LIVE
-                  </span>
-                </div>
-                <div className="divide-y divide-slate-50">
-                  {topUsers.length > 0 ? (
-                    topUsers.slice(0, 5).map((user, index) => {
-                      // Asignar colores según el ranking (1, 2, 3)
-                      let rankColor = "bg-slate-100 text-slate-600 border-slate-200";
-                      if (index === 0) rankColor = "bg-yellow-100 text-yellow-700 border-yellow-200";
-                      if (index === 1) rankColor = "bg-slate-100 text-slate-600 border-slate-200"; // Plata
-                      if (index === 2) rankColor = "bg-orange-50 text-orange-700 border-orange-200";
-
-                      return (
-                        <div key={user.id || index} className="p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer group">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${rankColor}`}>
-                            {index < 3 ? <Trophy size={14} /> : index + 1}
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
-                              {user.nombre || user.name || 'Usuario'}
-                            </p>
-                          </div>
-                          <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg text-xs">
-                            {user.puntos} pts
-                          </span>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="p-6 text-center text-slate-400 text-sm">
-                      <Loader size={20} className="animate-spin mx-auto mb-2" />
-                      Cargando ranking...
-                    </div>
-                  )}
-                </div>
-                <div className="p-3 text-center border-t border-slate-100 bg-slate-50/50">
-                  <Link to="/login" className="text-xs text-blue-600 font-bold hover:text-blue-800 flex items-center justify-center gap-1 mx-auto transition-colors">
-                    Ver Ranking Completo <ArrowRight size={12} />
-                  </Link>
-                </div>
-              </div>
-
-              {/* WIDGET: REGLAS */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
-                  <span className="text-2xl">📜</span>
-                  <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
-                </div>
-                <p className="text-sm text-slate-600 mb-4 leading-relaxed">
-                  Conoce cómo sumar puntos, las reglas de desempate y gana premios increíbles.
-                </p>
-                <a
-                  href="#reglas"
-                  className="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors text-sm"
-                >
-                  Ver Reglamento
-                </a>
-              </div>
-
             </div>
           </div>
         </div>
 
-        {/* SECCIÓN CÓMO FUNCIONA */}
+        {/* CÓMO FUNCIONA */}
         <div id="como-funciona" className="bg-white py-16 md:py-24 border-t border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
@@ -410,7 +411,6 @@ function Home() {
               <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">¿Cómo Funciona?</h2>
               <p className="text-slate-500 max-w-2xl mx-auto text-lg">Es muy fácil participar y ganar. Solo sigue estos 3 simples pasos.</p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
               <div className="text-center group">
                 <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300 shadow-sm group-hover:shadow-blue-200 group-hover:shadow-xl transform group-hover:-translate-y-2">
