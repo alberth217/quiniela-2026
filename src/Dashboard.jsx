@@ -382,6 +382,201 @@ function Dashboard() {
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 Entendido, ¡A Jugar!
+                <span>Tickets: 1/2</span>
+            </div>
+          </div>
+
+          <div className="mb-6 text-center md:text-left">
+            <h1 className="text-2xl font-bold text-slate-900">Partidos Disponibles</h1>
+            <p className="text-slate-500 text-sm">Completa tu quiniela y guarda los cambios.</p>
+          </div>
+
+          {/* FILTROS */}
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-2.5 text-slate-400" size={20} />
+              <input
+                type="text"
+                placeholder="Buscar equipos (Ej: Brasil)..."
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+              {['Todos', 'Fase de Grupos', 'Octavos', 'Cuartos', 'Semifinal', 'Final'].map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilterStage(f)}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap border transition-colors ${filterStage === f ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'}`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* LAYOUT GRID: PARTIDOS + SIDEBAR */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            {/* COLUMNA PRINCIPAL (PARTIDOS) */}
+            <div className="lg:col-span-3">
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                  <Loader size={40} className="animate-spin mb-4 text-blue-600" />
+                  <p>Cargando datos...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredMatches.length > 0 ? (
+                    filteredMatches.map((match) => {
+                      const existingPrediction = userPredictions.find(p => p.partido_id === match.id);
+                      // Si hay un cambio local sin guardar, lo usamos para la UI
+                      const unsaved = unsavedPredictions[match.id];
+
+                      return (
+                        <MatchCard
+                          key={match.id}
+                          match={match}
+                          existingPrediction={existingPrediction}
+                          unsavedPrediction={unsaved}
+                          onChange={handlePredictionChange}
+                        />
+                      );
+                    })
+                  ) : (
+                    <div className="col-span-full text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
+                      <p className="text-slate-500">No se encontraron partidos con esos filtros.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* SIDEBAR (RANKING + REGLAS) */}
+            <div className="hidden lg:block lg:col-span-1 space-y-6">
+
+              {/* WIDGET RANKING (Copiado de Home para consistencia) */}
+              <div className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden">
+                <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
+                  <h3 className="font-bold text-slate-800">Ranking Global</h3>
+                  <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    EN VIVO
+                  </span>
+                </div>
+                <div className="divide-y divide-slate-50">
+                  {[
+                    { name: "Carlos M.", points: 156, rank: 1, color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
+                    { name: "Ana R.", points: 142, rank: 2, color: "bg-slate-100 text-slate-600 border-slate-200" },
+                    { name: "Luis P.", points: 138, rank: 3, color: "bg-orange-50 text-orange-700 border-orange-200" },
+                  ].map((user) => (
+                    <div key={user.rank} className="p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer group">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${user.color}`}>
+                        {user.rank <= 3 ? <Trophy size={14} /> : user.rank}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">{user.name}</p>
+                      </div>
+                      <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">{user.points}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-3 text-center border-t border-slate-100 bg-slate-50/50">
+                  <Link to="/ranking" className="text-xs text-blue-600 font-bold hover:text-blue-800 flex items-center justify-center gap-1 mx-auto transition-colors">
+                    Ver Ranking Completo
+                  </Link>
+                </div>
+              </div>
+
+              {/* WIDGET REGLAS (MOVIDO AQUÍ) */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sticky top-24">
+                <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
+                  <span className="text-xl">📜</span>
+                  <h3 className="font-bold text-slate-800">Reglas del Juego</h3>
+                </div>
+                <p className="text-sm text-slate-600 mb-4">
+                  ¿Tienes dudas sobre cómo sumar puntos? Revisa el reglamento completo.
+                </p>
+                <Link
+                  to="/"
+                  className="block w-full text-center bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2 rounded-lg transition-colors text-sm"
+                >
+                  Ver Reglamento
+                </Link>
+              </div>
+            </div>
+
+          </div>
+
+          {/* SECCIÓN DE REGLAS (MÓVIL O EXTRA) */}
+          <div className="mt-8 lg:hidden">
+            <RulesSection />
+          </div>
+        </main>
+
+      {/* BOTÓN FLOTANTE DE GUARDADO */}
+      {hasUnsavedChanges && (
+        <div className="fixed bottom-20 md:bottom-8 left-1/2 transform -translate-x-1/2 z-50 animate-bounce-in">
+          <button
+            onClick={handleBatchSave}
+            disabled={savingBatch}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full shadow-lg font-bold flex items-center gap-2 transition-all hover:scale-105"
+          >
+            {savingBatch ? <Loader size={20} className="animate-spin" /> : <Save size={20} />}
+            Guardar Quiniela ({Object.keys(unsavedPredictions).length} cambios)
+          </button>
+        </div>
+      )}
+
+      {/* MODAL DE BIENVENIDA */}
+      {showWelcomeModal && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in-up relative">
+            <button
+              onClick={() => setShowWelcomeModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="text-center mb-6">
+              <img src="/img/logo.png" alt="Logo Quiniela" className="h-20 mx-auto mb-4 object-contain" />
+              <h3 className="text-2xl font-bold text-slate-900">¡Bienvenido a la Quiniela!</h3>
+              <p className="text-slate-500 text-sm mt-1">Prepárate para el Mundial 2026</p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-4">
+                <div className="bg-white p-2 rounded-full shadow-sm text-blue-600">
+                  <Ticket size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-blue-900">Costo del Ticket: $25 USD</h4>
+                  <p className="text-xs text-blue-700 font-medium mt-0.5">Fase de Grupos</p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex items-start gap-4">
+                <div className="bg-white p-2 rounded-full shadow-sm text-yellow-600">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-yellow-900">Regla Importante</h4>
+                  <p className="text-xs text-yellow-700 font-medium mt-0.5">Máximo 2 Tickets por usuario.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <p className="text-xs text-slate-400 mb-4">
+                * Siguiente Fase: Costo adicional aplicable.
+              </p>
+              <button
+                onClick={() => setShowWelcomeModal(false)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Entendido, ¡A Jugar!
               </button>
             </div>
           </div>
@@ -391,28 +586,22 @@ function Dashboard() {
   );
 }
 
-// --- COMPONENTE TARJETA (Sin Botón Guardar) ---
+// --- COMPONENTE TARJETA (Solo Marcador) ---
 function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
   // Prioridad: 1. Cambio local (unsaved), 2. Guardado en BD (existing), 3. Default
   const currentData = unsavedPrediction || existingPrediction || {};
 
-  const initialType = currentData.tipo_prediccion || '1X2';
-
   // Parsear marcador
   let initialScoreA = '';
   let initialScoreB = '';
-  if (initialType === 'Marcador' && currentData.seleccion) {
+  if (currentData.seleccion) {
     const parts = currentData.seleccion.split('-');
     if (parts.length === 2) {
       initialScoreA = parts[0];
       initialScoreB = parts[1];
     }
-  } else if (initialType === '1X2') {
-    // No hay marcador
   }
 
-  const [predictionType, setPredictionType] = useState(initialType);
-  const [selection, setSelection] = useState(currentData.seleccion || null);
   const [scoreA, setScoreA] = useState(initialScoreA);
   const [scoreB, setScoreB] = useState(initialScoreB);
 
@@ -421,33 +610,23 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
     let valorPrediccion = '';
     let isValid = false;
 
-    if (predictionType === '1X2') {
-      if (selection) {
-        valorPrediccion = selection;
-        isValid = true;
-      }
-    } else {
-      if (scoreA !== '' && scoreB !== '') {
-        valorPrediccion = `${scoreA}-${scoreB}`;
-        isValid = true;
-      }
+    if (scoreA !== '' && scoreB !== '') {
+      valorPrediccion = `${scoreA}-${scoreB}`;
+      isValid = true;
     }
 
     // Solo notificamos si es válido y diferente a lo que ya estaba guardado en BD
-    // O si es un cambio sobre un cambio anterior
     if (isValid) {
-      // Comparamos con lo que hay en BD para no marcar como "cambio" si es igual
-      const dbType = existingPrediction?.tipo_prediccion;
       const dbSel = existingPrediction?.seleccion;
 
-      if (predictionType !== dbType || valorPrediccion !== dbSel) {
+      if (valorPrediccion !== dbSel) {
         onChange(match.id, {
-          tipo_prediccion: predictionType,
+          tipo_prediccion: 'Marcador', // Siempre es marcador ahora
           seleccion: valorPrediccion
         });
       }
     }
-  }, [predictionType, selection, scoreA, scoreB]); // Dependencias
+  }, [scoreA, scoreB]); // Dependencias
 
   const isFinalized = match.estado === 'finalizado';
 
@@ -461,13 +640,13 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
       </div>
 
       <div className="p-5">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           {/* Equipo A */}
           <div className="flex flex-col items-center gap-2 w-1/3">
             {match.logo_a ? (
-              <img src={match.logo_a} alt={match.equipo_a} className="h-12 w-12 object-contain drop-shadow-sm" />
+              <img src={match.logo_a} alt={match.equipo_a} className="h-12 w-12 object-contain drop-shadow-sm mx-auto" />
             ) : (
-              <Shield size={32} className="text-slate-300" />
+              <Shield size={32} className="text-slate-300 mx-auto" />
             )}
             <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_a}</h3>
           </div>
@@ -485,9 +664,9 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
           {/* Equipo B */}
           <div className="flex flex-col items-center gap-2 w-1/3">
             {match.logo_b ? (
-              <img src={match.logo_b} alt={match.equipo_b} className="h-12 w-12 object-contain drop-shadow-sm" />
+              <img src={match.logo_b} alt={match.equipo_b} className="h-12 w-12 object-contain drop-shadow-sm mx-auto" />
             ) : (
-              <Shield size={32} className="text-slate-300" />
+              <Shield size={32} className="text-slate-300 mx-auto" />
             )}
             <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_b}</h3>
           </div>
@@ -498,73 +677,30 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
           <span className="flex items-center gap-1"><Clock size={12} /> {match.hora}</span>
         </div>
 
-        {/* CONTROLES DE PREDICCIÓN */}
+        {/* CONTROLES DE PREDICCIÓN (SOLO MARCADOR) */}
         {!isFinalized ? (
-          <div className="space-y-4">
-            {/* Selector de Tipo */}
-            <div className="flex bg-slate-100 p-1 rounded-lg">
-              <button
-                onClick={() => setPredictionType('1X2')}
-                className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${predictionType === '1X2' ? 'bg-white shadow text-blue-600' : 'text-slate-500'}`}
-              >
-                Ganador
-              </button>
-              <button
-                onClick={() => setPredictionType('Marcador')}
-                className={`flex-1 py-1 text-xs font-bold rounded-md transition-all ${predictionType === 'Marcador' ? 'bg-white shadow text-blue-600' : 'text-slate-500'}`}
-              >
-                Marcador
-              </button>
-            </div>
-
-            {predictionType === '1X2' ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setSelection('1')}
-                  className={`flex-1 py-2 rounded-lg border text-sm font-bold transition-all ${selection === '1' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'}`}
-                >
-                  1
-                </button>
-                <button
-                  onClick={() => setSelection('X')}
-                  className={`flex-1 py-2 rounded-lg border text-sm font-bold transition-all ${selection === 'X' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'}`}
-                >
-                  X
-                </button>
-                <button
-                  onClick={() => setSelection('2')}
-                  className={`flex-1 py-2 rounded-lg border text-sm font-bold transition-all ${selection === '2' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'}`}
-                >
-                  2
-                </button>
-              </div>
-            ) : (
-              <div className="flex justify-center items-center gap-3">
-                <input
-                  type="number"
-                  value={scoreA}
-                  onChange={(e) => setScoreA(e.target.value)}
-                  className="w-12 h-10 text-center border border-slate-200 rounded-lg font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="-"
-                />
-                <span className="font-bold text-slate-300">-</span>
-                <input
-                  type="number"
-                  value={scoreB}
-                  onChange={(e) => setScoreB(e.target.value)}
-                  className="w-12 h-10 text-center border border-slate-200 rounded-lg font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="-"
-                />
-              </div>
-            )}
+          <div className="flex justify-center items-center gap-3">
+            <input
+              type="number"
+              value={scoreA}
+              onChange={(e) => setScoreA(e.target.value)}
+              className="w-14 h-12 text-center border border-slate-200 rounded-lg font-bold text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+              placeholder="-"
+            />
+            <span className="font-bold text-slate-300">-</span>
+            <input
+              type="number"
+              value={scoreB}
+              onChange={(e) => setScoreB(e.target.value)}
+              className="w-14 h-12 text-center border border-slate-200 rounded-lg font-bold text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+              placeholder="-"
+            />
           </div>
         ) : (
           <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-100">
             <p className="text-xs text-slate-500 mb-1">Tu predicción:</p>
-            <p className="font-bold text-slate-800">
-              {existingPrediction ? (
-                existingPrediction.tipo_prediccion === '1X2' ? `Ganador: ${existingPrediction.seleccion}` : `Marcador: ${existingPrediction.seleccion}`
-              ) : 'Sin predicción'}
+            <p className="font-bold text-slate-800 text-lg">
+              {existingPrediction ? existingPrediction.seleccion : '-'}
             </p>
           </div>
         )}

@@ -248,9 +248,8 @@ function Home() {
             {/* GRID INTERNO PARA WIDGETS Y PARTIDOS */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-              {/* COLUMNA DE PARTIDOS (2/3 del espacio derecho) */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* SECCIÓN PRÓXIMOS PARTIDOS */}
+              {/* COLUMNA DE PARTIDOS (2/3) */}
+              <div className="lg:col-span-2 space-y-6">
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <Calendar className="text-blue-600" size={24} />
@@ -263,68 +262,70 @@ function Home() {
                       </div>
                     ) : matches.length > 0 ? (
                       matches.map((match, idx) => (
-                        <div key={match.id || idx} className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group bg-slate-900">
-                          {/* Imagen de fondo (Placeholder o dinámica si hubiera) */}
-                          <img
-                            src={`/img/hero${(idx % 3) + 1}.jpg`} // Fallback a imágenes locales rotativas
-                            alt={`${match.equipo_a} vs ${match.equipo_b}`}
-                            className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
-                          />
+                        <div key={match.id || idx} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all">
+                          {/* Cabecera */}
+                          <div className="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-full border border-blue-100">
+                              {match.fase || match.stage}
+                            </span>
+                            <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
+                              {match.fecha} • {match.hora}
+                            </span>
+                          </div>
 
-                          {/* Contenido */}
-                          <div className="relative z-10 p-4 sm:p-6">
-                            {/* Cabecera */}
-                            <div className="flex items-center justify-between mb-4 sm:mb-6">
-                              <div className="text-xs sm:text-sm text-white/90 font-medium bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
-                                {match.fecha} • {match.hora}
-                              </div>
-                              <div className="text-xs sm:text-sm text-white font-semibold bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full truncate max-w-[150px]">
-                                {match.fase}
-                              </div>
-                            </div>
-
-                            {/* Enfrentamiento */}
-                            <div className="flex items-center justify-center gap-2 sm:gap-6 mb-4 sm:mb-6">
-                              <div className="text-center flex-1 flex flex-col items-center gap-2">
+                          <div className="p-5">
+                            <div className="flex justify-between items-center mb-4">
+                              {/* Equipo A */}
+                              <div className="flex flex-col items-center gap-2 w-1/3">
                                 {match.logo_a ? (
-                                  <img src={match.logo_a} alt={match.equipo_a} className="h-12 w-12 object-contain drop-shadow-md" />
+                                  <img src={match.logo_a} alt={match.equipo_a} className="h-12 w-12 object-contain drop-shadow-sm mx-auto" />
                                 ) : (
-                                  <Shield size={40} className="text-slate-300" />
+                                  <Shield size={32} className="text-slate-300 mx-auto" />
                                 )}
-                                <div className="text-lg sm:text-xl font-bold text-white drop-shadow-lg truncate w-full">{match.equipo_a}</div>
-                                {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_a}</div>}
+                                <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_a}</h3>
                               </div>
-                              <div className="text-white/80 font-bold text-xl sm:text-2xl px-2">
-                                {match.estado === 'finalizado' ? '-' : 'VS'}
+
+                              {/* VS / Marcador */}
+                              <div className="text-center w-1/3 flex flex-col items-center justify-center">
+                                <span className="text-xs text-slate-400 font-bold mb-1">VS</span>
+                                {match.estado === 'finalizado' && (
+                                  <div className="text-xl font-black text-slate-800 tracking-widest">
+                                    {match.goles_a} - {match.goles_b}
+                                  </div>
+                                )}
                               </div>
-                              <div className="text-center flex-1 flex flex-col items-center gap-2">
+
+                              {/* Equipo B */}
+                              <div className="flex flex-col items-center gap-2 w-1/3">
                                 {match.logo_b ? (
-                                  <img src={match.logo_b} alt={match.equipo_b} className="h-12 w-12 object-contain drop-shadow-md" />
+                                  <img src={match.logo_b} alt={match.equipo_b} className="h-12 w-12 object-contain drop-shadow-sm mx-auto" />
                                 ) : (
-                                  <Shield size={40} className="text-slate-300" />
+                                  <Shield size={32} className="text-slate-300 mx-auto" />
                                 )}
-                                <div className="text-lg sm:text-xl font-bold text-white drop-shadow-lg truncate w-full">{match.equipo_b}</div>
-                                {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_b}</div>}
+                                <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_b}</h3>
                               </div>
                             </div>
 
-                            {/* Botones de pronóstico (Solo si no ha finalizado) */}
-                            {match.estado !== 'finalizado' && (
-                              <div className="flex gap-2 sm:gap-3">
-                                <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                                  Local
-                                </button>
-                                <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                                  Empate
-                                </button>
-                                <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                                  Visita
-                                </button>
+                            {/* Inputs (Visual Only for Home) */}
+                            {match.estado !== 'finalizado' ? (
+                              <div className="flex justify-center items-center gap-3">
+                                <input
+                                  type="number"
+                                  disabled
+                                  className="w-14 h-12 text-center border border-slate-200 rounded-lg font-bold text-xl bg-slate-50 text-slate-400 cursor-not-allowed"
+                                  placeholder="-"
+                                />
+                                <span className="font-bold text-slate-300">-</span>
+                                <input
+                                  type="number"
+                                  disabled
+                                  className="w-14 h-12 text-center border border-slate-200 rounded-lg font-bold text-xl bg-slate-50 text-slate-400 cursor-not-allowed"
+                                  placeholder="-"
+                                />
                               </div>
-                            )}
-                            {match.estado === 'finalizado' && (
+                            ) : (
                               <div className="text-center">
-                                <span className="bg-slate-800/80 text-white px-4 py-1 rounded-full text-xs font-bold border border-slate-600">Partido Finalizado</span>
+                                <span className="bg-slate-100 text-slate-500 px-4 py-1 rounded-full text-xs font-bold border border-slate-200">Finalizado</span>
                               </div>
                             )}
                           </div>
@@ -336,31 +337,32 @@ function Home() {
                       </div>
                     )}
                   </div>
-                </div>
 
-                {/* STATS BAR */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
-                    <div className="text-blue-600 flex justify-center mb-1"><Users size={24} /></div>
-                    <div className="text-2xl font-bold text-slate-800">2.4K</div>
-                    <div className="text-[10px] text-slate-500 uppercase font-bold">Usuarios</div>
-                  </div>
-                  <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
-                    <div className="text-blue-600 flex justify-center mb-1"><CheckCircle size={24} /></div>
-                    <div className="text-2xl font-bold text-slate-800">48K</div>
-                    <div className="text-[10px] text-slate-500 uppercase font-bold">Predicciones</div>
-                  </div>
-                  <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
-                    <div className="text-blue-600 flex justify-center mb-1"><Calendar size={24} /></div>
-                    <div className="text-2xl font-bold text-slate-800">104</div>
-                    <div className="text-[10px] text-slate-500 uppercase font-bold">Partidos</div>
+                  {/* STATS BAR */}
+                  <div className="grid grid-cols-3 gap-4 mt-8">
+                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                      <div className="text-blue-600 flex justify-center mb-1"><Users size={24} /></div>
+                      <div className="text-2xl font-bold text-slate-800">2.4K</div>
+                      <div className="text-[10px] text-slate-500 uppercase font-bold">Usuarios</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                      <div className="text-blue-600 flex justify-center mb-1"><CheckCircle size={24} /></div>
+                      <div className="text-2xl font-bold text-slate-800">48K</div>
+                      <div className="text-[10px] text-slate-500 uppercase font-bold">Predicciones</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
+                      <div className="text-blue-600 flex justify-center mb-1"><Calendar size={24} /></div>
+                      <div className="text-2xl font-bold text-slate-800">104</div>
+                      <div className="text-[10px] text-slate-500 uppercase font-bold">Partidos</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* COLUMNA DE WIDGETS (1/3 del espacio derecho) */}
+              {/* COLUMNA DE WIDGETS (1/3) */}
               <div className="space-y-6">
-                {/* CONTADOR REGRESIVO */}
+
+                {/* WIDGET CUENTA REGRESIVA */}
                 <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-lg p-5 text-white relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-transparent"></div>
                   <div className="relative z-10">
@@ -417,7 +419,7 @@ function Home() {
                   </div>
                 </div>
 
-                {/* WIDGET REGLAS (NUEVO) */}
+                {/* WIDGET REGLAS */}
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
                   <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
                     <span className="text-xl">📜</span>
