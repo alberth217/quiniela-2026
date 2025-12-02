@@ -450,35 +450,22 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
           {/* Equipo A */}
           <div className="flex flex-col items-center gap-2 w-1/3">
             {match.logo_a ? (
-              <img src={match.logo_a} alt={match.equipo_a} className="h-12 w-12 object-contain drop-shadow-sm mx-auto" />
+              <img src={match.logo_a} alt={match.equipo_a} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-md mx-auto" />
             ) : (
-              <Shield size={32} className="text-slate-300 mx-auto" />
+              <Shield size={64} className="text-slate-300 mx-auto" />
             )}
-            <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_a}</h3>
+            <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight mt-2">{match.equipo_a}</h3>
           </div>
 
           {/* VS / Marcador */}
           <div className="text-center w-1/3 flex flex-col items-center justify-center">
             <span className="text-xs text-slate-400 font-bold mb-1">VS</span>
             {match.estado === 'finalizado' && (
-              <div className="text-xl font-black text-slate-800 tracking-widest">
+              <div className="text-3xl font-black text-slate-800 tracking-widest">
                 {match.goles_a} - {match.goles_b}
               </div>
             )}
           </div>
-
-          {/* Equipo B */}
-          <div className="flex flex-col items-center gap-2 w-1/3">
-            {match.logo_b ? (
-              <img src={match.logo_b} alt={match.equipo_b} className="h-12 w-12 object-contain drop-shadow-sm mx-auto" />
-            ) : (
-              <Shield size={32} className="text-slate-300 mx-auto" />
-            )}
-            <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_b}</h3>
-          </div>
-        </div>
-
-        <div className="flex justify-center gap-4 text-xs text-slate-400 mb-6">
           <span className="flex items-center gap-1"><Calendar size={12} /> {match.fecha}</span>
           <span className="flex items-center gap-1"><Clock size={12} /> {match.hora}</span>
         </div>

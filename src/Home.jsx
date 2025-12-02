@@ -155,19 +155,19 @@ function Home() {
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 text-center">Patrocinadores Oficiales</h3>
               <div className="space-y-6">
                 {/* Sponsor 1: Nike */}
-                <div className="group relative bg-white rounded-xl p-4 flex items-center justify-center border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <img src="/img/nike.jpg" alt="Nike" className="max-h-20 max-w-full object-contain relative z-10 mix-blend-multiply" />
+                  <img src="/img/nike.jpg" alt="Nike" className="w-full h-full object-cover relative z-10" />
                 </div>
                 {/* Sponsor 2: Adidas */}
-                <div className="group relative bg-white rounded-xl p-4 flex items-center justify-center border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <img src="/img/adidas.jpg" alt="Adidas" className="max-h-20 max-w-full object-contain relative z-10 mix-blend-multiply" />
+                  <img src="/img/adidas.jpg" alt="Adidas" className="w-full h-full object-cover relative z-10" />
                 </div>
                 {/* Sponsor 3: Coca-Cola */}
-                <div className="group relative bg-white rounded-xl p-4 flex items-center justify-center border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <img src="/img/coca-cola.jpg" alt="Coca-Cola" className="max-h-20 max-w-full object-contain relative z-10 mix-blend-multiply" />
+                  <img src="/img/coca-cola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
                 </div>
 
                 {/* Banner Call to Action */}
@@ -278,18 +278,18 @@ function Home() {
                               {/* Equipo A */}
                               <div className="flex flex-col items-center gap-2 w-1/3">
                                 {match.logo_a ? (
-                                  <img src={match.logo_a} alt={match.equipo_a} className="h-12 w-12 object-contain drop-shadow-sm mx-auto" />
+                                  <img src={match.logo_a} alt={match.equipo_a} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-md mx-auto" />
                                 ) : (
-                                  <Shield size={32} className="text-slate-300 mx-auto" />
+                                  <Shield size={64} className="text-slate-300 mx-auto" />
                                 )}
-                                <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_a}</h3>
+                                <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight mt-2">{match.equipo_a}</h3>
                               </div>
 
                               {/* VS / Marcador */}
                               <div className="text-center w-1/3 flex flex-col items-center justify-center">
-                                <span className="text-xs text-slate-400 font-bold mb-1">VS</span>
+                                <span className="text-xs text-slate-400 font-bold mb-2">VS</span>
                                 {match.estado === 'finalizado' && (
-                                  <div className="text-xl font-black text-slate-800 tracking-widest">
+                                  <div className="text-3xl font-black text-slate-800 tracking-widest">
                                     {match.goles_a} - {match.goles_b}
                                   </div>
                                 )}
@@ -298,11 +298,11 @@ function Home() {
                               {/* Equipo B */}
                               <div className="flex flex-col items-center gap-2 w-1/3">
                                 {match.logo_b ? (
-                                  <img src={match.logo_b} alt={match.equipo_b} className="h-12 w-12 object-contain drop-shadow-sm mx-auto" />
+                                  <img src={match.logo_b} alt={match.equipo_b} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-md mx-auto" />
                                 ) : (
-                                  <Shield size={32} className="text-slate-300 mx-auto" />
+                                  <Shield size={64} className="text-slate-300 mx-auto" />
                                 )}
-                                <h3 className="font-bold text-slate-800 text-sm md:text-base text-center leading-tight">{match.equipo_b}</h3>
+                                <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight mt-2">{match.equipo_b}</h3>
                               </div>
                             </div>
 
