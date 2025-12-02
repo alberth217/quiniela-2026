@@ -64,7 +64,10 @@ function Admin() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <img src="/img/logo.png" alt="Logo Quiniela" className="h-12 w-auto object-contain" />
-                        <span className="font-bold text-xl tracking-tight text-slate-900">Admin Panel</span>
+                        <div className="flex items-center gap-2 text-slate-900">
+                            <Shield size={24} className="text-blue-600" />
+                            <span className="font-bold text-xl tracking-tight">Admin Panel</span>
+                        </div>
                     </div>
 
                     <div className="hidden md:flex items-center gap-6">
