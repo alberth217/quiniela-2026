@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, Users, Calendar, CheckCircle, ArrowRight, Shield, Clock } from 'lucide-react';
+import { Trophy, Users, Calendar, CheckCircle, ArrowRight, Shield, Clock, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import RulesSection from './RulesSection';
 
@@ -10,6 +10,8 @@ const heroImages = [
   '/img/hero3.png',
 ];
 
+const API_URL = 'https://api-quiniela-444s.onrender.com';
+
 function Home() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -19,6 +21,30 @@ function Home() {
     minutes: 0,
     seconds: 0
   });
+
+  const [matches, setMatches] = useState([]);
+  const [loadingMatches, setLoadingMatches] = useState(true);
+
+  // Fetch de Partidos Destacados
+  useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        const res = await fetch(`${API_URL}/partidos`);
+        if (res.ok) {
+          const data = await res.json();
+          // Filtrar o tomar los primeros 3-4 para mostrar en Home
+          // Ordenar por fecha si es necesario
+          setMatches(data.slice(0, 3));
+        }
+      } catch (error) {
+        console.error("Error fetching matches:", error);
+      } finally {
+        setLoadingMatches(false);
+      }
+    };
+
+    fetchMatches();
+  }, []);
 
   // Cambio automático de imagen cada 5 segundos
   useEffect(() => {
@@ -221,86 +247,74 @@ function Home() {
             <div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">Partidos Destacados</h3>
               <div className="space-y-4">
-                {[
-                  {
-                    date: '14 Jun',
-                    stadium: 'Estadio Azteca',
-                    home: 'MÉXICO',
-                    homeFlag: '🇲🇽',
-                    away: 'ALEMANIA',
-                    awayFlag: '🇩🇪',
-                    image: '/img/Mexico-vs-Alemania.jpeg'
-                  },
-                  {
-                    date: '15 Jun',
-                    stadium: 'MetLife Stadium',
-                    home: 'BRASIL',
-                    homeFlag: '🇧🇷',
-                    away: 'FRANCIA',
-                    awayFlag: '🇫🇷',
-                    image: '/img/brazil-vs-france.jpg'
-                  },
-                  {
-                    date: '16 Jun',
-                    stadium: 'BMO Field',
-                    home: 'ARGENTINA',
-                    homeFlag: '🇦🇷',
-                    away: 'ESPAÑA',
-                    awayFlag: '🇪🇸',
-                    image: '/img/Argentina vs España.png'
-                  },
-                ].map((match, idx) => (
-                  <div key={idx} className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group">
-                    {/* Imagen de fondo */}
-                    <img
-                      src={match.image}
-                      alt={`${match.home} vs ${match.away}`}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    {/* Overlay oscuro */}
-                    <div className="absolute inset-0 bg-black/60"></div>
+                {loadingMatches ? (
+                  <div className="flex justify-center py-10">
+                    <Loader className="animate-spin text-blue-600" size={32} />
+                  </div>
+                ) : matches.length > 0 ? (
+                  matches.map((match, idx) => (
+                    <div key={match.id || idx} className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group bg-slate-900">
+                      {/* Imagen de fondo (Placeholder o dinámica si hubiera) */}
+                      <img
+                        src={`/img/hero${(idx % 3) + 1}.jpg`} // Fallback a imágenes locales rotativas
+                        alt={`${match.equipo_a} vs ${match.equipo_b}`}
+                        className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
+                      />
 
-                    {/* Contenido */}
-                    <div className="relative z-10 p-4 sm:p-6">
-                      {/* Cabecera */}
-                      <div className="flex items-center justify-between mb-4 sm:mb-6">
-                        <div className="text-xs sm:text-sm text-white/90 font-medium bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
-                          {match.date}
+                      {/* Contenido */}
+                      <div className="relative z-10 p-4 sm:p-6">
+                        {/* Cabecera */}
+                        <div className="flex items-center justify-between mb-4 sm:mb-6">
+                          <div className="text-xs sm:text-sm text-white/90 font-medium bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
+                            {match.fecha} • {match.hora}
+                          </div>
+                          <div className="text-xs sm:text-sm text-white font-semibold bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full truncate max-w-[150px]">
+                            {match.fase}
+                          </div>
                         </div>
-                        <div className="text-xs sm:text-sm text-white font-semibold bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full truncate max-w-[150px]">
-                          {match.stadium}
-                        </div>
-                      </div>
 
-                      {/* Enfrentamiento */}
-                      <div className="flex items-center justify-center gap-2 sm:gap-6 mb-4 sm:mb-6">
-                        <div className="text-center flex-1">
-                          {/* RESPONSIVE: Banderas más pequeñas en móvil */}
-                          <div className="text-3xl sm:text-5xl mb-1 sm:mb-2">{match.homeFlag}</div>
-                          <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.home}</div>
+                        {/* Enfrentamiento */}
+                        <div className="flex items-center justify-center gap-2 sm:gap-6 mb-4 sm:mb-6">
+                          <div className="text-center flex-1">
+                            <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.equipo_a}</div>
+                            {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_a}</div>}
+                          </div>
+                          <div className="text-white/80 font-bold text-xl sm:text-2xl px-2">
+                            {match.estado === 'finalizado' ? '-' : 'VS'}
+                          </div>
+                          <div className="text-center flex-1">
+                            <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.equipo_b}</div>
+                            {match.estado === 'finalizado' && <div className="text-3xl font-bold text-yellow-400">{match.goles_b}</div>}
+                          </div>
                         </div>
-                        <div className="text-white/80 font-bold text-xl sm:text-2xl px-2">VS</div>
-                        <div className="text-center flex-1">
-                          <div className="text-3xl sm:text-5xl mb-1 sm:mb-2">{match.awayFlag}</div>
-                          <div className="text-lg sm:text-2xl font-bold text-white drop-shadow-lg truncate">{match.away}</div>
-                        </div>
-                      </div>
 
-                      {/* Botones de pronóstico */}
-                      <div className="flex gap-2 sm:gap-3">
-                        <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                          Local (1)
-                        </button>
-                        <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                          Empate
-                        </button>
-                        <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
-                          Visita (2)
-                        </button>
+                        {/* Botones de pronóstico (Solo si no ha finalizado) */}
+                        {match.estado !== 'finalizado' && (
+                          <div className="flex gap-2 sm:gap-3">
+                            <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                              Local
+                            </button>
+                            <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                              Empate
+                            </button>
+                            <button className="flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg bg-white/10 backdrop-blur-sm border-2 border-white/30 text-xs sm:text-sm font-bold text-white hover:bg-green-500 hover:border-green-500 hover:shadow-lg transition-all transform hover:scale-105">
+                              Visita
+                            </button>
+                          </div>
+                        )}
+                        {match.estado === 'finalizado' && (
+                          <div className="text-center">
+                            <span className="bg-slate-800/80 text-white px-4 py-1 rounded-full text-xs font-bold border border-slate-600">Partido Finalizado</span>
+                          </div>
+                        )}
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
+                    <p className="text-slate-500">No hay partidos destacados por el momento.</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
