@@ -36,7 +36,7 @@ function RulesSection() {
                         </li>
                         <li className="flex items-center gap-2 justify-center">
                             <CheckCircle size={14} className="text-green-500" />
-                            <span><span className="font-bold text-yellow-700">+3</span> Equipo favorito campeón</span>
+                            <span><span className="font-bold text-yellow-500">+3</span> Equipo favorito campeón</span>
                         </li>
                         <li className="flex items-center gap-2 justify-center">
                             <CheckCircle size={14} className="text-blue-500" />
