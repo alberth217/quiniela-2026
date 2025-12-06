@@ -179,6 +179,32 @@ function Home() {
                   <button className="bg-white text-blue-900 px-4 py-2 rounded-full text-xs font-bold">Contactar</button>
                 </div>
               </div>
+
+              {/* WIDGET: PATROCINADORES (Tu código original) */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  <span className="text-yellow-500">★</span> Patrocinadores Oficiales
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Sponsor 1: Nike */}
+                  <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="/img/nike.jpg" alt="Nike" className="w-full h-full object-cover relative z-10" />
+                  </div>
+
+                  {/* Sponsor 2: Adidas */}
+                  <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="/img/adidas.jpg" alt="Adidas" className="w-full h-full object-cover relative z-10" />
+                  </div>
+
+                  {/* Sponsor 3: Coca-Cola (Full Width) */}
+                  <div className="col-span-2 group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="/img/coca-cola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* --- COLUMNA CENTRAL: PARTIDOS DESTACADOS (Ocupa 2 columnas) --- */}
@@ -272,31 +298,7 @@ function Home() {
                   </Link>
                 </div>
               </div>
-              {/* WIDGET: PATROCINADORES (Tu código original) */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                  <span className="text-yellow-500">★</span> Patrocinadores Oficiales
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Sponsor 1: Nike */}
-                  <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <img src="/img/nike.jpg" alt="Nike" className="w-full h-full object-cover relative z-10" />
-                  </div>
 
-                  {/* Sponsor 2: Adidas */}
-                  <div className="group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <img src="/img/adidas.jpg" alt="Adidas" className="w-full h-full object-cover relative z-10" />
-                  </div>
-
-                  {/* Sponsor 3: Coca-Cola (Full Width) */}
-                  <div className="col-span-2 group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <img src="/img/coca-cola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
-                  </div>
-                </div>
-              </div>
 
             </div>
 
