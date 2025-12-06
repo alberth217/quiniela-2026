@@ -272,12 +272,6 @@ function Home() {
                   </Link>
                 </div>
               </div>
-
-            </div>
-
-            {/* --- COLUMNA DERECHA: SIDEBAR (Ocupa 1 columna) --- */}
-            <div className="space-y-8">
-
               {/* WIDGET: PATROCINADORES (Tu código original) */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
                 <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -299,10 +293,17 @@ function Home() {
                   {/* Sponsor 3: Coca-Cola (Full Width) */}
                   <div className="col-span-2 group relative bg-white rounded-xl border border-slate-100 h-32 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <img src="/img/cocacola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
+                    <img src="/img/coca-cola.jpg" alt="Coca-Cola" className="w-full h-full object-cover relative z-10" />
                   </div>
                 </div>
               </div>
+
+            </div>
+
+            {/* --- COLUMNA DERECHA: SIDEBAR (Ocupa 1 columna) --- */}
+            <div className="space-y-8">
+
+
 
               {/* WIDGET: ESTADÍSTICAS (Tu código original) */}
               <div className="bg-slate-900 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden">
