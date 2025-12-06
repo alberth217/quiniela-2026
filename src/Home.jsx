@@ -303,33 +303,6 @@ function Home() {
             {/* --- COLUMNA DERECHA: SIDEBAR (Ocupa 1 columna) --- */}
             <div className="space-y-8">
 
-
-
-              {/* WIDGET: ESTADÍSTICAS (Tu código original) */}
-              <div className="bg-slate-900 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                <h3 className="font-bold text-lg mb-6 relative z-10">Estadísticas Globales</h3>
-                <div className="grid grid-cols-2 gap-4 relative z-10">
-                  <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center">
-                    <div className="text-blue-400 flex justify-center mb-2"><Users size={24} /></div>
-                    <div className="text-2xl font-bold">2.5K+</div>
-                    <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Usuarios</div>
-                  </div>
-                  <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center">
-                    <div className="text-green-400 flex justify-center mb-2"><CheckCircle size={24} /></div>
-                    <div className="text-2xl font-bold">48K</div>
-                    <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Predicciones</div>
-                  </div>
-                  <div className="col-span-2 bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center flex items-center justify-between px-8">
-                    <div className="text-left">
-                      <div className="text-2xl font-bold">104</div>
-                      <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Partidos</div>
-                    </div>
-                    <div className="text-yellow-400"><Calendar size={32} /></div>
-                  </div>
-                </div>
-              </div>
-
               {/* WIDGET: CUENTA REGRESIVA (Tu código original) */}
               <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-lg p-6 text-white border border-slate-700/50">
                 <div className="flex items-center gap-2 mb-4">
@@ -421,6 +394,33 @@ function Home() {
                 >
                   Ver Reglamento
                 </a>
+              </div>
+
+
+
+              {/* WIDGET: ESTADÍSTICAS (Tu código original) */}
+              <div className="bg-slate-900 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                <h3 className="font-bold text-lg mb-6 relative z-10">Estadísticas Globales</h3>
+                <div className="grid grid-cols-2 gap-4 relative z-10">
+                  <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center">
+                    <div className="text-blue-400 flex justify-center mb-2"><Users size={24} /></div>
+                    <div className="text-2xl font-bold">2.5K+</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Usuarios</div>
+                  </div>
+                  <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center">
+                    <div className="text-green-400 flex justify-center mb-2"><CheckCircle size={24} /></div>
+                    <div className="text-2xl font-bold">48K</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Predicciones</div>
+                  </div>
+                  <div className="col-span-2 bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10 text-center flex items-center justify-between px-8">
+                    <div className="text-left">
+                      <div className="text-2xl font-bold">104</div>
+                      <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Partidos</div>
+                    </div>
+                    <div className="text-yellow-400"><Calendar size={32} /></div>
+                  </div>
+                </div>
               </div>
 
             </div>
