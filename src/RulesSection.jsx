@@ -17,9 +17,9 @@ function RulesSection() {
                     </div>
                     <h3 className="font-bold text-slate-900 mb-2">Tickets y Costos</h3>
                     <p className="text-sm text-slate-600">
-                        El costo es de <span className="font-bold text-blue-700">$25 USD</span> por fase.
+                        El costo es de participar en la quiniela es de  <span className="font-bold text-blue-700">$25 USD</span> para todo el torneo.
                         <br />
-                        <span className="text-xs mt-2 block bg-blue-100 text-blue-800 px-2 py-1 rounded-full w-fit mx-auto">Máximo 2 tickets por usuario</span>
+                        {/* <span className="text-xs mt-2 block bg-blue-100 text-blue-800 px-2 py-1 rounded-full w-fit mx-auto">Máximo 2 tickets por usuario</span>*/}
                     </p>
                 </div>
 
@@ -35,6 +35,10 @@ function RulesSection() {
                             <span><span className="font-bold text-yellow-700">+3</span> Marcador Exacto</span>
                         </li>
                         <li className="flex items-center gap-2 justify-center">
+                            <CheckCircle size={14} className="text-green-500" />
+                            <span><span className="font-bold text-yellow-700">+3</span> Equipo favorito campeón</span>
+                        </li>
+                        <li className="flex items-center gap-2 justify-center">
                             <CheckCircle size={14} className="text-blue-500" />
                             <span><span className="font-bold text-yellow-700">+1</span> Ganador / Empate</span>
                         </li>
@@ -46,11 +50,15 @@ function RulesSection() {
                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-purple-600 shadow-sm mb-4">
                         <Calendar size={24} />
                     </div>
-                    <h3 className="font-bold text-slate-900 mb-2">Fases del Torneo</h3>
+                    <h3 className="font-bold text-slate-900 mb-2">Premios del Torneo</h3>
                     <p className="text-sm text-slate-600">
-                        La quiniela se juega por etapas:
+                        La quiniela se acumula puntos por cada partido, los premios son:
                         <br />
-                        <span className="font-medium">Fase de Grupos, Octavos, Cuartos, Semifinal y Final.</span>
+                        <span className="font-medium">1er lugar: $7000 USD</span>
+                        <br />
+                        <span className="font-medium">2do lugar: $3000 USD</span>
+                        <br />
+                        <span className="font-medium">3er lugar: $1000 USD</span>
                     </p>
                 </div>
             </div>
