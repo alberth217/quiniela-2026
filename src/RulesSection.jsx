@@ -29,22 +29,27 @@ function RulesSection() {
                         <Trophy size={24} />
                     </div>
                     <h3 className="font-bold text-slate-900 mb-2">Sistema de Puntos</h3>
-                    <ul className="text-sm text-slate-600 space-y-2">
-                        <li className="flex items-center gap-2 justify-center">
-                            <CheckCircle size={14} className="text-green-500" />
+
+                    {/* CAMBIO 1: Agregamos w-fit y mx-auto al UL */}
+                    <ul className="text-sm text-slate-600 space-y-2 w-fit mx-auto text-left">
+
+                        {/* CAMBIO 2: Quitamos 'justify-center' de todos los LI */}
+                        <li className="flex items-center gap-2">
+                            <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
                             <span><span className="font-bold text-yellow-700">+3</span> Marcador Exacto</span>
                         </li>
-                        <li className="flex items-center gap-2 justify-center">
-                            <CheckCircle size={14} className="text-green-500" />
-                            <span><span className="font-bold text-yellow-500">+3</span> Equipo favorito campeón</span>
+
+                        <li className="flex items-center gap-2">
+                            <CheckCircle size={14} className="text-green-700 flex-shrink-0" />
+                            <span><span className="font-bold text-yellow-500">+3</span> Equipo favorito Campeón</span>
                         </li>
-                        <li className="flex items-center gap-2 justify-center">
-                            <CheckCircle size={14} className="text-blue-500" />
+
+                        <li className="flex items-center gap-2">
+                            <CheckCircle size={14} className="text-blue-500 flex-shrink-0" />
                             <span><span className="font-bold text-yellow-700">+1</span> Ganador / Empate</span>
                         </li>
                     </ul>
                 </div>
-
                 {/* Regla 3: Fases */}
                 <div className="bg-purple-50 rounded-xl p-6 border border-purple-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-purple-600 shadow-sm mb-4">
