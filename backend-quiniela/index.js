@@ -130,6 +130,27 @@ app.put('/admin/partidos/:id', async (req, res) => {
     }
 });
 
+// NUEVO: OBTENER FASE DE GRUPOS (POSICIONES)
+app.get('/posiciones', async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM posiciones ORDER BY grupo ASC, posicion ASC");
+
+        // Agrupar por grupo para facilitar el frontend: { "A": [...], "B": [...] }
+        const grupos = {};
+        result.rows.forEach(row => {
+            if (!grupos[row.grupo]) {
+                grupos[row.grupo] = [];
+            }
+            grupos[row.grupo].push(row);
+        });
+
+        res.json(grupos);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error al obtener posiciones");
+    }
+});
+
 // 2. RANKING: Calcular puntos
 app.get('/ranking', async (req, res) => {
     try {

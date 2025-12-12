@@ -29,9 +29,8 @@ async function syncMatches() {
             method: 'GET',
             url: API_URL,
             params: {
-                next: '15', // Próximos 15 partidos
-                // league: '1', // Opcional: ID de la Copa del Mundo (ej. 1) o Champions. Si se omite, trae de todo el mundo.
-                // timezone: 'America/La_Paz' // Ajustar si es necesario
+                league: '1', // Copa del Mundo
+                season: '2026', // Año del mundial
             },
             headers: {
                 'X-RapidAPI-Key': RAPIDAPI_KEY,

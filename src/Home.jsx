@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, Users, Calendar, CheckCircle, ArrowRight, Shield, Clock, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import BracketView from './BracketView';
 import RulesSection from './RulesSection';
 
 // Array de imágenes del carrusel
@@ -11,6 +12,7 @@ const heroImages = [
 ];
 
 const API_URL = 'https://api-quiniela-444s.onrender.com';
+//const API_URL = 'http://localhost:3000';
 
 function Home() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -21,6 +23,9 @@ function Home() {
     minutes: 0,
     seconds: 0
   });
+
+  // State for View Switcher
+  const [activeTab, setActiveTab] = useState('groups'); // 'groups' | 'bracket'
 
   const [matches, setMatches] = useState([]);
   const [loadingMatches, setLoadingMatches] = useState(true);
@@ -33,7 +38,7 @@ function Home() {
         const res = await fetch(`${API_URL}/partidos`);
         if (res.ok) {
           const data = await res.json();
-          setMatches(data.slice(0, 3));
+          setMatches(data);
         }
       } catch (error) {
         console.error("Error fetching matches:", error);
@@ -56,8 +61,27 @@ function Home() {
       }
     };
 
-    fetchMatches();
     fetchRanking();
+  }, []);
+
+  const [standings, setStandings] = useState({});
+  const [loadingStandings, setLoadingStandings] = useState(true);
+
+  useEffect(() => {
+    const fetchStandings = async () => {
+      try {
+        const res = await fetch(`${API_URL}/posiciones`);
+        if (res.ok) {
+          const data = await res.json();
+          setStandings(data);
+        }
+      } catch (error) {
+        console.error("Error fetching standings:", error);
+      } finally {
+        setLoadingStandings(false);
+      }
+    };
+    fetchStandings();
   }, []);
 
   // Efecto para el carrusel
@@ -212,76 +236,93 @@ function Home() {
             {/* --- COLUMNA CENTRAL: PARTIDOS DESTACADOS (Ocupa 2 columnas) --- */}
             <div className="lg:col-span-2 space-y-12">
 
-              {/* Título de Sección */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
-                  <span className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Calendar size={24} /></span>
-                  Partidos Destacados
-                </h2>
-                <Link to="/login" className="text-blue-600 font-bold text-sm hover:underline flex items-center gap-1">
-                  Ver Todos <ArrowRight size={16} />
-                </Link>
-              </div>
 
-              {/* Lista de Partidos (Tu código original) */}
-              <div className="space-y-6">
-                {loadingMatches ? (
-                  <div className="flex justify-center py-10">
-                    <Loader size={40} className="animate-spin text-blue-600" />
+
+              {/* --- SECCIÓN PRINCIPAL: TABS Y CONTENIDO --- */}
+              <div className="col-span-1 lg:col-span-3 space-y-8">
+
+                {/* HEADER DE LA SECCIÓN CON TABS */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
+                    <span className="bg-blue-100 text-blue-600 p-2 rounded-lg">
+                      {activeTab === 'groups' ? <Shield size={24} /> : <Trophy size={24} />}
+                    </span>
+                    {activeTab === 'groups' ? 'Fase de Grupos' : 'Eliminatoria Directa'}
+                  </h2>
+
+                  {/* TABS SELECTOR */}
+                  <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1">
+                    <button
+                      onClick={() => setActiveTab('groups')}
+                      className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'groups'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                        }`}
+                    >
+                      Fase de Grupos
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('bracket')}
+                      className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'bracket'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                        }`}
+                    >
+                      Eliminatoria Directa
+                    </button>
                   </div>
-                ) : (
-                  matches.map((match) => (
-                    <div key={match.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow group">
-                      <div className="bg-slate-50 px-6 py-3 border-b border-slate-100 flex justify-between items-center">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{match.fase}</span>
-                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1">
-                          <Clock size={12} /> {match.fecha} - {match.hora}
-                        </span>
-                      </div>
-                      <div className="p-6 md:p-8 flex items-center justify-between">
-                        {/* Equipo A */}
-                        <div className="flex flex-col items-center gap-3 w-1/3 group-hover:transform group-hover:scale-105 transition-transform duration-300">
-                          {match.logo_a ? (
-                            <img src={match.logo_a} alt={match.equipo_a} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg" />
-                          ) : (
-                            <Shield size={64} className="text-slate-300" />
-                          )}
-                          <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight">{match.equipo_a}</h3>
-                        </div>
+                </div>
 
-                        {/* VS / Marcador */}
-                        <div className="flex flex-col items-center justify-center w-1/3">
-                          {match.estado === 'finalizado' ? (
-                            <div className="text-3xl md:text-5xl font-black text-slate-800 tracking-tighter">
-                              {match.goles_a} <span className="text-slate-300">-</span> {match.goles_b}
-                            </div>
-                          ) : (
-                            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-black text-xl border-4 border-white shadow-inner">
-                              VS
-                            </div>
-                          )}
-                          <span className="mt-2 text-xs font-bold text-slate-400 uppercase">
-                            {match.estado === 'finalizado' ? 'Finalizado' : 'Por Jugar'}
-                          </span>
-                        </div>
+                {/* CONTENIDO CONDICIONAL */}
+                {activeTab === 'groups' ? (
 
-                        {/* Equipo B */}
-                        <div className="flex flex-col items-center gap-3 w-1/3 group-hover:transform group-hover:scale-105 transition-transform duration-300">
-                          {match.logo_b ? (
-                            <img src={match.logo_b} alt={match.equipo_b} className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg" />
-                          ) : (
-                            <Shield size={64} className="text-slate-300" />
-                          )}
-                          <h3 className="font-bold text-slate-800 text-sm md:text-lg text-center leading-tight">{match.equipo_b}</h3>
-                        </div>
-                      </div>
-                      <div className="bg-slate-50 px-6 py-3 border-t border-slate-100 text-center">
-                        <Link to="/login" className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
-                          Haz tu predicción &rarr;
-                        </Link>
-                      </div>
+                  loadingStandings ? (
+                    <div className="flex justify-center py-10" >
+                      <Loader size={40} className="animate-spin text-green-600" />
                     </div>
-                  ))
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {Object.keys(standings).sort().map((groupKey) => (
+                        <div key={groupKey} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                          <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 font-bold text-slate-700">
+                            Grupo {groupKey}
+                          </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-xs text-left">
+                              <thead className="text-slate-500 bg-slate-50 uppercase font-semibold">
+                                <tr>
+                                  <th className="px-3 py-2">#</th>
+                                  <th className="px-3 py-2 w-full">Equipo</th>
+                                  <th className="px-2 py-2 text-center">PJ</th>
+                                  <th className="px-2 py-2 text-center">DG</th>
+                                  <th className="px-3 py-2 text-center font-bold">Pts</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100">
+                                {standings[groupKey].map((team) => (
+                                  <tr key={team.equipo} className="hover:bg-slate-50 transition-colors">
+                                    <td className={`px-3 py-2 font-bold ${team.posicion <= 2 ? 'text-green-600 border-l-4 border-green-500' : 'text-slate-500'}`}>
+                                      {team.posicion}
+                                    </td>
+                                    <td className="px-3 py-2 font-medium text-slate-800 flex items-center gap-2">
+                                      {team.logo && <img src={team.logo} alt={team.equipo} className="w-5 h-5 object-contain" />}
+                                      {team.equipo}
+                                    </td>
+                                    <td className="px-2 py-2 text-center text-slate-500">{team.pj}</td>
+                                    <td className="px-2 py-2 text-center text-slate-500">{team.dg}</td>
+                                    <td className="px-3 py-2 text-center font-bold text-slate-900">{team.puntos}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )) : (
+                  <div className="animate-fade-in">
+                    <BracketView />
+                  </div>
                 )}
               </div>
 
@@ -473,10 +514,10 @@ function Home() {
           </div>
         </div>
 
-      </main>
+      </main >
 
       {/* FOOTER */}
-      <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+      < footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div className="col-span-1 md:col-span-2">
@@ -509,8 +550,8 @@ function Home() {
             &copy; {new Date().getFullYear()} Quiniela 2026. Todos los derechos reservados.
           </div>
         </div>
-      </footer>
-    </div>
+      </footer >
+    </div >
   );
 }
 
