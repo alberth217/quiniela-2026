@@ -6,8 +6,9 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import RulesSection from './RulesSection';
+import config from './config';
 
-const API_URL = 'https://api-quiniela-444s.onrender.com';
+const { API_URL } = config;
 
 function Dashboard() {
   const navigate = useNavigate();

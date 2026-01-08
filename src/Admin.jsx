@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Lock, Check, Loader, Trophy, Home, BarChart2, Bell, LogOut, Shield } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import config from './config';
 
-const API_URL = 'https://api-quiniela-444s.onrender.com'; // Ajustado a producción
+const { API_URL } = config;
 
 function Admin() {
     const navigate = useNavigate();

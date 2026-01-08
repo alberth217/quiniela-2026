@@ -314,6 +314,14 @@ app.get('/mis-puntos/:usuario_id', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
+
+    // VERIFICACIÓN DE CONEXIÓN A DB
+    try {
+        const res = await pool.query('SELECT NOW()');
+        console.log("✅ CONEXIÓN A BASE DE DATOS EXITOSA:", res.rows[0]);
+    } catch (err) {
+        console.error("❌ ERROR AL CONECTAR A BASE DE DATOS:", err.message);
+    }
 });
