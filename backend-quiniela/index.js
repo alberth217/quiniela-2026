@@ -313,8 +313,7 @@ app.get('/mis-puntos/:usuario_id', async (req, res) => {
     }
 });
 
-// Exportar la app para Vercel
-module.exports = app;
+
 
 // Solo escuchar en el puerto si NO estamos en producción (Vercel maneja la ejecución)
 if (process.env.NODE_ENV !== 'production') {
@@ -332,3 +331,6 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
+
+// Exportar la app para Vercel
+module.exports = app;
