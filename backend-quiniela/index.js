@@ -313,13 +313,12 @@ app.get('/mis-puntos/:usuario_id', async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3000;
-
 // Exportar la app para Vercel
 module.exports = app;
 
-// Solo escuchar si se ejecuta directamente (no en Vercel)
-if (require.main === module) {
+// Solo escuchar en el puerto si NO estamos en producción (Vercel maneja la ejecución)
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
     app.listen(PORT, async () => {
         console.log(`Servidor corriendo en el puerto ${PORT}`);
 
@@ -332,3 +331,4 @@ if (require.main === module) {
         }
     });
 }
+
