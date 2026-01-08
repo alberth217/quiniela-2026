@@ -1,25 +1,22 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const connectionString = process.env.DATABASE_URL || 'postgres://admin:sCDzp6H5TGIh9ZO4CUAvjMQH3QCxcPBp@dpg-d4i7m5emcj7s73cen37g-a.oregon-postgres.render.com/quiniela_db_jn3f';
+const connectionString = process.env.DATABASE_URL;
 
-const isProduction = process.env.RENDER || false; // RENDER es true en el entorno de despliegue
+if (!connectionString) {
+  console.warn("⚠️ ADVERTENCIA: DATABASE_URL no está definida. Asegúrate de tener un archivo .env o variables de entorno configuradas.");
+}
 
 const poolConfig = {
   connectionString,
+  ssl: {
+    rejectUnauthorized: false // Requerido para Neon y la mayoría de proveedores remotos
+  }
 };
 
-// Lógica de SSL:
-// - Si estamos en PRODUCCIÓN (Render), asumimos conexión interna (sin SSL explícito).
-// - Si estamos en LOCAL y conectamos a Render, necesitamos SSL.
-if (!isProduction && connectionString.includes('render.com')) {
-  poolConfig.ssl = { rejectUnauthorized: false };
-}
-
 console.log(`🔌 Configurando DB:
-  - Entorno: ${isProduction ? 'Producción (Render)' : 'Local'}
-  - URL (Masked): ${connectionString.replace(/:[^:/@]+@/, ':****@')}
-  - SSL Habilitado: ${poolConfig.ssl ? 'SÍ' : 'NO'}
+  - URL definida: ${connectionString ? 'SÍ' : 'NO'}
+  - SSL Habilitado: SÍ (rejectUnauthorized: false)
 `);
 
 const pool = new Pool(poolConfig);
