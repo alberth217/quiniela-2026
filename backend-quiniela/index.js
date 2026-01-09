@@ -4,7 +4,32 @@ const pool = require('./db');
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+    'https://quiniela-2026.pages.dev',
+    'https://quiniela-2026-beryl.vercel.app',
+    'http://localhost:5173'
+];
+
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else {
+        // Para otros orígenes, no enviamos credenciales y permitimos solo si no hay credenciales
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization');
+
+    // Manejar pre-vuelo (preflight)
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+    next();
+});
+
 app.use(express.json());
 
 // RUTA DE PRUEBA
