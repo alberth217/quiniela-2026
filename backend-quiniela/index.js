@@ -11,36 +11,33 @@ const allowedOrigins = [
     'http://localhost:5173'
 ];
 
-// LOG DE INICIO
-console.log("--- SERVIDOR REINICIADO (MODO DEBUG CORS V3) ---");
-console.log("DATABASE_URL definida:", process.env.DATABASE_URL ? "SÍ" : "NO");
+// LOGS PARA DEPURACIÓN EN VERCEL
+console.log("--- SERVIDOR OPERATIVO (SOLUCIÓN HÍBRIDA) ---");
+console.log("DATABASE_URL cargada:", process.env.DATABASE_URL ? "SÍ" : "NO");
 
-// Middleware de Logs para TODO
+// Middleware de Logs
 app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    console.log(`[REQ-DEBUG] ${req.method} ${req.url} | Origin: ${origin}`);
+    console.log(`[REQ] ${req.method} ${req.url} | Origin: ${req.headers.origin}`);
     next();
 });
 
-// Configuración de CORS usando la librería oficial
+// Configuración de CORS simplificada
+// Vercel inyectará los headers principales desde vercel.json
 app.use(cors({
     origin: function (origin, callback) {
-        // Permitir si no hay origin (como apps móviles o curl)
         if (!origin) return callback(null, true);
-
         const isAllowedVercel = origin.endsWith('.vercel.app');
         const isExplicitlyAllowed = allowedOrigins.includes(origin);
-
         if (isExplicitlyAllowed || isAllowedVercel) {
             callback(null, true);
         } else {
-            console.log(`[CORS-REJECT] Origen no permitido: ${origin}`);
-            callback(new Error('Not allowed by CORS'));
+            // Permitimos el origen aunque no esté en la lista para evitar bloqueos durante depuración
+            // Pero logueamos la advertencia
+            console.log(`[CORS-WARN] Origen no listado: ${origin}`);
+            callback(null, true);
         }
     },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+    credentials: true
 }));
 
 app.use(express.json());
@@ -48,15 +45,14 @@ app.use(express.json());
 // RUTA DE PRUEBA
 app.get('/', (req, res) => {
     res.json({
-        status: 'online',
-        origin_received: req.headers.origin || 'none',
+        msg: '¡Backend Quiniela 2026 en Vercel!',
+        status: 'ok',
         db: !!process.env.DATABASE_URL
     });
 });
 
 // RUTA DE REGISTRO
 app.post('/registro', async (req, res) => {
-    console.log("[DEBUG] Procesando /registro...");
     try {
         const { nombre, apellido, email, password } = req.body;
         const userExist = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
@@ -124,7 +120,7 @@ app.get('/posiciones', async (req, res) => {
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-        console.log(`Servidor corriendo en el puerto ${PORT}`);
+        console.log(`Servidor corriendo en puerto ${PORT}`);
     });
 }
 
