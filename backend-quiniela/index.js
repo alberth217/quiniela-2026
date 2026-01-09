@@ -12,19 +12,20 @@ const allowedOrigins = [
 
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
+    console.log(`[CORS-DEBUG] Method: ${req.method} | URL: ${req.url} | Origin: ${origin}`);
+
+    if (allowedOrigins.includes(origin) || !origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin || '*');
         res.setHeader('Access-Control-Allow-Credentials', 'true');
     } else {
-        // Para otros orígenes, no enviamos credenciales y permitimos solo si no hay credenciales
         res.setHeader('Access-Control-Allow-Origin', '*');
     }
 
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization, Accept');
 
-    // Manejar pre-vuelo (preflight)
     if (req.method === 'OPTIONS') {
+        console.log(`[CORS-DEBUG] Respondiento a preflight OPTIONS`);
         return res.status(200).end();
     }
     next();
@@ -39,6 +40,7 @@ app.get('/', (req, res) => {
 
 // RUTA DE REGISTRO
 app.post('/registro', async (req, res) => {
+    console.log("[DEBUG] Petición a /registro recibida");
     try {
         const { nombre, apellido, email, password } = req.body;
         const userExist = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
@@ -51,8 +53,8 @@ app.post('/registro', async (req, res) => {
         );
         res.json(nuevoUsuario.rows[0]);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
+        console.error("[ERROR DB] Error en registro:", err.message);
+        res.status(500).json({ message: "Error interno en el servidor", error: err.message });
     }
 });
 
@@ -70,8 +72,8 @@ app.post('/login', async (req, res) => {
         }
         res.json(usuario);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error del servidor");
+        console.error("[ERROR DB] Error en login:", err.message);
+        res.status(500).json({ message: "Error del servidor", error: err.message });
     }
 });
 
@@ -81,7 +83,7 @@ app.get('/partidos', async (req, res) => {
         const result = await pool.query("SELECT * FROM partidos ORDER BY id ASC");
         res.json(result.rows);
     } catch (err) {
-        console.error(err.message);
+        console.error("[ERROR DB] Error en partidos:", err.message);
         res.status(500).send("Error al obtener partidos");
     }
 });
@@ -104,12 +106,10 @@ app.post('/predicciones', async (req, res) => {
     try {
         const { usuario_id, partido_id, tipo_prediccion, seleccion } = req.body;
 
-        // Validación básica
         if (!usuario_id || !partido_id || !seleccion) {
             return res.status(400).json({ message: "Faltan datos obligatorios" });
         }
 
-        // Usamos "ON CONFLICT" para actualizar si ya existe
         const query = `
             INSERT INTO predicciones (usuario_id, partido_id, tipo_prediccion, seleccion)
             VALUES ($1, $2, $3, $4)
@@ -127,9 +127,8 @@ app.post('/predicciones', async (req, res) => {
     }
 });
 
-// --- NUEVAS RUTAS (REQUERIMIENTO) ---
+// --- ADMIN ---
 
-// 1. ADMIN: Actualizar resultado de partido
 app.put('/admin/partidos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -155,12 +154,10 @@ app.put('/admin/partidos/:id', async (req, res) => {
     }
 });
 
-// NUEVO: OBTENER FASE DE GRUPOS (POSICIONES)
+// POSICIONES
 app.get('/posiciones', async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM posiciones ORDER BY grupo ASC, posicion ASC");
-
-        // Agrupar por grupo para facilitar el frontend: { "A": [...], "B": [...] }
         const grupos = {};
         result.rows.forEach(row => {
             if (!grupos[row.grupo]) {
@@ -168,7 +165,6 @@ app.get('/posiciones', async (req, res) => {
             }
             grupos[row.grupo].push(row);
         });
-
         res.json(grupos);
     } catch (err) {
         console.error(err.message);
@@ -176,10 +172,9 @@ app.get('/posiciones', async (req, res) => {
     }
 });
 
-// 2. RANKING: Calcular puntos
+// RANKING
 app.get('/ranking', async (req, res) => {
     try {
-        // Obtenemos usuarios, predicciones y partidos finalizados
         const usuariosRes = await pool.query("SELECT id, nombre FROM usuarios");
         const prediccionesRes = await pool.query("SELECT * FROM predicciones");
         const partidosRes = await pool.query("SELECT * FROM partidos WHERE estado = 'finalizado'");
@@ -188,49 +183,42 @@ app.get('/ranking', async (req, res) => {
         const predicciones = prediccionesRes.rows;
         const partidos = partidosRes.rows;
 
-        // Mapa de partidos para acceso rápido
         const partidosMap = {};
         partidos.forEach(p => partidosMap[p.id] = p);
 
-        // Calcular puntos por usuario
         const ranking = usuarios.map(user => {
             let puntos = 0;
             const misPredicciones = predicciones.filter(p => p.usuario_id === user.id);
 
             misPredicciones.forEach(pred => {
                 const partido = partidosMap[pred.partido_id];
-                if (!partido) return; // Partido no finalizado o no existe
+                if (!partido) return;
 
                 const golesA = partido.goles_a;
                 const golesB = partido.goles_b;
 
-                // Lógica de Puntos
                 let resultadoReal = '';
                 if (golesA > golesB) resultadoReal = 'Local';
                 else if (golesA < golesB) resultadoReal = 'Visita';
                 else resultadoReal = 'Empate';
 
-                // Caso 1: Predicción 1X2
                 if (pred.tipo_prediccion === '1X2') {
                     if (pred.seleccion === resultadoReal) {
-                        puntos += 1; // Acierto simple
+                        puntos += 1;
                     }
                 }
-                // Caso 2: Predicción Marcador Exacto
                 else if (pred.tipo_prediccion === 'Marcador') {
                     const [predA, predB] = pred.seleccion.split('-').map(Number);
-
                     if (predA === golesA && predB === golesB) {
-                        puntos += 3; // Pleno exacto
+                        puntos += 3;
                     } else {
-                        // Verificar si acertó al menos el resultado (ganador)
                         let resultadoPredicho = '';
                         if (predA > predB) resultadoPredicho = 'Local';
                         else if (predA < predB) resultadoPredicho = 'Visita';
                         else resultadoPredicho = 'Empate';
 
                         if (resultadoPredicho === resultadoReal) {
-                            puntos += 1; // Acierto parcial
+                            puntos += 1;
                         }
                     }
                 }
@@ -243,30 +231,25 @@ app.get('/ranking', async (req, res) => {
             };
         });
 
-        // Ordenar por puntos descendente
         ranking.sort((a, b) => b.puntos - a.puntos);
-
-        // Asignar posición
         const rankingConPosicion = ranking.map((item, index) => ({
             posicion: index + 1,
             ...item
         }));
 
         res.json(rankingConPosicion);
-
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Error al calcular ranking");
     }
 });
 
-// 3. MIS PUNTOS: Historial detallado
+// HISTORIAL
 app.get('/mis-puntos/:usuario_id', async (req, res) => {
     try {
         const { usuario_id } = req.params;
-
         const prediccionesRes = await pool.query("SELECT * FROM predicciones WHERE usuario_id = $1", [usuario_id]);
-        const partidosRes = await pool.query("SELECT * FROM partidos"); // Traemos todos para mostrar info del partido
+        const partidosRes = await pool.query("SELECT * FROM partidos");
 
         const predicciones = prediccionesRes.rows;
         const partidos = partidosRes.rows;
@@ -275,14 +258,12 @@ app.get('/mis-puntos/:usuario_id', async (req, res) => {
 
         const historial = predicciones.map(pred => {
             const partido = partidosMap[pred.partido_id];
-
             let puntosGanados = 0;
-            let estadoPrediccion = 'Pendiente'; // Pendiente, Acertado, Fallado, Pleno
+            let estadoPrediccion = 'Pendiente';
 
             if (partido && partido.estado === 'finalizado') {
                 const golesA = partido.goles_a;
                 const golesB = partido.goles_b;
-
                 let resultadoReal = '';
                 if (golesA > golesB) resultadoReal = 'Local';
                 else if (golesA < golesB) resultadoReal = 'Visita';
@@ -305,7 +286,6 @@ app.get('/mis-puntos/:usuario_id', async (req, res) => {
                         if (predA > predB) resultadoPredicho = 'Local';
                         else if (predA < predB) resultadoPredicho = 'Visita';
                         else resultadoPredicho = 'Empate';
-
                         if (resultadoPredicho === resultadoReal) {
                             puntosGanados = 1;
                             estadoPrediccion = 'Acertado';
@@ -331,22 +311,16 @@ app.get('/mis-puntos/:usuario_id', async (req, res) => {
         });
 
         res.json(historial);
-
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Error al obtener historial");
     }
 });
 
-
-
-// Solo escuchar en el puerto si NO estamos en producción (Vercel maneja la ejecución)
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, async () => {
         console.log(`Servidor corriendo en el puerto ${PORT}`);
-
-        // VERIFICACIÓN DE CONEXIÓN A DB
         try {
             const res = await pool.query('SELECT NOW()');
             console.log("✅ CONEXIÓN A BASE DE DATOS EXITOSA:", res.rows[0]);
@@ -356,6 +330,4 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-
-// Exportar la app para Vercel
 module.exports = app;
