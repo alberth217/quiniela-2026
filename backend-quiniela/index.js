@@ -6,6 +6,7 @@ const app = express();
 
 const allowedOrigins = [
     'https://quiniela-2026.pages.dev',
+    'https://quiniela-golmaster-2026.pages.dev',
     'https://alberth217-quiniela-2026-m5gd.vercel.app',
     'https://quiniela-2026.vercel.app',
     'http://localhost:5173'
