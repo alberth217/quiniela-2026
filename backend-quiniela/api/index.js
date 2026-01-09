@@ -4,8 +4,32 @@ const pool = require('../db');
 
 const app = express();
 
-app.use(cors());
+// CONFIGURACIÓN DE CORS ROBUSTA
+const allowedOrigins = [
+    'https://quiniela-2026.pages.dev',
+    'https://quiniela-2026-beryl.vercel.app',
+    'http://localhost:5173'
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Permitir peticiones sin origen (como apps móviles o curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'El origen CORS no está permitido: ' + origin;
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 app.use(express.json());
+
+// Manejar manualmente peticiones OPTIONS si es necesario
+app.options('*', cors());
 
 // RUTA DE PRUEBA
 app.get('/', (req, res) => {
