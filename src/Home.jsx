@@ -191,17 +191,32 @@ function Home() {
               <div className="sticky top-24 space-y-6">
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Publicidad</div>
 
-                {/* Banner Vertical Ejemplo 1 */}
+                {/* Banner Vertical Video 1 */}
                 <div className="bg-white rounded-xl border border-slate-200 p-2 shadow-sm flex flex-col items-center">
-                  <img src="/img/ad-vertical-1.jpg" alt="Publicidad" className="w-full h-auto rounded-lg object-cover" />
+                  <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
+                    <iframe
+                      className="absolute inset-0 w-full h-full"
+                      src="https://www.youtube.com/embed/RMPX8q5_kZ0"
+                      title="FIFA World Cup 26™ Brand Reveal"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
                   <span className="text-[10px] text-slate-400 mt-2">Patrocinado</span>
                 </div>
 
-                {/* Banner Vertical Ejemplo 2 */}
-                <div className="bg-blue-900 rounded-xl p-4 text-white text-center shadow-md h-64 flex flex-col justify-center items-center">
-                  <h4 className="font-bold text-lg mb-2">Tu Marca Aquí</h4>
-                  <p className="text-xs text-blue-200 mb-4">Anúnciate con nosotros</p>
-                  <button className="bg-white text-blue-900 px-4 py-2 rounded-full text-xs font-bold">Contactar</button>
+                {/* Banner Vertical Video 2 */}
+                <div className="bg-white rounded-xl border border-slate-200 p-2 shadow-sm flex flex-col items-center">
+                  <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
+                    <iframe
+                      className="absolute inset-0 w-full h-full"
+                      src="https://www.youtube.com/embed/0z3eN7Y_7sU"
+                      title="We Are 26"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                  <span className="text-[10px] text-slate-400 mt-2">FIFA World Cup 26™</span>
                 </div>
 
                 {/* WIDGET: PATROCINADORES (Tu código original) */}
