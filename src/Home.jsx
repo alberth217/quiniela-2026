@@ -187,7 +187,7 @@ function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
             {/* --- NUEVA COLUMNA IZQUIERDA: PUBLICIDAD (Ocupa 1 columna) --- */}
-            <div className="hidden lg:block space-y-6">
+            <div className="space-y-6">
               <div className="sticky top-24 space-y-6">
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Publicidad</div>
 
