@@ -11,12 +11,7 @@ const allowedOrigins = [
     'http://localhost:5173'
 ];
 
-// LOGS DE INICIO
-console.log("--- SERVIDOR REINICIADO (DEBUG ROUTING V4) ---");
-console.log("DATABASE_URL:", process.env.DATABASE_URL ? "CONFIGURADA" : "FALTA");
-
 // 1. MANEJO MANUAL DE OPTIONS (CORS PREFLIGHT)
-// Esto asegura que Vercel/Navegador reciban un 200 OK con los headers correctos en el preflight
 app.options('*', (req, res) => {
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin) || (origin && origin.endsWith('.vercel.app'))) {
@@ -30,7 +25,7 @@ app.options('*', (req, res) => {
     res.status(200).end();
 });
 
-// 2. CONFIGURACIÓN DE CORS PARA RUTAS REALES
+// 2. CONFIGURACIÓN DE CORS
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin) return callback(null, true);
@@ -39,8 +34,7 @@ app.use(cors({
         if (isExplicitlyAllowed || isAllowedVercel) {
             callback(null, true);
         } else {
-            console.log(`[CORS-WARN] Origen no reconocido: ${origin}`);
-            callback(null, true); // Permitimos en debug para no bloquear
+            callback(null, true);
         }
     },
     credentials: true
@@ -48,22 +42,18 @@ app.use(cors({
 
 app.use(express.json());
 
-// Middleware de Logs para todas las peticiones
+// Logs básicos
 app.use((req, res, next) => {
-    console.log(`[REQ-LOG] ${req.method} ${req.url} | Origin: ${req.headers.origin}`);
+    console.log(`[REQ] ${req.method} ${req.url}`);
     next();
 });
 
-// RUTAS DE PRUEBA / DEBUG
+// --- RUTAS ---
+
 app.get('/', (req, res) => {
-    res.json({ status: 'active', info: 'Quiniela 2026 API' });
+    res.json({ status: 'online', service: 'Quiniela 2026 API' });
 });
 
-app.get('/login', (req, res) => {
-    res.json({ message: 'Login endpoint is reachable via GET. Use POST for authentication.' });
-});
-
-// RUTA DE REGISTRO
 app.post('/registro', async (req, res) => {
     try {
         const { nombre, apellido, email, password } = req.body;
@@ -77,12 +67,11 @@ app.post('/registro', async (req, res) => {
         );
         res.json(nuevoUsuario.rows[0]);
     } catch (err) {
-        console.error("[ERROR DB]", err.message);
-        res.status(500).json({ message: "Error en base de datos", error: err.message });
+        console.error(err.message);
+        res.status(500).json({ message: "Error en registro" });
     }
 });
 
-// RUTA DE LOGIN
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -96,16 +85,67 @@ app.post('/login', async (req, res) => {
         }
         res.json(usuario);
     } catch (err) {
-        console.error("[ERROR DB]", err.message);
-        res.status(500).json({ message: "Error en servidor", error: err.message });
+        console.error(err.message);
+        res.status(500).json({ message: "Error en login" });
     }
 });
 
-// Otras rutas omitidas por brevedad...
+app.get('/partidos', async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM partidos ORDER BY id ASC");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al obtener partidos" });
+    }
+});
+
+app.get('/posiciones', async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM posiciones ORDER BY grupo ASC, posicion ASC");
+        const grupos = {};
+        result.rows.forEach(row => {
+            if (!grupos[row.grupo]) grupos[row.grupo] = [];
+            grupos[row.grupo].push(row);
+        });
+        res.json(grupos);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al obtener posiciones" });
+    }
+});
+
+app.get('/predicciones', async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM predicciones");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al obtener predicciones" });
+    }
+});
+
+app.post('/predicciones', async (req, res) => {
+    try {
+        const { usuario_id, partido_id, tipo_prediccion, seleccion } = req.body;
+        const query = `
+            INSERT INTO predicciones (usuario_id, partido_id, tipo_prediccion, seleccion)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (usuario_id, partido_id)
+            DO UPDATE SET tipo_prediccion = $3, seleccion = $4
+            RETURNING *;
+        `;
+        const result = await pool.query(query, [usuario_id, partido_id, tipo_prediccion, seleccion]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al guardar predicción" });
+    }
+});
 
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`Run on ${PORT}`));
+    app.listen(PORT, () => console.log(`Backend on ${PORT}`));
 }
 
 module.exports = app;
