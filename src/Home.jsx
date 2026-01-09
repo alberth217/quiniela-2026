@@ -196,7 +196,7 @@ function Home() {
                   <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
                     <iframe
                       className="absolute inset-0 w-full h-full"
-                      src="https://www.youtube.com/watch?v=oWOG6PTs75s"
+                      src="https://www.youtube.com/embed/oWOG6PTs75s"
                       title="FIFA World Cup 26™ Brand Reveal"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
@@ -210,7 +210,7 @@ function Home() {
                   <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
                     <iframe
                       className="absolute inset-0 w-full h-full"
-                      src="https://www.youtube.com/watch?v=ycleKszxMXs"
+                      src="https://www.youtube.com/embed/ycleKszxMXs"
                       title="We Are 26"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
