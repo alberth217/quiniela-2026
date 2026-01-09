@@ -18,6 +18,7 @@ app.options('*', (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', origin);
     } else {
         res.setHeader('Access-Control-Allow-Origin', 'https://quiniela-2026.pages.dev');
+        res.setHeader('Access-Control-Allow-Origin', 'https://quiniela-golmaster-2026.pages.dev');
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization, Accept, Origin');
