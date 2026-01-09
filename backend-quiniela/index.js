@@ -11,52 +11,52 @@ const allowedOrigins = [
     'http://localhost:5173'
 ];
 
-// LOG DE INICIO PARA VERIFICAR VARIABLES DE ENTORNO
-console.log("--- INICIO DE SERVIDOR (DEBUG MODE) ---");
+// LOG DE INICIO
+console.log("--- SERVIDOR REINICIADO (MODO DEBUG CORS V3) ---");
 console.log("DATABASE_URL definida:", process.env.DATABASE_URL ? "SÍ" : "NO");
 
+// Middleware de Logs para TODO
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    console.log(`[CORS-DEBUG] Petición: ${req.method} | URL: ${req.url} | Origin: ${origin}`);
-
-    const isAllowedVercel = origin && origin.endsWith('.vercel.app');
-    const isExplicitlyAllowed = allowedOrigins.includes(origin);
-
-    if (isExplicitlyAllowed || isAllowedVercel) {
-        // ORIGEN PERMITIDO: Enviamos el origen exacto y permitimos credenciales
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-    } else if (!origin) {
-        // SIN ORIGEN (Acceso directo o servidor): Permitimos con '*' pero sin credenciales
-        res.setHeader('Access-Control-Allow-Origin', '*');
-    } else {
-        // ORIGEN NO RECONOCIDO: Bloqueamos enviando el principal por defecto (o ninguno)
-        console.log(`[CORS-DEBUG] Origen bloqueado: ${origin}`);
-        res.setHeader('Access-Control-Allow-Origin', 'https://quiniela-2026.pages.dev');
-    }
-
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization, Accept, Origin');
-
-    if (req.method === 'OPTIONS') {
-        console.log(`[CORS-DEBUG] Respondiendo a preflight OPTIONS`);
-        return res.status(200).end();
-    }
+    console.log(`[REQ-DEBUG] ${req.method} ${req.url} | Origin: ${origin}`);
     next();
 });
+
+// Configuración de CORS usando la librería oficial
+app.use(cors({
+    origin: function (origin, callback) {
+        // Permitir si no hay origin (como apps móviles o curl)
+        if (!origin) return callback(null, true);
+
+        const isAllowedVercel = origin.endsWith('.vercel.app');
+        const isExplicitlyAllowed = allowedOrigins.includes(origin);
+
+        if (isExplicitlyAllowed || isAllowedVercel) {
+            callback(null, true);
+        } else {
+            console.log(`[CORS-REJECT] Origen no permitido: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+}));
 
 app.use(express.json());
 
 // RUTA DE PRUEBA
 app.get('/', (req, res) => {
     res.json({
-        message: 'Servidor operativo con CORS dinámico',
-        db_status: process.env.DATABASE_URL ? 'Connected' : 'Missing URL'
+        status: 'online',
+        origin_received: req.headers.origin || 'none',
+        db: !!process.env.DATABASE_URL
     });
 });
 
 // RUTA DE REGISTRO
 app.post('/registro', async (req, res) => {
+    console.log("[DEBUG] Procesando /registro...");
     try {
         const { nombre, apellido, email, password } = req.body;
         const userExist = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
@@ -93,7 +93,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// OTRAS RUTAS...
+// Otras rutas...
 app.get('/partidos', async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM partidos ORDER BY id ASC");
