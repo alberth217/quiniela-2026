@@ -1,19 +1,6 @@
 {
     "version": 2,
-    "functions": {
-        "index.js": {
-            "runtime": "@vercel/node"
-        }
-    },
     "rewrites": [
-        {
-            "source": "/login",
-            "destination": "/index.js"
-        },
-        {
-            "source": "/registro",
-            "destination": "/index.js"
-        },
         {
             "source": "/(.*)",
             "destination": "/index.js"
