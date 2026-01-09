@@ -12,23 +12,7 @@ const allowedOrigins = [
     'http://localhost:5173'
 ];
 
-// 1. MANEJO MANUAL DE OPTIONS (CORS PREFLIGHT)
-app.options('*', (req, res) => {
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin) || (origin && origin.endsWith('.vercel.app'))) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    } else {
-        res.setHeader('Access-Control-Allow-Origin', 'https://quiniela-2026.pages.dev');
-        res.setHeader('Access-Control-Allow-Origin', 'https://quiniela-golmaster-2026.pages.dev');
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization, Accept, Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.status(200).end();
-});
-
-// 2. CONFIGURACIÓN DE CORS
-app.use(cors({
+const corsOptions = {
     origin: function (origin, callback) {
         if (!origin) return callback(null, true);
         const isAllowedVercel = origin.endsWith('.vercel.app');
@@ -36,11 +20,16 @@ app.use(cors({
         if (isExplicitlyAllowed || isAllowedVercel) {
             callback(null, true);
         } else {
-            callback(null, true);
+            callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true
-}));
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['X-Requested-With', 'content-type', 'Authorization', 'Accept', 'Origin']
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
