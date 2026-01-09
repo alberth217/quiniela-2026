@@ -240,6 +240,68 @@ app.get('/mis-puntos/:id', async (req, res) => {
     }
 });
 
+// --- RUTA TEMPORAL PARA POBLAR GRUPOS ---
+app.get('/dev/seed-groups', async (req, res) => {
+    try {
+        const sql = `
+            INSERT INTO posiciones (grupo, posicion, equipo, logo) VALUES 
+            ('A', 1, 'México', 'https://flagcdn.com/w40/mx.png'),
+            ('A', 2, 'Sudáfrica', 'https://flagcdn.com/w40/za.png'),
+            ('A', 3, 'Corea del Sur', 'https://flagcdn.com/w40/kr.png'),
+            ('A', 4, 'Winner Playoff Path D', 'https://upload.wikimedia.org/wikipedia/commons/a/a1/FIFA_World_Cup_2026_logo.svg'),
+            ('B', 1, 'Canadá', 'https://flagcdn.com/w40/ca.png'),
+            ('B', 2, 'Winner Playoff Path A', 'https://upload.wikimedia.org/wikipedia/commons/a/a1/FIFA_World_Cup_2026_logo.svg'),
+            ('B', 3, 'Catar', 'https://flagcdn.com/w40/qa.png'),
+            ('B', 4, 'Suiza', 'https://flagcdn.com/w40/ch.png'),
+            ('C', 1, 'Brasil', 'https://flagcdn.com/w40/br.png'),
+            ('C', 2, 'Marruecos', 'https://flagcdn.com/w40/ma.png'),
+            ('C', 3, 'Haití', 'https://flagcdn.com/w40/ht.png'),
+            ('C', 4, 'Escocia', 'https://flagcdn.com/w40/gb-sct.png'),
+            ('D', 1, 'Estados Unidos', 'https://flagcdn.com/w40/us.png'),
+            ('D', 2, 'Paraguay', 'https://flagcdn.com/w40/py.png'),
+            ('D', 3, 'Australia', 'https://flagcdn.com/w40/au.png'),
+            ('D', 4, 'Winner Playoff Path C', 'https://upload.wikimedia.org/wikipedia/commons/a/a1/FIFA_World_Cup_2026_logo.svg'),
+            ('E', 1, 'Alemania', 'https://flagcdn.com/w40/de.png'),
+            ('E', 2, 'Curacao', 'https://flagcdn.com/w40/cw.png'),
+            ('E', 3, 'Costa de Marfil', 'https://flagcdn.com/w40/ci.png'),
+            ('E', 4, 'Ecuador', 'https://flagcdn.com/w40/ec.png'),
+            ('F', 1, 'Países Bajos', 'https://flagcdn.com/w40/nl.png'),
+            ('F', 2, 'Japón', 'https://flagcdn.com/w40/jp.png'),
+            ('F', 3, 'Winner Playoff Path B', 'https://upload.wikimedia.org/wikipedia/commons/a/a1/FIFA_World_Cup_2026_logo.svg'),
+            ('F', 4, 'Túnez', 'https://flagcdn.com/w40/tn.png'),
+            ('G', 1, 'Bélgica', 'https://flagcdn.com/w40/be.png'),
+            ('G', 2, 'Egipto', 'https://flagcdn.com/w40/eg.png'),
+            ('G', 3, 'Irán', 'https://flagcdn.com/w40/ir.png'),
+            ('G', 4, 'Nueva Zelanda', 'https://flagcdn.com/w40/nz.png'),
+            ('H', 1, 'España', 'https://flagcdn.com/w40/es.png'),
+            ('H', 2, 'Cabo Verde', 'https://flagcdn.com/w40/cv.png'),
+            ('H', 3, 'Arabia Saudita', 'https://flagcdn.com/w40/sa.png'),
+            ('H', 4, 'Uruguay', 'https://flagcdn.com/w40/uy.png'),
+            ('I', 1, 'Francia', 'https://flagcdn.com/w40/fr.png'),
+            ('I', 2, 'Senegal', 'https://flagcdn.com/w40/sn.png'),
+            ('I', 3, 'Intercontinental Playoff Path 2', 'https://upload.wikimedia.org/wikipedia/commons/a/a1/FIFA_World_Cup_2026_logo.svg'),
+            ('I', 4, 'Noruega', 'https://flagcdn.com/w40/no.png'),
+            ('J', 1, 'Argentina', 'https://flagcdn.com/w40/ar.png'),
+            ('J', 2, 'Argelia', 'https://flagcdn.com/w40/dz.png'),
+            ('J', 3, 'Austria', 'https://flagcdn.com/w40/at.png'),
+            ('J', 4, 'Jordania', 'https://flagcdn.com/w40/jo.png'),
+            ('K', 1, 'Portugal', 'https://flagcdn.com/w40/pt.png'),
+            ('K', 2, 'Intercontinental Playoff Path 1', 'https://upload.wikimedia.org/wikipedia/commons/a/a1/FIFA_World_Cup_2026_logo.svg'),
+            ('K', 3, 'Uzbekistán', 'https://flagcdn.com/w40/uz.png'),
+            ('K', 4, 'Colombia', 'https://flagcdn.com/w40/co.png'),
+            ('L', 1, 'Inglaterra', 'https://flagcdn.com/w40/gb-eng.png'),
+            ('L', 2, 'Croacia', 'https://flagcdn.com/w40/hr.png'),
+            ('L', 3, 'Ghana', 'https://flagcdn.com/w40/gh.png'),
+            ('L', 4, 'Panamá', 'https://flagcdn.com/w40/pa.png')
+            ON CONFLICT (grupo, equipo) DO UPDATE SET logo = EXCLUDED.logo;
+        `;
+        await pool.query(sql);
+        res.send("<h1>✅ Grupos del Mundial 2026 (A-L) cargados con éxito</h1>");
+    } catch (err) {
+        res.status(500).send("Error: " + err.message);
+    }
+});
+
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => console.log(`Backend on ${PORT}`));
