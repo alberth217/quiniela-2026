@@ -143,6 +143,103 @@ app.post('/predicciones', async (req, res) => {
     }
 });
 
+// --- RUTA RANKING ---
+app.get('/ranking', async (req, res) => {
+    try {
+        const query = `
+            SELECT u.id, u.nombre, 
+                COALESCE(SUM(
+                    CASE 
+                        WHEN p.estado = 'finalizado' THEN 
+                            CASE 
+                                WHEN pr.seleccion = (p.goles_a || '-' || p.goles_b) THEN 3
+                                WHEN (
+                                    (p.goles_a > p.goles_b AND split_part(pr.seleccion, '-', 1)::int > split_part(pr.seleccion, '-', 2)::int) OR
+                                    (p.goles_a < p.goles_b AND split_part(pr.seleccion, '-', 1)::int < split_part(pr.seleccion, '-', 2)::int) OR
+                                    (p.goles_a = p.goles_b AND split_part(pr.seleccion, '-', 1)::int = split_part(pr.seleccion, '-', 2)::int)
+                                ) THEN 1
+                                ELSE 0 
+                            END
+                        ELSE 0 
+                    END
+                ), 0) as puntos,
+                COALESCE(COUNT(CASE WHEN p.estado = 'finalizado' AND (
+                    pr.seleccion = (p.goles_a || '-' || p.goles_b) OR
+                    ((p.goles_a > p.goles_b AND split_part(pr.seleccion, '-', 1)::int > split_part(pr.seleccion, '-', 2)::int) OR
+                     (p.goles_a < p.goles_b AND split_part(pr.seleccion, '-', 1)::int < split_part(pr.seleccion, '-', 2)::int) OR
+                     (p.goles_a = p.goles_b AND split_part(pr.seleccion, '-', 1)::int = split_part(pr.seleccion, '-', 2)::int))
+                ) THEN 1 END), 0) as aciertos
+            FROM usuarios u
+            LEFT JOIN predicciones pr ON u.id = pr.usuario_id
+            LEFT JOIN partidos p ON pr.partido_id = p.id
+            GROUP BY u.id, u.nombre
+            ORDER BY puntos DESC, aciertos DESC;
+        `;
+        const result = await pool.query(query);
+        const ranking = result.rows.map((row, index) => ({
+            ...row,
+            posicion: index + 1
+        }));
+        res.json(ranking);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al obtener ranking" });
+    }
+});
+
+// --- RUTA MIS PUNTOS ---
+app.get('/mis-puntos/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const query = `
+            SELECT pr.*, 
+                   json_build_object(
+                       'equipo_a', p.equipo_a,
+                       'equipo_b', p.equipo_b,
+                       'goles_a', p.goles_a,
+                       'goles_b', p.goles_b,
+                       'estado', p.estado,
+                       'fecha', p.fecha
+                   ) as partido,
+                   CASE 
+                       WHEN p.estado = 'finalizado' THEN 
+                           CASE 
+                               WHEN pr.seleccion = (p.goles_a || '-' || p.goles_b) THEN 3
+                               WHEN (
+                                   (p.goles_a > p.goles_b AND split_part(pr.seleccion, '-', 1)::int > split_part(pr.seleccion, '-', 2)::int) OR
+                                   (p.goles_a < p.goles_b AND split_part(pr.seleccion, '-', 1)::int < split_part(pr.seleccion, '-', 2)::int) OR
+                                   (p.goles_a = p.goles_b AND split_part(pr.seleccion, '-', 1)::int = split_part(pr.seleccion, '-', 2)::int)
+                               ) THEN 1
+                               ELSE 0 
+                           END
+                       ELSE 0 
+                   END as puntos,
+                   CASE 
+                       WHEN p.estado = 'finalizado' THEN 
+                           CASE 
+                               WHEN pr.seleccion = (p.goles_a || '-' || p.goles_b) THEN 'Pleno'
+                               WHEN (
+                                   (p.goles_a > p.goles_b AND split_part(pr.seleccion, '-', 1)::int > split_part(pr.seleccion, '-', 2)::int) OR
+                                   (p.goles_a < p.goles_b AND split_part(pr.seleccion, '-', 1)::int < split_part(pr.seleccion, '-', 2)::int) OR
+                                   (p.goles_a = p.goles_b AND split_part(pr.seleccion, '-', 1)::int = split_part(pr.seleccion, '-', 2)::int)
+                               ) THEN 'Acertado'
+                               ELSE 'Fallado'
+                           END
+                       ELSE 'Pendiente'
+                   END as estado_resultado
+            FROM predicciones pr
+            JOIN partidos p ON pr.partido_id = p.id
+            WHERE pr.usuario_id = $1
+            ORDER BY p.id DESC;
+        `;
+        const result = await pool.query(query, [userId]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al obtener puntos del usuario" });
+    }
+});
+
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => console.log(`Backend on ${PORT}`));
