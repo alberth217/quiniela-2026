@@ -34,6 +34,7 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
 // --- STRIPE WEBHOOK ---
+// aun no se ve 
 // IMPORTANTE: Esto debe ir ANTES de express.json()
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
