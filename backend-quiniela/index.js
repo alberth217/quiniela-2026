@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
 
 const app = express();
 
@@ -32,6 +32,44 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+
+// --- STRIPE WEBHOOK ---
+// IMPORTANTE: Esto debe ir ANTES de express.json()
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+        if (!stripe) throw new Error("Stripe no inicializado");
+        // Asegúrate de usar tu STRIPE_WEBHOOK_SECRET en .env
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+        console.error(`Webhook Error: ${err.message}`);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        const usuario_id = session.metadata.usuario_id;
+
+        console.log(`✅ Pago recibido para usuario: ${usuario_id}`);
+
+        // Update database
+        try {
+            await pool.query(
+                "UPDATE usuarios SET pago_realizado = TRUE WHERE id = $1",
+                [usuario_id]
+            );
+            console.log(`✅ Usuario ${usuario_id} marcado como PAGADO.`);
+        } catch (dbError) {
+            console.error('Error updating user payment status:', dbError);
+            return res.status(500).send('Database Error');
+        }
+    }
+
+    res.send();
+});
 
 app.use(express.json());
 
@@ -146,6 +184,11 @@ app.post('/create-checkout-session', async (req, res) => {
 
         // Default amount 1000 cents = $10.00 USD
         const amount = monto ? parseInt(monto) * 100 : 1000;
+
+        if (!stripe) {
+            console.error("Stripe secret key not found");
+            return res.status(500).json({ message: "Servicio de pagos no configurado" });
+        }
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
