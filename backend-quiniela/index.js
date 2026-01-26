@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
-const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
+// const stripe = ... (Moved initialized to inside route)
 
 const app = express();
 
@@ -186,10 +186,11 @@ app.post('/create-checkout-session', async (req, res) => {
         // Default amount 1000 cents = $10.00 USD
         const amount = monto ? parseInt(monto) * 100 : 1000;
 
+        // Initialize Stripe dynamically to ensure env var is loaded
+        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
         if (!stripe) {
-            console.error("Stripe secret key not found");
-            const debugInfo = process.env.STRIPE_SECRET_KEY ? "Key existe pero modulo falló" : "Key es UNDEFINED";
-            return res.status(500).json({ message: `Servicio de pagos no configurado. Debug: ${debugInfo}` });
+            throw new Error("Stripe initialization failed");
         }
 
         const session = await stripe.checkout.sessions.create({
