@@ -188,7 +188,8 @@ app.post('/create-checkout-session', async (req, res) => {
 
         if (!stripe) {
             console.error("Stripe secret key not found");
-            return res.status(500).json({ message: "Servicio de pagos no configurado" });
+            const debugInfo = process.env.STRIPE_SECRET_KEY ? "Key existe pero modulo falló" : "Key es UNDEFINED";
+            return res.status(500).json({ message: `Servicio de pagos no configurado. Debug: ${debugInfo}` });
         }
 
         const session = await stripe.checkout.sessions.create({
