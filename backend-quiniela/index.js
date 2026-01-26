@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 
@@ -131,6 +133,46 @@ app.post('/predicciones', async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ message: "Error al guardar predicción" });
+    }
+});
+
+app.post('/create-checkout-session', async (req, res) => {
+    try {
+        const { usuario_id, monto } = req.body;
+
+        if (!usuario_id) {
+            return res.status(400).json({ message: 'Usuario ID es requerido' });
+        }
+
+        // Default amount 1000 cents = $10.00 USD
+        const amount = monto ? parseInt(monto) * 100 : 1000;
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: 'Inscripción Quiniela 2026',
+                        },
+                        unit_amount: amount,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: 'http://localhost:5173/pago-exitoso',
+            cancel_url: 'http://localhost:5173/pago-fallido',
+            metadata: {
+                usuario_id: usuario_id.toString(),
+            },
+        });
+
+        res.json({ url: session.url });
+    } catch (err) {
+        console.error("Stripe Error:", err.message);
+        res.status(500).json({ message: "Error al crear sesión de pago" });
     }
 });
 
