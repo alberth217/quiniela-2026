@@ -7,6 +7,7 @@ import {
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import RulesSection from './RulesSection';
 import config from './config';
+import BotonPagar from './BotonPagar';
 
 const { API_URL } = config;
 
@@ -216,34 +217,58 @@ function Dashboard() {
         </div>
 
         {/* GRID DE PARTIDOS (4 COLUMNAS + TARJETAS CORREGIDAS) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {loading ? (
-            <div className="col-span-full flex flex-col items-center justify-center py-24 text-slate-400">
-              <Loader size={40} className="animate-spin mb-4 text-blue-600" />
-              <p>Cargando partidos...</p>
+        {activeTab === 'Partidos' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {loading ? (
+              <div className="col-span-full flex flex-col items-center justify-center py-24 text-slate-400">
+                <Loader size={40} className="animate-spin mb-4 text-blue-600" />
+                <p>Cargando partidos...</p>
+              </div>
+            ) : filteredMatches.length > 0 ? (
+              filteredMatches.map((match) => {
+                const existingPrediction = userPredictions.find(p => p.partido_id === match.id);
+                const unsaved = unsavedPredictions[match.id];
+                return (
+                  <MatchCard
+                    key={match.id}
+                    match={match}
+                    existingPrediction={existingPrediction}
+                    unsavedPrediction={unsaved}
+                    onChange={handlePredictionChange}
+                  />
+                );
+              })
+            ) : (
+              <div className="col-span-full text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
+                <Shield size={48} className="mx-auto text-slate-200 mb-3" />
+                <p className="text-slate-500 font-medium">No hay partidos que coincidan con tu búsqueda.</p>
+                <button onClick={() => { setSearchTerm(''); setFilterStage('Todos') }} className="text-blue-600 text-sm font-bold mt-2 hover:underline">Limpiar filtros</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* CONTENIDO TAB PAGOS */}
+        {activeTab === 'Pagos' && (
+          <div className="flex flex-col items-center justify-center py-12 bg-white rounded-2xl shadow-sm border border-slate-200 text-center max-w-2xl mx-auto">
+            <div className="bg-blue-50 p-4 rounded-full mb-6">
+              <Ticket size={48} className="text-blue-600" />
             </div>
-          ) : filteredMatches.length > 0 ? (
-            filteredMatches.map((match) => {
-              const existingPrediction = userPredictions.find(p => p.partido_id === match.id);
-              const unsaved = unsavedPredictions[match.id];
-              return (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  existingPrediction={existingPrediction}
-                  unsavedPrediction={unsaved}
-                  onChange={handlePredictionChange}
-                />
-              );
-            })
-          ) : (
-            <div className="col-span-full text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
-              <Shield size={48} className="mx-auto text-slate-200 mb-3" />
-              <p className="text-slate-500 font-medium">No hay partidos que coincidan con tu búsqueda.</p>
-              <button onClick={() => { setSearchTerm(''); setFilterStage('Todos') }} className="text-blue-600 text-sm font-bold mt-2 hover:underline">Limpiar filtros</button>
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">Inscripción al Mundial</h2>
+            <p className="text-slate-500 mb-8 max-w-md mx-auto">
+              Asegura tu participación en la quiniela. Realiza el pago único para competir por los premios.
+            </p>
+
+            {/* Si el usuario ya pagó (podríamos chequear currentUser.pago_realizado si lo tuviéramos actualizado en frontend, por ahora mostramos el botón) */}
+            <div className="w-full max-w-xs">
+              <BotonPagar />
             </div>
-          )}
-        </div>
+
+            <p className="text-xs text-slate-400 mt-6">
+              Pagos procesados de forma segura por Stripe.
+            </p>
+          </div>
+        )}
 
       </main>
 
