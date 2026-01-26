@@ -208,8 +208,8 @@ app.post('/create-checkout-session', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'https://alberth217-quiniela-2026-ree1.vercel.app/pago-exitoso',
-            cancel_url: 'https://alberth217-quiniela-2026-ree1.vercel.app/pago-fallido',
+            success_url: 'https://quiniela-2026.pages.dev/pago-exitoso',
+            cancel_url: 'https://quiniela-2026.pages.dev/pago-fallido',
             metadata: {
                 usuario_id: usuario_id.toString(),
             },
