@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
-const ProtectedRoute = ({ children, requirePayment = false }) => {
+const ProtectedRoute = ({ children, requirePayment = false, requireAdmin = false }) => {
     const location = useLocation();
     const userStr = localStorage.getItem('currentUser');
 
@@ -14,11 +14,12 @@ const ProtectedRoute = ({ children, requirePayment = false }) => {
 
     // 2. Check if payment is required and not made
     if (requirePayment && !user.pago_realizado) {
-        // Redirect to Dashboard where the payment button is located, passing a state to open the 'Pagos' tab optionally
-        // or we could redirect to a specific "Payment Required" page if it existed.
-        // For now, let's redirect to Dashboard with a query param or state?
-        // Actually, simply redirecting to dashboard (which is accessible) stands as the "Payment Required" landing
         return <Navigate to="/dashboard?tab=pagos" replace />;
+    }
+
+    // 3. Check if admin is required
+    if (requireAdmin && !user.es_admin) {
+        return <Navigate to="/dashboard" replace />;
     }
 
     return children;

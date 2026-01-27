@@ -38,6 +38,9 @@ const Navbar = ({ currentUser, onLogout }) => {
                     <NavItem to="/ranking" icon={Trophy} label="Ranking" />
                     <NavItem to="/reglas" icon={Book} label="Reglas" />
                     <NavItem to="/pagos" icon={Ticket} label="Pagos" />
+                    {currentUser?.es_admin && (
+                        <NavItem to="/admin" icon={ClipboardList} label="Admin Panel" />
+                    )}
                 </div>
 
                 {/* USER & ACTIONS */}

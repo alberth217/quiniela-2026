@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import Login from './Login';
 import Register from './Register';
-import Admin from './Admin';
+import AdminPanel from './AdminPanel';
 import ProtectedRoute from './ProtectedRoute';
 import PagoExitoso from './PagoExitoso';
 import PagoFallido from './PagoFallido';
@@ -33,12 +33,14 @@ function App() {
         <Route path="/perfil" element={<Perfil />} />
       </Route>
 
-      {/* Admin sigue protegido independientemente */}
+      {/* Admin Route */}
       <Route path="/admin" element={
-        <ProtectedRoute>
-          <Admin />
+        <ProtectedRoute requireAdmin={true}>
+          <DashboardLayout />
         </ProtectedRoute>
-      } />
+      }>
+        <Route index element={<AdminPanel />} />
+      </Route>
 
       <Route path="/pago-exitoso" element={<PagoExitoso />} />
       <Route path="/pago-fallido" element={<PagoFallido />} />

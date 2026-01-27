@@ -33,6 +33,31 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
+// --- RUTAS ADMIN ---
+
+// Update match result (Protected)
+app.put('/admin/partidos/:id', verifyAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { goles_a, goles_b } = req.body;
+
+        // Finalize match and update score
+        const result = await pool.query(
+            "UPDATE partidos SET goles_a = $1, goles_b = $2, estado = 'finalizado' WHERE id = $3 RETURNING *",
+            [goles_a, goles_b, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Partido no encontrado" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al actualizar partido" });
+    }
+});
+
 // --- STRIPE WEBHOOK ---
 // aun no se ve 
 // IMPORTANTE: Esto debe ir ANTES de express.json()
@@ -118,7 +143,7 @@ app.post('/registro', async (req, res) => {
 app.get('/usuarios/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await pool.query("SELECT id, nombre, email, pago_realizado FROM usuarios WHERE id = $1", [id]);
+        const result = await pool.query("SELECT id, nombre, email, pago_realizado, es_admin FROM usuarios WHERE id = $1", [id]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ message: "Usuario no encontrado" });
@@ -129,130 +154,162 @@ app.get('/usuarios/:id', async (req, res) => {
         console.error(err.message);
         res.status(500).json({ message: "Error del servidor" });
     }
-});
 
-app.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const result = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
-        if (result.rows.length === 0) {
-            return res.status(401).json({ message: "Usuario no registrado" });
+
+    // --- MIDDLEWARES ---
+    const verifyAdmin = async (req, res, next) => {
+        // For now, we trust the 'user_id' sent in body or headers, OR we re-verify with DB if available.
+        // Ideally we use a JWT token. Since we don't have JWT yet, we will check a custom header 'X-Admin-ID' or body.
+        // BETTER SECURE APPROACH FOR THIS STAGE:
+        // The frontend should send the user ID in the update request body or params?
+        // Let's assume the frontend sends 'admin_id' in the body to verify.
+        // OR BETTER: Check the DB for the user corresponding to the session/request.
+
+        // TEMPORARY: Check a header 'x-user-id' sent by frontend 
+        const userId = req.headers['x-user-id'];
+        if (!userId) return res.status(401).json({ message: "No autorizado (Falta ID)" });
+
+        try {
+            const result = await pool.query("SELECT es_admin FROM usuarios WHERE id = $1", [userId]);
+            if (result.rows.length === 0 || !result.rows[0].es_admin) {
+                return res.status(403).json({ message: "Acceso denegado. Requiere Admin." });
+            }
+            next();
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Error verificando permisos" });
         }
-        const usuario = result.rows[0];
-        if (password !== usuario.password) {
-            return res.status(401).json({ message: "Contraseña incorrecta" });
+    };
+
+    app.post('/login', async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            const result = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
+            if (result.rows.length === 0) {
+                return res.status(401).json({ message: "Usuario no registrado" });
+            }
+            const usuario = result.rows[0];
+            if (password !== usuario.password) {
+                return res.status(401).json({ message: "Contraseña incorrecta" });
+            }
+            // Include es_admin in response
+            res.json({
+                id: usuario.id,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                pago_realizado: usuario.pago_realizado,
+                es_admin: usuario.es_admin
+            });
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: "Error en login" });
         }
-        res.json(usuario);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: "Error en login" });
-    }
-});
+    });
 
-app.get('/partidos', async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM partidos ORDER BY id ASC");
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: "Error al obtener partidos" });
-    }
-});
+    app.get('/partidos', async (req, res) => {
+        try {
+            const result = await pool.query("SELECT * FROM partidos ORDER BY id ASC");
+            res.json(result.rows);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: "Error al obtener partidos" });
+        }
+    });
 
-app.get('/posiciones', async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM posiciones ORDER BY grupo ASC, posicion ASC");
-        const grupos = {};
-        result.rows.forEach(row => {
-            if (!grupos[row.grupo]) grupos[row.grupo] = [];
-            grupos[row.grupo].push(row);
-        });
-        res.json(grupos);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: "Error al obtener posiciones" });
-    }
-});
+    app.get('/posiciones', async (req, res) => {
+        try {
+            const result = await pool.query("SELECT * FROM posiciones ORDER BY grupo ASC, posicion ASC");
+            const grupos = {};
+            result.rows.forEach(row => {
+                if (!grupos[row.grupo]) grupos[row.grupo] = [];
+                grupos[row.grupo].push(row);
+            });
+            res.json(grupos);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: "Error al obtener posiciones" });
+        }
+    });
 
-app.get('/predicciones', async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM predicciones");
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: "Error al obtener predicciones" });
-    }
-});
+    app.get('/predicciones', async (req, res) => {
+        try {
+            const result = await pool.query("SELECT * FROM predicciones");
+            res.json(result.rows);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: "Error al obtener predicciones" });
+        }
+    });
 
-app.post('/predicciones', async (req, res) => {
-    try {
-        const { usuario_id, partido_id, tipo_prediccion, seleccion } = req.body;
-        const query = `
+    app.post('/predicciones', async (req, res) => {
+        try {
+            const { usuario_id, partido_id, tipo_prediccion, seleccion } = req.body;
+            const query = `
             INSERT INTO predicciones (usuario_id, partido_id, tipo_prediccion, seleccion)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (usuario_id, partido_id)
             DO UPDATE SET tipo_prediccion = $3, seleccion = $4
             RETURNING *;
         `;
-        const result = await pool.query(query, [usuario_id, partido_id, tipo_prediccion, seleccion]);
-        res.json(result.rows[0]);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: "Error al guardar predicción" });
-    }
-});
-
-app.post('/create-checkout-session', async (req, res) => {
-    try {
-        const { usuario_id, monto } = req.body;
-
-        if (!usuario_id) {
-            return res.status(400).json({ message: 'Usuario ID es requerido' });
+            const result = await pool.query(query, [usuario_id, partido_id, tipo_prediccion, seleccion]);
+            res.json(result.rows[0]);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: "Error al guardar predicción" });
         }
+    });
 
-        // Default amount 1000 cents = $10.00 USD
-        const amount = monto ? parseInt(monto) * 100 : 1000;
+    app.post('/create-checkout-session', async (req, res) => {
+        try {
+            const { usuario_id, monto } = req.body;
 
-        // Initialize Stripe dynamically to ensure env var is loaded
-        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+            if (!usuario_id) {
+                return res.status(400).json({ message: 'Usuario ID es requerido' });
+            }
 
-        if (!stripe) {
-            throw new Error("Stripe initialization failed");
-        }
+            // Default amount 1000 cents = $10.00 USD
+            const amount = monto ? parseInt(monto) * 100 : 1000;
 
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'usd',
-                        product_data: {
-                            name: 'Inscripción Quiniela 2026',
+            // Initialize Stripe dynamically to ensure env var is loaded
+            const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+            if (!stripe) {
+                throw new Error("Stripe initialization failed");
+            }
+
+            const session = await stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: [
+                    {
+                        price_data: {
+                            currency: 'usd',
+                            product_data: {
+                                name: 'Inscripción Quiniela 2026',
+                            },
+                            unit_amount: amount,
                         },
-                        unit_amount: amount,
+                        quantity: 1,
                     },
-                    quantity: 1,
+                ],
+                mode: 'payment',
+                success_url: 'https://quiniela-2026.pages.dev/pago-exitoso',
+                cancel_url: 'https://quiniela-2026.pages.dev/pago-fallido',
+                metadata: {
+                    usuario_id: usuario_id.toString(),
                 },
-            ],
-            mode: 'payment',
-            success_url: 'https://quiniela-2026.pages.dev/pago-exitoso',
-            cancel_url: 'https://quiniela-2026.pages.dev/pago-fallido',
-            metadata: {
-                usuario_id: usuario_id.toString(),
-            },
-        });
+            });
 
-        res.json({ url: session.url });
-    } catch (err) {
-        console.error("Stripe Error:", err.message);
-        res.status(500).json({ message: "Error al crear sesión de pago" });
-    }
-});
+            res.json({ url: session.url });
+        } catch (err) {
+            console.error("Stripe Error:", err.message);
+            res.status(500).json({ message: "Error al crear sesión de pago" });
+        }
+    });
 
-// --- RUTA RANKING ---
-app.get('/ranking', async (req, res) => {
-    try {
-        const query = `
+    // --- RUTA RANKING ---
+    app.get('/ranking', async (req, res) => {
+        try {
+            const query = `
             SELECT u.id, u.nombre, 
                 COALESCE(SUM(
                     CASE 
@@ -281,23 +338,23 @@ app.get('/ranking', async (req, res) => {
             GROUP BY u.id, u.nombre
             ORDER BY puntos DESC, aciertos DESC;
         `;
-        const result = await pool.query(query);
-        const ranking = result.rows.map((row, index) => ({
-            ...row,
-            posicion: index + 1
-        }));
-        res.json(ranking);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: "Error al obtener ranking" });
-    }
-});
+            const result = await pool.query(query);
+            const ranking = result.rows.map((row, index) => ({
+                ...row,
+                posicion: index + 1
+            }));
+            res.json(ranking);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: "Error al obtener ranking" });
+        }
+    });
 
-// --- RUTA MIS PUNTOS ---
-app.get('/mis-puntos/:id', async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const query = `
+    // --- RUTA MIS PUNTOS ---
+    app.get('/mis-puntos/:id', async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const query = `
             SELECT pr.*, 
                    json_build_object(
                        'equipo_a', p.equipo_a,
@@ -338,18 +395,18 @@ app.get('/mis-puntos/:id', async (req, res) => {
             WHERE pr.usuario_id = $1
             ORDER BY p.id DESC;
         `;
-        const result = await pool.query(query, [userId]);
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: "Error al obtener puntos del usuario" });
-    }
-});
+            const result = await pool.query(query, [userId]);
+            res.json(result.rows);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: "Error al obtener puntos del usuario" });
+        }
+    });
 
-// --- RUTA TEMPORAL PARA POBLAR GRUPOS ---
-app.get('/dev/seed-groups', async (req, res) => {
-    try {
-        const sql = `
+    // --- RUTA TEMPORAL PARA POBLAR GRUPOS ---
+    app.get('/dev/seed-groups', async (req, res) => {
+        try {
+            const sql = `
             INSERT INTO posiciones (grupo, posicion, equipo, logo) VALUES 
             ('A', 1, 'México', 'https://flagcdn.com/w40/mx.png'),
             ('A', 2, 'Sudáfrica', 'https://flagcdn.com/w40/za.png'),
@@ -401,16 +458,16 @@ app.get('/dev/seed-groups', async (req, res) => {
             ('L', 4, 'Panamá', 'https://flagcdn.com/w40/pa.png')
             ON CONFLICT (grupo, equipo) DO UPDATE SET logo = EXCLUDED.logo;
         `;
-        await pool.query(sql);
-        res.send("<h1>✅ Grupos del Mundial 2026 (A-L) cargados con éxito</h1>");
-    } catch (err) {
-        res.status(500).send("Error: " + err.message);
+            await pool.query(sql);
+            res.send("<h1>✅ Grupos del Mundial 2026 (A-L) cargados con éxito</h1>");
+        } catch (err) {
+            res.status(500).send("Error: " + err.message);
+        }
+    });
+
+    if (process.env.NODE_ENV !== 'production') {
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => console.log(`Backend on ${PORT}`));
     }
-});
 
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`Backend on ${PORT}`));
-}
-
-module.exports = app;
+    module.exports = app;
