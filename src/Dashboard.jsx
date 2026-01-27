@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Trophy, Home, BarChart2, LogOut, Search,
   Calendar, Clock, Loader, Save, Lock,
-  Ticket, AlertTriangle, Shield, TrendingUp, Star, X
+  Ticket, AlertTriangle, Shield, TrendingUp, Star, X, CheckCircle
 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import RulesSection from './RulesSection';
@@ -15,8 +15,6 @@ function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('Partidos');
-
-
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -36,11 +34,14 @@ function Dashboard() {
   const [unsavedPredictions, setUnsavedPredictions] = useState({});
   const [loading, setLoading] = useState(true);
   const [savingBatch, setSavingBatch] = useState(false);
+
+  // Inicialización segura de currentUser desde localStorage
   const [currentUser, setCurrentUser] = useState(() => {
     const userStr = localStorage.getItem('currentUser');
     return userStr ? JSON.parse(userStr) : null;
   });
 
+  // Calculamos isPremium después de tener currentUser
   const isPremium = currentUser?.pago_realizado;
 
   // Estados de Filtros
@@ -70,6 +71,27 @@ function Dashboard() {
         setLoading(true);
         const matchesRes = await fetch(`${API_URL}/partidos`);
         const predictionsRes = await fetch(`${API_URL}/predicciones`);
+
+        // NEW: Sincronizar estado del usuario (pago) desde el backend
+        if (userId) {
+          try {
+            const userRes = await fetch(`${API_URL}/usuarios/${userId}`);
+            if (userRes.ok) {
+              const freshUser = await userRes.json();
+              const storedUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+              // Si el estado de pago cambió en la DB (por Webhook), actualizamos local
+              if (freshUser.pago_realizado !== storedUser.pago_realizado) {
+                console.log("🔄 Sincronizando estado de pago confirmado...");
+                const updatedUser = { ...storedUser, pago_realizado: freshUser.pago_realizado };
+                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                setCurrentUser(updatedUser);
+              }
+            }
+          } catch (err) {
+            console.error("Error sincronizando usuario:", err);
+          }
+        }
 
         if (matchesRes.ok && predictionsRes.ok) {
           const matchesData = await matchesRes.json();
@@ -291,7 +313,7 @@ function Dashboard() {
               </p>
 
               {/* Estado de Pagos Condicional */}
-              {currentUser && currentUser.pago_realizado ? (
+              {isPremium ? (
                 <div className="w-full max-w-xs bg-green-50 border border-green-200 rounded-xl p-6 flex flex-col items-center animate-fade-in-up">
                   <div className="bg-green-100 p-3 rounded-full mb-3">
                     <CheckCircle size={32} className="text-green-600" />
@@ -437,7 +459,7 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
             <Lock size={10} /> Finalizado
           </span>
         ) : (
-          <span className="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full flex items-center gap-1 border border-green-100">
+          <span className="text-[10px] font-bold text-green-700 bg-green-50 bg-opacity-50 px-2 py-0.5 rounded-full flex items-center gap-1 border border-green-100">
             <Clock size={10} /> {match.hora}
           </span>
         )}
