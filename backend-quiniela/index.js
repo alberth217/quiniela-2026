@@ -27,36 +27,84 @@ const corsOptions = {
     },
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['X-Requested-With', 'content-type', 'Authorization', 'Accept', 'Origin']
-};
+    require('dotenv').config();
+    const express = require('express');
+    const cors = require('cors');
+    const pool = require('./db');
+    // const stripe = ... (Moved initialized to inside route)
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+    const app = express();
 
-// --- RUTAS ADMIN ---
+    const allowedOrigins = [
+        'https://quiniela-2026.pages.dev',
+        'https://quiniela-golmaster-2026.pages.dev',
+        'https://alberth217-quiniela-2026-m5gd.vercel.app',
+        'https://quiniela-2026.vercel.app',
+        'http://localhost:5173'
+    ];
 
-// Update match result (Protected)
-app.put('/admin/partidos/:id', verifyAdmin, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { goles_a, goles_b } = req.body;
+    const corsOptions = {
+        origin: function (origin, callback) {
+            if (!origin) return callback(null, true);
+            const isAllowedVercel = origin.endsWith('.vercel.app');
+            const isExplicitlyAllowed = allowedOrigins.includes(origin);
+            if (isExplicitlyAllowed || isAllowedVercel) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+        methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+        allowedHeaders: ['X-Requested-With', 'content-type', 'Authorization', 'Accept', 'Origin']
+    };
 
-        // Finalize match and update score
-        const result = await pool.query(
-            "UPDATE partidos SET goles_a = $1, goles_b = $2, estado = 'finalizado' WHERE id = $3 RETURNING *",
-            [goles_a, goles_b, id]
-        );
+    app.use(cors(corsOptions));
+    app.options('*', cors(corsOptions));
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: "Partido no encontrado" });
+    // --- MIDDLEWARES ---
+    const verifyAdmin = async (req, res, next) => {
+        // For now, we trust the 'user_id' sent in body or headers, OR we re-verify with DB if available.
+        // Ideally we use a JWT token. Since we don't have JWT yet, we will check a custom header 'X-Admin-ID' or body.
+        // BETTER SECURE APPROACH FOR THIS STAGE:
+        // The frontend should send the user ID in the update request body or params?
+        // Let's assume the frontend sends 'admin_id' in the body to verify.
+        // OR BETTER: Check the DB for the user corresponding to the session/request.
+
+        // TEMPORARY: Check a header 'x-user-id' sent by frontend 
+        const userId = req.headers['x-user-id'];
+        if (!userId) return res.status(401).json({ message: "No autorizado (Falta ID)" });
+
+        try {
+            const result = await pool.query("SELECT es_admin FROM usuarios WHERE id = $1", [userId]);
+            if (result.rows.length === 0 || !result.rows[0].es_admin) {
+                return res.status(403).json({ message: "Acceso denegado. Requiere Admin." });
+            }
+            next();
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Error verificando permisos" });
         }
+        try {
+            const { id } = req.params;
+            const { goles_a, goles_b } = req.body;
 
-        res.json(result.rows[0]);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: "Error al actualizar partido" });
-    }
-});
+            // Finalize match and update score
+            const result = await pool.query(
+                "UPDATE partidos SET goles_a = $1, goles_b = $2, estado = 'finalizado' WHERE id = $3 RETURNING *",
+                [goles_a, goles_b, id]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({ message: "Partido no encontrado" });
+            }
+
+            res.json(result.rows[0]);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: "Error al actualizar partido" });
+        }
+    });
 
 // --- STRIPE WEBHOOK ---
 // aun no se ve 
@@ -471,5 +519,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = app;
-/ /   t r i g g e r   r e d e p l o y  
+/ /   t r i g g e r   r e d e p l o y 
+ 
  
