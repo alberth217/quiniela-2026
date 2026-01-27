@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
-// const stripe = ... (Moved initialized to inside route)
+// const stripe = ... (initialized dynamically inside routes)
 
 const app = express();
 
@@ -27,98 +27,63 @@ const corsOptions = {
     },
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
-    require('dotenv').config();
-    const express = require('express');
-    const cors = require('cors');
-    const pool = require('./db');
-    // const stripe = ... (Moved initialized to inside route)
+    allowedHeaders: ['X-Requested-With', 'content-type', 'Authorization', 'Accept', 'Origin', 'x-user-id']
+};
 
-    const app = express();
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
-    const allowedOrigins = [
-        'https://quiniela-2026.pages.dev',
-        'https://quiniela-golmaster-2026.pages.dev',
-        'https://alberth217-quiniela-2026-m5gd.vercel.app',
-        'https://quiniela-2026.vercel.app',
-        'http://localhost:5173'
-    ];
+// --- MIDDLEWARES ---
+const verifyAdmin = async (req, res, next) => {
+    const userId = req.headers['x-user-id'];
+    if (!userId) return res.status(401).json({ message: "No autorizado (Falta ID)" });
 
-    const corsOptions = {
-        origin: function (origin, callback) {
-            if (!origin) return callback(null, true);
-            const isAllowedVercel = origin.endsWith('.vercel.app');
-            const isExplicitlyAllowed = allowedOrigins.includes(origin);
-            if (isExplicitlyAllowed || isAllowedVercel) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
-        credentials: true,
-        methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
-        allowedHeaders: ['X-Requested-With', 'content-type', 'Authorization', 'Accept', 'Origin']
-    };
-
-    app.use(cors(corsOptions));
-    app.options('*', cors(corsOptions));
-
-    // --- MIDDLEWARES ---
-    const verifyAdmin = async (req, res, next) => {
-        // For now, we trust the 'user_id' sent in body or headers, OR we re-verify with DB if available.
-        // Ideally we use a JWT token. Since we don't have JWT yet, we will check a custom header 'X-Admin-ID' or body.
-        // BETTER SECURE APPROACH FOR THIS STAGE:
-        // The frontend should send the user ID in the update request body or params?
-        // Let's assume the frontend sends 'admin_id' in the body to verify.
-        // OR BETTER: Check the DB for the user corresponding to the session/request.
-
-        // TEMPORARY: Check a header 'x-user-id' sent by frontend 
-        const userId = req.headers['x-user-id'];
-        if (!userId) return res.status(401).json({ message: "No autorizado (Falta ID)" });
-
-        try {
-            const result = await pool.query("SELECT es_admin FROM usuarios WHERE id = $1", [userId]);
-            if (result.rows.length === 0 || !result.rows[0].es_admin) {
-                return res.status(403).json({ message: "Acceso denegado. Requiere Admin." });
-            }
-            next();
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Error verificando permisos" });
+    try {
+        const result = await pool.query("SELECT es_admin FROM usuarios WHERE id = $1", [userId]);
+        if (result.rows.length === 0 || !result.rows[0].es_admin) {
+            return res.status(403).json({ message: "Acceso denegado. Requiere Admin." });
         }
-        try {
-            const { id } = req.params;
-            const { goles_a, goles_b } = req.body;
+        next();
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Error verificando permisos" });
+    }
+};
 
-            // Finalize match and update score
-            const result = await pool.query(
-                "UPDATE partidos SET goles_a = $1, goles_b = $2, estado = 'finalizado' WHERE id = $3 RETURNING *",
-                [goles_a, goles_b, id]
-            );
+// --- RUTAS ADMIN ---
 
-            if (result.rows.length === 0) {
-                return res.status(404).json({ message: "Partido no encontrado" });
-            }
+// Update match result (Protected)
+app.put('/admin/partidos/:id', verifyAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { goles_a, goles_b } = req.body;
 
-            res.json(result.rows[0]);
-        } catch (err) {
-            console.error(err.message);
-            res.status(500).json({ message: "Error al actualizar partido" });
+        // Finalize match and update score
+        const result = await pool.query(
+            "UPDATE partidos SET goles_a = $1, goles_b = $2, estado = 'finalizado' WHERE id = $3 RETURNING *",
+            [goles_a, goles_b, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Partido no encontrado" });
         }
-    });
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al actualizar partido" });
+    }
+});
 
 // --- STRIPE WEBHOOK ---
-// aun no se ve 
 // IMPORTANTE: Esto debe ir ANTES de express.json()
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
 
     try {
-        // Initialize Stripe dynamically here too
         const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
         if (!stripe) throw new Error("Stripe no inicializado");
-        // Asegúrate de usar tu STRIPE_WEBHOOK_SECRET en .env
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     } catch (err) {
         console.error(`Webhook Error: ${err.message}`);
@@ -203,31 +168,6 @@ app.get('/usuarios/:id', async (req, res) => {
         res.status(500).json({ message: "Error del servidor" });
     }
 });
-
-// --- MIDDLEWARES ---
-const verifyAdmin = async (req, res, next) => {
-    // For now, we trust the 'user_id' sent in body or headers, OR we re-verify with DB if available.
-    // Ideally we use a JWT token. Since we don't have JWT yet, we will check a custom header 'X-Admin-ID' or body.
-    // BETTER SECURE APPROACH FOR THIS STAGE:
-    // The frontend should send the user ID in the update request body or params?
-    // Let's assume the frontend sends 'admin_id' in the body to verify.
-    // OR BETTER: Check the DB for the user corresponding to the session/request.
-
-    // TEMPORARY: Check a header 'x-user-id' sent by frontend 
-    const userId = req.headers['x-user-id'];
-    if (!userId) return res.status(401).json({ message: "No autorizado (Falta ID)" });
-
-    try {
-        const result = await pool.query("SELECT es_admin FROM usuarios WHERE id = $1", [userId]);
-        if (result.rows.length === 0 || !result.rows[0].es_admin) {
-            return res.status(403).json({ message: "Acceso denegado. Requiere Admin." });
-        }
-        next();
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: "Error verificando permisos" });
-    }
-};
 
 app.post('/login', async (req, res) => {
     try {
@@ -377,8 +317,8 @@ app.get('/ranking', async (req, res) => {
                 COALESCE(COUNT(CASE WHEN p.estado = 'finalizado' AND (
                     pr.seleccion = (p.goles_a || '-' || p.goles_b) OR
                     ((p.goles_a > p.goles_b AND split_part(pr.seleccion, '-', 1)::int > split_part(pr.seleccion, '-', 2)::int) OR
-                     (p.goles_a < p.goles_b AND split_part(pr.seleccion, '-', 1)::int < split_part(pr.seleccion, '-', 2)::int) OR
-                     (p.goles_a = p.goles_b AND split_part(pr.seleccion, '-', 1)::int = split_part(pr.seleccion, '-', 2)::int))
+                    (p.goles_a < p.goles_b AND split_part(pr.seleccion, '-', 1)::int < split_part(pr.seleccion, '-', 2)::int) OR
+                    (p.goles_a = p.goles_b AND split_part(pr.seleccion, '-', 1)::int = split_part(pr.seleccion, '-', 2)::int))
                 ) THEN 1 END), 0) as aciertos
             FROM usuarios u
             LEFT JOIN predicciones pr ON u.id = pr.usuario_id
@@ -519,6 +459,3 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = app;
-/ /   t r i g g e r   r e d e p l o y 
- 
- 
