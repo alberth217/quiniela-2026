@@ -16,6 +16,16 @@ function Dashboard() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('Partidos');
 
+  // Check for payment status
+  const isPremium = currentUser?.pago_realizado;
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'pagos') {
+      setActiveTab('Pagos');
+    }
+  }, []);
+
   // Estado para el Modal
   const [showWelcomeModal, setShowWelcomeModal] = useState(() => {
     return location.state?.fromLogin || false;
@@ -27,7 +37,10 @@ function Dashboard() {
   const [unsavedPredictions, setUnsavedPredictions] = useState({});
   const [loading, setLoading] = useState(true);
   const [savingBatch, setSavingBatch] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const userStr = localStorage.getItem('currentUser');
+    return userStr ? JSON.parse(userStr) : null;
+  });
 
   // Estados de Filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -218,132 +231,164 @@ function Dashboard() {
 
         {/* GRID DE PARTIDOS (4 COLUMNAS + TARJETAS CORREGIDAS) */}
         {activeTab === 'Partidos' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {loading ? (
-              <div className="col-span-full flex flex-col items-center justify-center py-24 text-slate-400">
-                <Loader size={40} className="animate-spin mb-4 text-blue-600" />
-                <p>Cargando partidos...</p>
+          !isPremium ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-slate-200 shadow-sm animate-fade-in">
+              <div className="bg-amber-50 p-6 rounded-full mb-6">
+                <Lock size={48} className="text-amber-500" />
               </div>
-            ) : filteredMatches.length > 0 ? (
-              filteredMatches.map((match) => {
-                const existingPrediction = userPredictions.find(p => p.partido_id === match.id);
-                const unsaved = unsavedPredictions[match.id];
-                return (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    existingPrediction={existingPrediction}
-                    unsavedPrediction={unsaved}
-                    onChange={handlePredictionChange}
-                  />
-                );
-              })
-            ) : (
-              <div className="col-span-full text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
-                <Shield size={48} className="mx-auto text-slate-200 mb-3" />
-                <p className="text-slate-500 font-medium">No hay partidos que coincidan con tu búsqueda.</p>
-                <button onClick={() => { setSearchTerm(''); setFilterStage('Todos') }} className="text-blue-600 text-sm font-bold mt-2 hover:underline">Limpiar filtros</button>
-              </div>
-            )}
-          </div>
+              <h2 className="text-2xl font-bold text-slate-800 mb-3">Sección Bloqueada</h2>
+              <p className="text-slate-500 max-w-md mb-8">Debes completar tu inscripción para poder realizar tus predicciones y participar por los premios.</p>
+              <button
+                onClick={() => setActiveTab('Pagos')}
+                className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-amber-500/20 transform hover:-translate-y-1"
+              >
+                Ir a Pagar Inscripción
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {loading ? (
+                <div className="col-span-full flex flex-col items-center justify-center py-24 text-slate-400">
+                  <Loader size={40} className="animate-spin mb-4 text-blue-600" />
+                  <p>Cargando partidos...</p>
+                </div>
+              ) : filteredMatches.length > 0 ? (
+                filteredMatches.map((match) => {
+                  const existingPrediction = userPredictions.find(p => p.partido_id === match.id);
+                  const unsaved = unsavedPredictions[match.id];
+                  return (
+                    <MatchCard
+                      key={match.id}
+                      match={match}
+                      existingPrediction={existingPrediction}
+                      unsavedPrediction={unsaved}
+                      onChange={handlePredictionChange}
+                    />
+                  );
+                })
+              ) : (
+                <div className="col-span-full text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
+                  <Shield size={48} className="mx-auto text-slate-200 mb-3" />
+                  <p className="text-slate-500 font-medium">No hay partidos que coincidan con tu búsqueda.</p>
+                  <button onClick={() => { setSearchTerm(''); setFilterStage('Todos') }} className="text-blue-600 text-sm font-bold mt-2 hover:underline">Limpiar filtros</button>
+                </div>
+              )}
+            </div>
+          )
         )}
 
         {/* CONTENIDO TAB PAGOS */}
-        {activeTab === 'Pagos' && (
-          <div className="flex flex-col items-center justify-center py-12 bg-white rounded-2xl shadow-sm border border-slate-200 text-center max-w-2xl mx-auto">
-            <div className="bg-blue-50 p-4 rounded-full mb-6">
-              <Ticket size={48} className="text-blue-600" />
+        {
+          activeTab === 'Pagos' && (
+            <div className="flex flex-col items-center justify-center py-12 bg-white rounded-2xl shadow-sm border border-slate-200 text-center max-w-2xl mx-auto">
+              <div className="bg-blue-50 p-4 rounded-full mb-6">
+                <Ticket size={48} className="text-blue-600" />
+              </div>
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Inscripción al Mundial</h2>
+              <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                Asegura tu participación en la quiniela. Realiza el pago único para competir por los premios.
+              </p>
+
+              {/* Estado de Pagos Condicional */}
+              {currentUser && currentUser.pago_realizado ? (
+                <div className="w-full max-w-xs bg-green-50 border border-green-200 rounded-xl p-6 flex flex-col items-center animate-fade-in-up">
+                  <div className="bg-green-100 p-3 rounded-full mb-3">
+                    <CheckCircle size={32} className="text-green-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-green-700 mb-1">¡Suscripción Activa!</h3>
+                  <p className="text-sm text-green-600">Ya estás participando en la quiniela.</p>
+                </div>
+              ) : (
+                <div className="w-full max-w-xs">
+                  <BotonPagar />
+                </div>
+              )}
+
+              <p className="text-xs text-slate-400 mt-6">
+                Pagos procesados de forma segura por Stripe.
+              </p>
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">Inscripción al Mundial</h2>
-            <p className="text-slate-500 mb-8 max-w-md mx-auto">
-              Asegura tu participación en la quiniela. Realiza el pago único para competir por los premios.
-            </p>
+          )
+        }
 
-            {/* Si el usuario ya pagó (podríamos chequear currentUser.pago_realizado si lo tuviéramos actualizado en frontend, por ahora mostramos el botón) */}
-            <div className="w-full max-w-xs">
-              <BotonPagar />
-            </div>
-
-            <p className="text-xs text-slate-400 mt-6">
-              Pagos procesados de forma segura por Stripe.
-            </p>
-          </div>
-        )}
-
-      </main>
+      </main >
 
       {/* BOTÓN FLOTANTE */}
-      {hasUnsavedChanges && (
-        <div className="fixed bottom-6 right-6 md:right-10 z-50 animate-bounce-in">
-          <button
-            onClick={handleBatchSave}
-            disabled={savingBatch}
-            className="bg-slate-900 hover:bg-black text-white pl-6 pr-8 py-4 rounded-full shadow-2xl font-bold flex items-center gap-3 transition-all hover:scale-105 border border-slate-700"
-          >
-            {savingBatch ? <Loader size={20} className="animate-spin" /> : <Save size={20} className="text-green-400" />}
-            <div className="flex flex-col items-start leading-none">
-              <span className="text-xs text-slate-400 font-normal uppercase mb-1">Cambios pendientes</span>
-              <span>Guardar ({Object.keys(unsavedPredictions).length})</span>
-            </div>
-          </button>
-        </div>
-      )}
+      {
+        hasUnsavedChanges && (
+          <div className="fixed bottom-6 right-6 md:right-10 z-50 animate-bounce-in">
+            <button
+              onClick={handleBatchSave}
+              disabled={savingBatch}
+              className="bg-slate-900 hover:bg-black text-white pl-6 pr-8 py-4 rounded-full shadow-2xl font-bold flex items-center gap-3 transition-all hover:scale-105 border border-slate-700"
+            >
+              {savingBatch ? <Loader size={20} className="animate-spin" /> : <Save size={20} className="text-green-400" />}
+              <div className="flex flex-col items-start leading-none">
+                <span className="text-xs text-slate-400 font-normal uppercase mb-1">Cambios pendientes</span>
+                <span>Guardar ({Object.keys(unsavedPredictions).length})</span>
+              </div>
+            </button>
+          </div>
+        )
+      }
 
       {/* --- MODAL DE BIENVENIDA RECUPERADO --- */}
-      {showWelcomeModal && (
-        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in-up relative">
-            <button
-              onClick={() => setShowWelcomeModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <X size={24} />
-            </button>
-
-            <div className="text-center mb-6">
-              <img src="/img/logo.png" alt="Logo Quiniela" className="h-20 mx-auto mb-4 object-contain" />
-              <h3 className="text-2xl font-bold text-slate-900">¡Bienvenido a la Quiniela!</h3>
-              <p className="text-slate-500 text-sm mt-1">Prepárate para el Mundial 2026</p>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-4">
-                <div className="bg-white p-2 rounded-full shadow-sm text-blue-600">
-                  <Ticket size={20} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-blue-900">Costo del Ticket: $25 USD</h4>
-                  <p className="text-xs text-blue-700 font-medium mt-0.5">Fase de Grupos</p>
-                </div>
-              </div>
-
-              <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex items-start gap-4">
-                <div className="bg-white p-2 rounded-full shadow-sm text-yellow-600">
-                  <AlertTriangle size={20} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-yellow-900">Regla Importante</h4>
-                  <p className="text-xs text-yellow-700 font-medium mt-0.5">Máximo 2 Tickets por usuario.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <p className="text-xs text-slate-400 mb-4">
-                * Siguiente Fase: Costo adicional aplicable.
-              </p>
+      {
+        showWelcomeModal && (
+          <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in-up relative">
               <button
                 onClick={() => setShowWelcomeModal(false)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
               >
-                Entendido, ¡A Jugar! <span>Tickets: 1/2</span>
+                <X size={24} />
               </button>
+
+              <div className="text-center mb-6">
+                <img src="/img/logo.png" alt="Logo Quiniela" className="h-20 mx-auto mb-4 object-contain" />
+                <h3 className="text-2xl font-bold text-slate-900">¡Bienvenido a la Quiniela!</h3>
+                <p className="text-slate-500 text-sm mt-1">Prepárate para el Mundial 2026</p>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-4">
+                  <div className="bg-white p-2 rounded-full shadow-sm text-blue-600">
+                    <Ticket size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-blue-900">Costo del Ticket: $25 USD</h4>
+                    <p className="text-xs text-blue-700 font-medium mt-0.5">Fase de Grupos</p>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex items-start gap-4">
+                  <div className="bg-white p-2 rounded-full shadow-sm text-yellow-600">
+                    <AlertTriangle size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-yellow-900">Regla Importante</h4>
+                    <p className="text-xs text-yellow-700 font-medium mt-0.5">Máximo 2 Tickets por usuario.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <p className="text-xs text-slate-400 mb-4">
+                  * Siguiente Fase: Costo adicional aplicable.
+                </p>
+                <button
+                  onClick={() => setShowWelcomeModal(false)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  Entendido, ¡A Jugar! <span>Tickets: 1/2</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-    </div>
+    </div >
   );
 }
 
