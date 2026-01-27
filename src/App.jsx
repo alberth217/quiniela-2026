@@ -2,14 +2,19 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import Login from './Login';
 import Register from './Register';
-import Dashboard from './Dashboard';
 import Admin from './Admin';
 import ProtectedRoute from './ProtectedRoute';
 import PagoExitoso from './PagoExitoso';
 import PagoFallido from './PagoFallido';
 
+// Layout & Pages
+import DashboardLayout from './DashboardLayout';
+import DashboardHome from './DashboardHome';
+import Predicciones from './Predicciones';
 import Ranking from './Ranking';
-import MisPuntos from './MisPuntos';
+import Reglas from './Reglas';
+import Pagos from './Pagos';
+import Perfil from './Perfil';
 
 function App() {
   return (
@@ -17,26 +22,24 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      } />
-      <Route path="/ranking" element={
-        <ProtectedRoute requirePayment={true}>
-          <Ranking />
-        </ProtectedRoute>
-      } />
-      <Route path="/mis-puntos" element={
-        <ProtectedRoute requirePayment={true}>
-          <MisPuntos />
-        </ProtectedRoute>
-      } />
+
+      {/* Rutas del Dashboard con Layout */}
+      <Route element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<DashboardHome />} />
+        <Route path="/predicciones" element={<Predicciones />} />
+        <Route path="/ranking" element={<Ranking />} />
+        <Route path="/reglas" element={<Reglas />} />
+        <Route path="/pagos" element={<Pagos />} />
+        <Route path="/perfil" element={<Perfil />} />
+      </Route>
+
+      {/* Admin sigue protegido independientemente */}
       <Route path="/admin" element={
         <ProtectedRoute>
           <Admin />
         </ProtectedRoute>
       } />
+
       <Route path="/pago-exitoso" element={<PagoExitoso />} />
       <Route path="/pago-fallido" element={<PagoFallido />} />
     </Routes>
