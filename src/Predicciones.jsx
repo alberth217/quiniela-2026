@@ -95,8 +95,38 @@ const Predicciones = () => {
 
     const hasUnsavedChanges = Object.keys(unsavedPredictions).length > 0;
 
+    // --- ADMIN CHECK ---
+    if (currentUser?.es_admin) {
+        return (
+            <div className="p-8 flex flex-col items-center justify-center min-h-[60vh] text-center">
+                <div className="bg-blue-50 p-6 rounded-full mb-6">
+                    <Shield size={64} className="text-blue-600" />
+                </div>
+                <h2 className="text-3xl font-black text-slate-800 mb-4">Modo Administrador</h2>
+                <p className="text-slate-500 max-w-md mb-8 text-lg">
+                    Como administrador, tu rol es gestionar el torneo y cargar los resultados oficiales. No participas en la quiniela.
+                </p>
+                <button
+                    onClick={() => navigate('/admin')}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-xl transition-all shadow-xl hover:scale-105"
+                >
+                    Ir al Panel de Control
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div className="p-4 md:p-8 relative min-h-screen pb-24">
+            {/* HEADER */}
+            <div className="mb-8">
+                <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <Shield className="text-amber-500" />
+                    Mi Quiniela
+                </h1>
+                <p className="text-slate-500 text-sm mt-1">Realiza tus predicciones y compite por los premios.</p>
+            </div>
+
             {/* BARRA DE HERRAMIENTAS INTEGRADA */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-white p-2 rounded-xl border border-slate-200 shadow-sm sticky top-20 z-40">
                 <div className="flex overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-hide gap-1">
@@ -104,7 +134,7 @@ const Predicciones = () => {
                         <button
                             key={f}
                             onClick={() => setFilterStage(f)}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${filterStage === f ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'}`}
+                            className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${filterStage === f ? 'bg-amber-500 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'}`}
                         >
                             {f}
                         </button>

@@ -10,6 +10,7 @@ import PagoFallido from './PagoFallido';
 // Layout & Pages
 import DashboardLayout from './DashboardLayout';
 import DashboardHome from './DashboardHome';
+import Partidos from './Partidos';
 import Predicciones from './Predicciones';
 import Ranking from './Ranking';
 import Reglas from './Reglas';
@@ -26,6 +27,7 @@ function App() {
       {/* Rutas del Dashboard con Layout */}
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<DashboardHome />} />
+        <Route path="/partidos" element={<Partidos />} />
         <Route path="/predicciones" element={<Predicciones />} />
         <Route path="/ranking" element={<Ranking />} />
         <Route path="/reglas" element={<Reglas />} />

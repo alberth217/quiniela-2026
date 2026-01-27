@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Trophy, Home, BarChart2, LogOut, Ticket, Book, ClipboardList, Menu, X, User } from 'lucide-react';
+import { Trophy, Home, BarChart2, LogOut, Ticket, Book, ClipboardList, Menu, X, User, Calendar } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = ({ currentUser, onLogout }) => {
@@ -34,6 +33,7 @@ const Navbar = ({ currentUser, onLogout }) => {
                 {/* DESKTOP MENU */}
                 <div className="hidden md:flex items-center gap-1">
                     <NavItem to="/dashboard" icon={Home} label="Inicio" />
+                    <NavItem to="/partidos" icon={Calendar} label="Calendario" />
                     <NavItem to="/predicciones" icon={ClipboardList} label="Predicciones" />
                     <NavItem to="/ranking" icon={Trophy} label="Ranking" />
                     <NavItem to="/reglas" icon={Book} label="Reglas" />
@@ -82,6 +82,7 @@ const Navbar = ({ currentUser, onLogout }) => {
                         </div>
                     )}
                     <NavItem to="/dashboard" icon={Home} label="Inicio" />
+                    <NavItem to="/partidos" icon={Calendar} label="Calendario" />
                     <NavItem to="/predicciones" icon={ClipboardList} label="Predicciones" />
                     <NavItem to="/ranking" icon={Trophy} label="Ranking" />
                     <NavItem to="/reglas" icon={Book} label="Reglas" />

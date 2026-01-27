@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Lock, Shield } from 'lucide-react';
 
-function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
+function MatchCard({ match, existingPrediction, unsavedPrediction, onChange, readOnly = false }) {
     const currentData = unsavedPrediction || existingPrediction || {};
 
     let initialScoreA = '';
@@ -66,7 +66,7 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
                     <h3 className="text-sm font-bold text-slate-800 text-center leading-tight h-8 flex items-center justify-center mb-2">
                         {match.equipo_a}
                     </h3>
-                    {!isFinalized ? (
+                    {!isFinalized && !readOnly ? (
                         <input
                             type="number"
                             min="0"
@@ -76,7 +76,9 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
                             className="w-12 h-10 text-center bg-white border border-slate-200 rounded-lg font-bold text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
                         />
                     ) : (
-                        <span className="text-2xl font-black text-slate-800">{match.goles_a}</span>
+                        <span className="text-2xl font-black text-slate-800">
+                            {isFinalized ? match.goles_a : '-'}
+                        </span>
                     )}
                 </div>
 
@@ -104,7 +106,7 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
                     <h3 className="text-sm font-bold text-slate-800 text-center leading-tight h-8 flex items-center justify-center mb-2">
                         {match.equipo_b}
                     </h3>
-                    {!isFinalized ? (
+                    {!isFinalized && !readOnly ? (
                         <input
                             type="number"
                             min="0"
@@ -114,7 +116,9 @@ function MatchCard({ match, existingPrediction, unsavedPrediction, onChange }) {
                             className="w-12 h-10 text-center bg-white border border-slate-200 rounded-lg font-bold text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
                         />
                     ) : (
-                        <span className="text-2xl font-black text-slate-800">{match.goles_b}</span>
+                        <span className="text-2xl font-black text-slate-800">
+                            {isFinalized ? match.goles_b : '-'}
+                        </span>
                     )}
                 </div>
             </div>
