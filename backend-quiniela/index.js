@@ -41,6 +41,9 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     let event;
 
     try {
+        // Initialize Stripe dynamically here too
+        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
         if (!stripe) throw new Error("Stripe no inicializado");
         // Asegúrate de usar tu STRIPE_WEBHOOK_SECRET en .env
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
