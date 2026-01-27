@@ -45,11 +45,11 @@ const BotonPagar = () => {
             onClick={handlePago}
             disabled={loading}
             className={`w-full py-3 px-6 rounded-xl text-white font-bold text-lg shadow-lg transition-all ${loading
-                    ? 'bg-gray-400 cursor-wait'
-                    : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/30 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5'
+                ? 'bg-gray-400 cursor-wait'
+                : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/30 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5'
                 }`}
         >
-            {loading ? 'Procesando...' : 'Pagar Inscripción ($10.00 USD)'}
+            {loading ? 'Procesando...' : 'Pagar Inscripción ($25.00 USD)'}
         </button>
     );
 };

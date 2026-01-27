@@ -16,8 +16,7 @@ function Dashboard() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('Partidos');
 
-  // Check for payment status
-  const isPremium = currentUser?.pago_realizado;
+
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -41,6 +40,8 @@ function Dashboard() {
     const userStr = localStorage.getItem('currentUser');
     return userStr ? JSON.parse(userStr) : null;
   });
+
+  const isPremium = currentUser?.pago_realizado;
 
   // Estados de Filtros
   const [searchTerm, setSearchTerm] = useState('');
