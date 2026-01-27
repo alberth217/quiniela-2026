@@ -53,19 +53,26 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     }
 
     // Handle the event
+    console.log(`🔔 Webhook rcvd: ${event.type}`);
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
-        const usuario_id = session.metadata.usuario_id;
+        console.log('📦 Metadata:', session.metadata);
+        const usuario_id = session.metadata ? session.metadata.usuario_id : null;
 
         console.log(`✅ Pago recibido para usuario: ${usuario_id}`);
 
         // Update database
         try {
-            await pool.query(
-                "UPDATE usuarios SET pago_realizado = TRUE WHERE id = $1",
+            const updateRes = await pool.query(
+                "UPDATE usuarios SET pago_realizado = TRUE WHERE id = $1 RETURNING *",
                 [usuario_id]
             );
-            console.log(`✅ Usuario ${usuario_id} marcado como PAGADO.`);
+
+            if (updateRes.rowCount > 0) {
+                console.log(`✅ Usuario ${usuario_id} actualizado a PAGO REALIZADO: TRUE`);
+            } else {
+                console.error(`⚠️ Usuario ID ${usuario_id} NO ENCONTRADO en DB.`);
+            }
         } catch (dbError) {
             console.error('Error updating user payment status:', dbError);
             return res.status(500).send('Database Error');
