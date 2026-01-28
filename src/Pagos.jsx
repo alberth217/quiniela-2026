@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Ticket, CheckCircle } from 'lucide-react';
+import { Ticket, CheckCircle, Shield } from 'lucide-react';
 import BotonPagar from './BotonPagar';
 
 const Pagos = () => {
@@ -24,18 +24,48 @@ const Pagos = () => {
 
                 {/* Estado de Pagos Condicional */}
                 {isPremium ? (
-                    <div className="w-full max-w-sm mx-auto bg-green-50 border border-green-200 rounded-xl p-8 flex flex-col items-center animate-fade-in-up">
-                        <div className="bg-green-100 p-3 rounded-full mb-4">
-                            <CheckCircle size={40} className="text-green-600" />
+                    <div className="w-full max-w-md mx-auto relative group">
+                        <div className="absolute inset-0 bg-blue-500 rounded-2xl transform rotate-3 scale-95 opacity-20 transition-transform group-hover:rotate-6"></div>
+                        <div className="bg-white border border-slate-200 rounded-2xl p-0 overflow-hidden shadow-xl relative z-10 animate-fade-in-up">
+                            {/* Receipt Header */}
+                            <div className="bg-slate-900 p-6 text-white text-center relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full blur-xl -mr-10 -mt-10"></div>
+                                <CheckCircle size={48} className="mx-auto text-green-400 mb-3" />
+                                <h3 className="text-xl font-bold uppercase tracking-widest">Inscripción Completada</h3>
+                                <p className="text-blue-200 text-sm">Quiniela Mundial 2026</p>
+                            </div>
+
+                            {/* Receipt Body */}
+                            <div className="p-8 space-y-4">
+                                <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                                    <span className="text-slate-500 text-sm">Estado</span>
+                                    <span className="text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full text-xs uppercase">Pagado</span>
+                                </div>
+                                <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                                    <span className="text-slate-500 text-sm">Usuario</span>
+                                    <span className="font-bold text-slate-800">{currentUser.nombre}</span>
+                                </div>
+                                <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                                    <span className="text-slate-500 text-sm">Monto</span>
+                                    <span className="font-bold text-slate-800">$10.00 USD</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-500 text-sm">Fecha</span>
+                                    <span className="font-medium text-slate-800 text-sm">{new Date().toLocaleDateString()}</span>
+                                </div>
+                            </div>
+
+                            {/* Receipt Footer */}
+                            <div className="bg-slate-50 p-4 text-center border-t border-slate-100">
+                                <p className="text-xs text-slate-400">Gracias por participar. ¡Mucha suerte!</p>
+                            </div>
                         </div>
-                        <h3 className="text-2xl font-bold text-green-700 mb-2">¡Suscripción Activa!</h3>
-                        <p className="text-green-600">Ya estás participando en la quiniela.</p>
                     </div>
                 ) : (
                     <div className="w-full max-w-sm mx-auto">
                         <BotonPagar />
-                        <p className="text-xs text-slate-400 mt-6">
-                            Pagos procesados de forma segura por Stripe.
+                        <p className="text-xs text-slate-400 mt-6 md:mt-8 flex items-center justify-center gap-1">
+                            <Shield size={12} /> Pagos procesados de forma 100% segura.
                         </p>
                     </div>
                 )}

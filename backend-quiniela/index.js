@@ -107,6 +107,7 @@ app.use((req, res, next) => {
 // --- RUTAS ADMIN ---
 
 // Update match result (Protected)
+// Update match result (Protected)
 app.put('/admin/partidos/:id', verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -120,7 +121,7 @@ app.put('/admin/partidos/:id', verifyAdmin, async (req, res) => {
             return res.status(400).json({ message: "Goles deben ser numéricos" });
         }
 
-        // Finalize match and update score
+        // 1. Finalize match and update score
         const result = await pool.query(
             "UPDATE partidos SET goles_a = $1, goles_b = $2, estado = 'finalizado' WHERE id = $3 RETURNING *",
             [gA, gB, id]
@@ -129,6 +130,39 @@ app.put('/admin/partidos/:id', verifyAdmin, async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).json({ message: "Partido no encontrado" });
         }
+
+        const match = result.rows[0];
+
+        // 2. TRIGGER: Calculate points for all predictions of this match
+        const predictions = await pool.query("SELECT * FROM predicciones WHERE partido_id = $1", [id]);
+
+        for (const pred of predictions.rows) {
+            let puntos = 0;
+            const predParts = pred.seleccion.split('-');
+            if (predParts.length !== 2) continue; // Skip invalid formats
+
+            const predA = parseInt(predParts[0], 10);
+            const predB = parseInt(predParts[1], 10);
+
+            // Regla 1: Marcador Exacto (3 Puntos)
+            if (predA === gA && predB === gB) {
+                puntos = 3;
+            }
+            // Regla 2: Ganador o Empate (1 Punto)
+            else {
+                const predWinner = predA > predB ? 'A' : (predA < predB ? 'B' : 'Draw');
+                const realWinner = gA > gB ? 'A' : (gA < gB ? 'B' : 'Draw');
+
+                if (predWinner === realWinner) {
+                    puntos = 1;
+                }
+            }
+
+            // Actualizar puntos en la predicción
+            await pool.query("UPDATE predicciones SET puntos = $1 WHERE id = $2", [puntos, pred.id]);
+        }
+
+        console.log(`✅ Partido ${id} finalizado. Puntos calculados para ${predictions.rows.length} predicciones.`);
 
         res.json(result.rows[0]);
     } catch (err) {
@@ -304,34 +338,17 @@ app.post('/create-checkout-session', async (req, res) => {
 });
 
 // --- RUTA RANKING ---
+// --- RUTA RANKING ---
 app.get('/ranking', async (req, res) => {
     try {
         const query = `
-            SELECT u.id, u.nombre, 
-                COALESCE(SUM(
-                    CASE 
-                        WHEN p.estado = 'finalizado' THEN 
-                            CASE 
-                                WHEN pr.seleccion = (p.goles_a || '-' || p.goles_b) THEN 3
-                                WHEN (
-                                    (p.goles_a > p.goles_b AND split_part(pr.seleccion, '-', 1)::int > split_part(pr.seleccion, '-', 2)::int) OR
-                                    (p.goles_a < p.goles_b AND split_part(pr.seleccion, '-', 1)::int < split_part(pr.seleccion, '-', 2)::int) OR
-                                    (p.goles_a = p.goles_b AND split_part(pr.seleccion, '-', 1)::int = split_part(pr.seleccion, '-', 2)::int)
-                                ) THEN 1
-                                ELSE 0 
-                            END
-                        ELSE 0 
-                    END
-                ), 0) as puntos,
-                COALESCE(COUNT(CASE WHEN p.estado = 'finalizado' AND (
-                    pr.seleccion = (p.goles_a || '-' || p.goles_b) OR
-                    ((p.goles_a > p.goles_b AND split_part(pr.seleccion, '-', 1)::int > split_part(pr.seleccion, '-', 2)::int) OR
-                    (p.goles_a < p.goles_b AND split_part(pr.seleccion, '-', 1)::int < split_part(pr.seleccion, '-', 2)::int) OR
-                    (p.goles_a = p.goles_b AND split_part(pr.seleccion, '-', 1)::int = split_part(pr.seleccion, '-', 2)::int))
-                ) THEN 1 END), 0) as aciertos
+            SELECT 
+                u.id, 
+                u.nombre, 
+                COALESCE(SUM(pr.puntos), 0) as puntos,
+                COALESCE(COUNT(CASE WHEN pr.puntos > 0 THEN 1 END), 0) as aciertos
             FROM usuarios u
             LEFT JOIN predicciones pr ON u.id = pr.usuario_id
-            LEFT JOIN partidos p ON pr.partido_id = p.id
             GROUP BY u.id, u.nombre
             ORDER BY puntos DESC, aciertos DESC;
         `;
