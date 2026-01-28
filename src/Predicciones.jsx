@@ -3,59 +3,53 @@ import { Search, Loader, Shield, Lock, Save } from 'lucide-react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import config from './config';
 import MatchCard from './MatchCard';
+import usePartidos from './hooks/usePartidos';
 
 const { API_URL } = config;
 
 const Predicciones = () => {
     const navigate = useNavigate();
-    const { currentUser } = useOutletContext(); // Access user from Layout
+    const { currentUser } = useOutletContext();
     const isPremium = currentUser?.pago_realizado;
 
-    // Estados de Datos
-    const [matches, setMatches] = useState([]);
+    // Use Hook for shared logic
+    const {
+        matches,
+        filteredMatches,
+        loading: loadingMatches,
+        filterStage,
+        setFilterStage,
+        searchTerm,
+        setSearchTerm
+    } = usePartidos();
+
+    // Local state for predictions
     const [userPredictions, setUserPredictions] = useState([]);
     const [unsavedPredictions, setUnsavedPredictions] = useState({});
-    const [loading, setLoading] = useState(true);
     const [savingBatch, setSavingBatch] = useState(false);
-
-    // Estados de Filtros
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterStage, setFilterStage] = useState('Fase de Grupos');
+    const [loadingPredictions, setLoadingPredictions] = useState(true);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchPredictions = async () => {
+            if (!currentUser) return;
             try {
-                setLoading(true);
-                const matchesRes = await fetch(`${API_URL}/partidos`);
+                setLoadingPredictions(true);
                 const predictionsRes = await fetch(`${API_URL}/predicciones`);
-
-                if (matchesRes.ok && predictionsRes.ok) {
-                    const matchesData = await matchesRes.json();
+                if (predictionsRes.ok) {
                     const allPredictions = await predictionsRes.json();
                     const myPredictions = allPredictions.filter(p => p.usuario_id === currentUser?.id);
-                    setMatches(matchesData);
                     setUserPredictions(myPredictions);
                 }
             } catch (error) {
-                console.error("Error cargando datos:", error);
+                console.error("Error loading predictions", error);
             } finally {
-                setLoading(false);
+                setLoadingPredictions(false);
             }
         };
-        if (currentUser) {
-            fetchData();
-        }
+        fetchPredictions();
     }, [currentUser]);
 
-    // --- LÓGICA DE FILTRADO ---
-    const filteredMatches = matches.filter(match => {
-        const searchLower = searchTerm.toLowerCase();
-        const matchesSearch =
-            (match.equipo_a || '').toLowerCase().includes(searchLower) ||
-            (match.equipo_b || '').toLowerCase().includes(searchLower);
-        const matchesStage = filterStage === 'Todos' || (match.fase === filterStage);
-        return matchesSearch && matchesStage;
-    });
+    const loading = loadingMatches || loadingPredictions;
 
     const handlePredictionChange = (partidoId, predictionData) => {
         setUnsavedPredictions(prev => ({ ...prev, [partidoId]: predictionData }));

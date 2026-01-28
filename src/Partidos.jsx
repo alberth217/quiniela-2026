@@ -1,51 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Search, Loader, Calendar, Shield } from 'lucide-react';
-import config from './config';
 import MatchCard from './MatchCard';
-
-const { API_URL } = config;
+import usePartidos from './hooks/usePartidos';
 
 const Partidos = () => {
-    // Estados de Datos
-    const [matches, setMatches] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    // Estados de Filtros
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterStage, setFilterStage] = useState('Todas');
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const matchesRes = await fetch(`${API_URL}/partidos`);
-                if (matchesRes.ok) {
-                    const matchesData = await matchesRes.json();
-                    setMatches(matchesData);
-                }
-            } catch (error) {
-                console.error("Error cargando calendario:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
-
-    // --- LÓGICA DE FILTRADO ---
-    const filteredMatches = matches.filter(match => {
-        const searchLower = searchTerm.toLowerCase();
-        const matchesSearch =
-            (match.equipo_a || '').toLowerCase().includes(searchLower) ||
-            (match.equipo_b || '').toLowerCase().includes(searchLower);
-
-        // Mapping simple filters to actual match phases if needed, or exact match
-        const matchesStage = filterStage === 'Todas' ||
-            (match.fase === filterStage) ||
-            (filterStage === 'Fase de Grupos' && match.fase && match.fase.includes('Grupo'));
-
-        return matchesSearch && matchesStage;
-    });
+    // Shared Logic Hook
+    const {
+        filteredMatches,
+        loading,
+        filterStage,
+        setFilterStage,
+        searchTerm,
+        setSearchTerm
+    } = usePartidos();
 
     return (
         <div className="p-4 md:p-8 min-h-screen pb-12">
@@ -57,7 +24,7 @@ const Partidos = () => {
                 <p className="text-slate-500 text-sm mt-1">Consulta los horarios y resultados de todos los partidos del torneo.</p>
             </div>
 
-            {/* BARRA DE HERRAMIENTAS */}
+            {/* BARRA DE HERRAMIENTAS - REUSED DESIGN */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-white p-2 rounded-xl border border-slate-200 shadow-sm sticky top-20 z-40">
                 <div className="flex overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-hide gap-1">
                     {['Todas', 'Fase de Grupos', 'Octavos', 'Cuartos', 'Semifinal', 'Final'].map(f => (
