@@ -14,7 +14,13 @@ const Pagos = () => {
     // BUT we need the updated user object. Let's use useOutletContext since 'Ranking' uses it.
     const context = useOutletContext();
     // Fallback if context is null (e.g. if rendered outside outlet, though unlikely in this app structure)
-    const currentUser = context?.currentUser; 
+    // ALSO fallback to localStorage to be absolutely sure we catch the admin status
+    const getStoredUser = () => {
+        const stored = localStorage.getItem('currentUser');
+        return stored ? JSON.parse(stored) : null;
+    };
+
+    const currentUser = context?.currentUser || getStoredUser(); 
 
     // Check payment status and admin status
     const isPremium = currentUser?.pago_realizado;
