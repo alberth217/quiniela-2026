@@ -171,6 +171,36 @@ app.put('/admin/partidos/:id', verifyAdmin, async (req, res) => {
     }
 });
 
+// Get Admin Stats
+app.get('/admin/stats', verifyAdmin, async (req, res) => {
+    try {
+        const statsQuery = `
+            SELECT 
+                COUNT(*) as total_usuarios,
+                COUNT(CASE WHEN pago_realizado = TRUE THEN 1 END) as usuarios_premium,
+                COUNT(CASE WHEN pago_realizado = FALSE THEN 1 END) as usuarios_free
+            FROM usuarios
+            WHERE es_admin IS NOT TRUE;
+        `;
+        const result = await pool.query(statsQuery);
+        const stats = result.rows[0];
+
+        // Mock price for estimation
+        const PRECIO = 10;
+        const ingresos = stats.usuarios_premium * PRECIO;
+
+        res.json({
+            total_usuarios: parseInt(stats.total_usuarios),
+            usuarios_premium: parseInt(stats.usuarios_premium),
+            usuarios_free: parseInt(stats.usuarios_free),
+            ingresos_estimados: ingresos
+        });
+    } catch (err) {
+        console.error("STATS ERROR:", err);
+        res.status(500).json({ message: "Error al obtener estadísticas" });
+    }
+});
+
 // --- RUTAS ---
 
 app.get('/', (req, res) => {
@@ -349,6 +379,7 @@ app.get('/ranking', async (req, res) => {
                 COALESCE(COUNT(CASE WHEN pr.puntos > 0 THEN 1 END), 0) as aciertos
             FROM usuarios u
             LEFT JOIN predicciones pr ON u.id = pr.usuario_id
+            WHERE u.es_admin IS NOT TRUE
             GROUP BY u.id, u.nombre
             ORDER BY puntos DESC, aciertos DESC;
         `;
