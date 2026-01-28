@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Trophy, Home, BarChart2, LogOut, Ticket, Book, ClipboardList, Menu, X, User, Calendar } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
