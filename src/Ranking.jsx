@@ -46,7 +46,7 @@ function Ranking() {
                 </div>
 
                 <div className={`w-full ${height} ${bgColor} rounded-t-2xl border-t border-x shadow-sm p-4 flex flex-col items-center justify-start pt-8 text-center`}>
-                    <p className="font-bold text-slate-800 text-sm md:text-base leading-tight mb-1 truncate w-full px-2">{user.nombre}</p>
+                    <p className="font-bold text-slate-800 text-sm md:text-base leading-tight mb-1 truncate w-full px-2">{user.nickname || user.nombre}</p>
                     <span className="font-black text-xl md:text-2xl text-slate-900">{user.puntos}</span>
                     <span className="text-[10px] uppercase font-bold text-slate-500">Puntos</span>
                 </div>
@@ -102,7 +102,7 @@ function Ranking() {
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <span className={`font-bold text-sm ${isCurrentUser ? 'text-blue-900' : 'text-slate-700'}`}>
-                                                                {user.nombre} {isCurrentUser && <span className="inline-block px-1.5 py-0.5 rounded text-[10px] bg-blue-200 text-blue-800 ml-1">Tú</span>}
+                                                                {user.nickname || user.nombre} {isCurrentUser && <span className="inline-block px-1.5 py-0.5 rounded text-[10px] bg-blue-200 text-blue-800 ml-1">Tú</span>}
                                                             </span>
                                                         </div>
                                                     </div>

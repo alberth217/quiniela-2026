@@ -240,6 +240,29 @@ app.get('/usuarios/:id', async (req, res) => {
         console.error(err.message);
         res.status(500).json({ message: "Error del servidor" });
     }
+}
+});
+
+// Actualizar Perfil (Nombre, Nickname)
+app.put('/perfil/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, nickname } = req.body;
+
+        const result = await pool.query(
+            "UPDATE usuarios SET nombre = $1, nickname = $2 WHERE id = $3 RETURNING id, nombre, email, nickname, pago_realizado, es_admin",
+            [nombre, nickname, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Error al actualizar perfil" });
+    }
 });
 
 app.post('/login', async (req, res) => {
@@ -259,7 +282,8 @@ app.post('/login', async (req, res) => {
             nombre: usuario.nombre,
             email: usuario.email,
             pago_realizado: usuario.pago_realizado,
-            es_admin: usuario.es_admin
+            es_admin: usuario.es_admin,
+            nickname: usuario.nickname
         });
     } catch (err) {
         console.error(err.message);
@@ -375,12 +399,13 @@ app.get('/ranking', async (req, res) => {
             SELECT 
                 u.id, 
                 u.nombre, 
+                u.nickname,
                 COALESCE(SUM(pr.puntos), 0) as puntos,
                 COALESCE(COUNT(CASE WHEN pr.puntos > 0 THEN 1 END), 0) as aciertos
             FROM usuarios u
             LEFT JOIN predicciones pr ON u.id = pr.usuario_id
             WHERE u.es_admin IS NOT TRUE
-            GROUP BY u.id, u.nombre
+            GROUP BY u.id, u.nombre, u.nickname
             ORDER BY puntos DESC, aciertos DESC;
         `;
         const result = await pool.query(query);
