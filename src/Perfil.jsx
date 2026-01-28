@@ -115,72 +115,72 @@ const Perfil = () => {
                                     {currentUser.nombre ? currentUser.nombre.charAt(0).toUpperCase() : <User size={48} />}
                                 </div>
                             </div>
-                        </div>
-                        <div className="mb-2 w-full md:w-auto">
-                            {!isEditing ? (
-                                <>
-                                    <div className="flex items-center gap-3 mb-1">
-                                        <h1 className="text-3xl font-bold text-slate-900">{currentUser.nickname || currentUser.nombre}</h1>
-                                        <button
-                                            onClick={() => setIsEditing(true)}
-                                            className="text-slate-400 hover:text-blue-600 transition-colors"
-                                            title="Editar Perfil"
-                                        >
-                                            <Edit2 size={18} />
-                                        </button>
-                                    </div>
-                                    {currentUser.nickname && (
-                                        <p className="text-sm text-slate-500 font-medium mb-1 pl-1">
-                                            {currentUser.nombre}
-                                        </p>
-                                    )}
-                                    <div className="flex items-center gap-2 text-slate-500">
-                                        <Mail size={16} />
-                                        <span>{currentUser.email}</span>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 animate-fade-in w-full max-w-md">
-                                    <h3 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Editar Perfil</h3>
-                                    <div className="grid gap-3 mb-3">
-                                        <div>
-                                            <label className="text-xs font-semibold text-slate-500 block mb-1">Nickname (Apodo)</label>
-                                            <input
-                                                type="text"
-                                                name="nickname"
-                                                value={formData.nickname}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                                placeholder="Ej: El Mago"
-                                            />
+                            <div className="mb-2 w-full md:w-auto">
+                                {!isEditing ? (
+                                    <>
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <h1 className="text-3xl font-bold text-slate-900">{currentUser.nickname || currentUser.nombre}</h1>
+                                            <button
+                                                onClick={() => setIsEditing(true)}
+                                                className="text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 text-sm font-medium ml-2"
+                                                title="Editar Perfil"
+                                            >
+                                                <Edit2 size={16} /> <span className="underline">Editar</span>
+                                            </button>
                                         </div>
-                                        <div>
-                                            <label className="text-xs font-semibold text-slate-500 block mb-1">Nombre Real</label>
-                                            <input
-                                                type="text"
-                                                name="nombre"
-                                                value={formData.nombre}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            />
+                                        {currentUser.nickname && (
+                                            <p className="text-sm text-slate-500 font-medium mb-1 pl-1">
+                                                {currentUser.nombre}
+                                            </p>
+                                        )}
+                                        <div className="flex items-center gap-2 text-slate-500">
+                                            <Mail size={16} />
+                                            <span>{currentUser.email}</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 animate-fade-in w-full max-w-md">
+                                        <h3 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Editar Perfil</h3>
+                                        <div className="grid gap-3 mb-3">
+                                            <div>
+                                                <label className="text-xs font-semibold text-slate-500 block mb-1">Nickname (Apodo)</label>
+                                                <input
+                                                    type="text"
+                                                    name="nickname"
+                                                    value={formData.nickname}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                                    placeholder="Ej: El Mago"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-semibold text-slate-500 block mb-1">Nombre Real</label>
+                                                <input
+                                                    type="text"
+                                                    name="nombre"
+                                                    value={formData.nombre}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 justify-end">
+                                            <button
+                                                onClick={() => setIsEditing(false)}
+                                                className="px-3 py-1.5 text-slate-600 text-sm font-medium hover:bg-slate-200 rounded-lg flex items-center gap-1"
+                                            >
+                                                <X size={16} /> Cancelar
+                                            </button>
+                                            <button
+                                                onClick={handleSaveProfile}
+                                                className="px-3 py-1.5 bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 rounded-lg flex items-center gap-1 shadow-sm"
+                                            >
+                                                <Save size={16} /> Guardar
+                                            </button>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2 justify-end">
-                                        <button
-                                            onClick={() => setIsEditing(false)}
-                                            className="px-3 py-1.5 text-slate-600 text-sm font-medium hover:bg-slate-200 rounded-lg flex items-center gap-1"
-                                        >
-                                            <X size={16} /> Cancelar
-                                        </button>
-                                        <button
-                                            onClick={handleSaveProfile}
-                                            className="px-3 py-1.5 bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 rounded-lg flex items-center gap-1 shadow-sm"
-                                        >
-                                            <Save size={16} /> Guardar
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
 
 
